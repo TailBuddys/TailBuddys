@@ -24,7 +24,6 @@ namespace TailBuddys.Core.Models
         public ICollection<Match> Matches { get; set; } = new List<Match>();
         public ICollection<Park> FavParks { get; set; } = new List<Park>();
         public ICollection<Chat> Chats { get; set; } = new List<Chat>();
-        public string moshe { get; set; }
     }
 
     public enum DogType
