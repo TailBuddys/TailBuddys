@@ -11,5 +11,6 @@
         //public Messege LastMessege { get; set; }
         public bool IsActive { get; set; }
         public ICollection<Messege> Messeges { get; set; } = new List<Messege>();
+        public string Noy {  get; set; }
     }
 }
