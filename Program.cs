@@ -1,4 +1,8 @@
 
+using Microsoft.EntityFrameworkCore;
+using TailBuddys.Hubs;
+using TailBuddys.Infrastructure.Data;
+
 namespace TailBuddys
 {
     public class Program
@@ -10,6 +14,20 @@ namespace TailBuddys
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddDbContext<TinderDogsContext>(options => options.UseSqlServer("Server=MOSHIKO\\SQLEXPRESS;Database=TinderDogs;Trusted_Connection=True;TrustServerCertificate=True;"));
+
+            builder.Services.AddSignalR();
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials()
+                          .SetIsOriginAllowed(origin => true); // Allow any origin
+                });
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -24,11 +42,14 @@ namespace TailBuddys
             }
 
             app.UseHttpsRedirection();
+            app.UseCors();
+            app.UseRouting();
 
-            app.UseAuthorization();
-
-
-            app.MapControllers();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<NotificationHub>("/NotificationHub");
+            });
 
             app.Run();
         }
