@@ -1,10 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Xml;
-using System;
-using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TailBuddys.Core.Models
 {
@@ -18,7 +12,7 @@ namespace TailBuddys.Core.Models
         [Phone]
         public string Phone { get; set; }
         public string PasswordHash { get; set; }
-        public string PasswordSalt { get; set; }
+        public string PasswordSalt { get; set; } // צריך להבין מה זה
         public DateTime BirthDate { get; set; }
         public Gender Gender { get; set; }
         public bool IsAdmin { get; set; }
