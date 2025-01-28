@@ -11,9 +11,14 @@ namespace TailBuddys
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Add services to the container
 
-            string ConnectionString = Environment.GetEnvironmentVariable("TailBuddysDBString", EnvironmentVariableTarget.User);
+            string? ConnectionString = Environment.GetEnvironmentVariable("TailBuddysDBString", EnvironmentVariableTarget.User);
+
+            if (string.IsNullOrEmpty(ConnectionString))
+            {
+                throw new Exception("connection string is required");
+            }
             builder.Services.AddControllers();
             builder.Services.AddDbContext<TailBuddysContext>(options => options.UseSqlServer(ConnectionString));
 
