@@ -13,8 +13,9 @@ namespace TailBuddys
 
             // Add services to the container.
 
+            string ConnectionString = Environment.GetEnvironmentVariable("TailBuddysDBString", EnvironmentVariableTarget.User);
             builder.Services.AddControllers();
-            builder.Services.AddDbContext<TailBuddysContext>(options => options.UseSqlServer("Server=MOSHIKO\\SQLEXPRESS;Database=TailBuddys;Trusted_Connection=True;TrustServerCertificate=True;"));
+            builder.Services.AddDbContext<TailBuddysContext>(options => options.UseSqlServer(ConnectionString));
 
             builder.Services.AddSignalR();
             builder.Services.AddCors(options =>
