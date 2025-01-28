@@ -4,7 +4,7 @@ namespace TailBuddys.Core.Models
 {
     public class User
     {
-        public string id { get; set; } = Guid.NewGuid().ToString();
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string FirstName { get; set; }
         public string LastName { get; set; }
         [Required, EmailAddress]
