@@ -4,10 +4,10 @@ namespace TailBuddys.Core.Interfaces
 {
     public interface IChatRepository
     {
-        public Task<Chat?> CreateChatAsync(string id);
-        public Task<List<Chat?>> GetAllChatsAsync(string id);
-        public Task<Chat?> GetChatByIdAsync(string id);
-        public Task<Chat?> UpdateChatAsync(string id);
-        public Task<Chat?> DeleteChatAsync(string id);
+        public Task<Chat?> CreateChat(string id);
+        public Task<List<Chat?>> GetAllChats(string id);
+        public Task<Chat?> GetChatById(string id);
+        public Task<Chat?> UpdateChat(string id);
+        public Task<Chat?> DeleteChat(string id);
     }
 }

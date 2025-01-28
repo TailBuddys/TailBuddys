@@ -10,6 +10,6 @@
         //public string LastMessegeId { get; set; }
         //public Messege LastMessege { get; set; }
         public bool IsActive { get; set; }
-        public ICollection<Messege> Messeges { get; set; } = new List<Messege>();
+        public ICollection<Message> Messages { get; set; } = new List<Message>();
     }
 }

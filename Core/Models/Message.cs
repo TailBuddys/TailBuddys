@@ -1,6 +1,6 @@
 ﻿namespace TailBuddys.Core.Models
 {
-    public class Messege
+    public class Message
     {
         public string Id { get; set; }
         public string ChatID { get; set; }
