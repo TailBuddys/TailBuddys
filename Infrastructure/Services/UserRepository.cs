@@ -66,13 +66,19 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                User? userToUpdate = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+                User? userToUpdate = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
                 if (userToUpdate == null)
                 {
                     return null;
                 }
+                userToUpdate.FirstName = user.FirstName;
+                userToUpdate.LastName = user.LastName;
                 userToUpdate.Email = user.Email;
                 userToUpdate.Phone = user.Phone;
+                userToUpdate.BirthDate = user.BirthDate;
+                userToUpdate.Gender = user.Gender;
+                userToUpdate.UpdatedAt = DateTime.Now;
+
                 _context.Users.Update(userToUpdate);
                 await _context.SaveChangesAsync();
                 return userToUpdate;
@@ -83,7 +89,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        // remove all dogs ????
+
         public async Task<User?> DeleteUser(string userId)
         {
             try
