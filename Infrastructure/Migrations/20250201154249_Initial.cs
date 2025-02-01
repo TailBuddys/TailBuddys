@@ -12,20 +12,6 @@ namespace TailBuddys.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Notifications",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    DogId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UnreadMessages = table.Column<int>(type: "int", nullable: false),
-                    LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notifications", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Parks",
                 columns: table => new
                 {
@@ -100,23 +86,29 @@ namespace TailBuddys.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FromDogId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ToDogId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    DogId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    FromDogId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ToDogId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Chats", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Chats_Dogs_DogId",
-                        column: x => x.DogId,
+                        name: "FK_Chats_Dogs_FromDogId",
+                        column: x => x.FromDogId,
                         principalTable: "Dogs",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Chats_Dogs_ToDogId",
+                        column: x => x.ToDogId,
+                        principalTable: "Dogs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DogPark",
+                name: "DogParks",
                 columns: table => new
                 {
                     DogLikesId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -124,15 +116,15 @@ namespace TailBuddys.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DogPark", x => new { x.DogLikesId, x.FavParksId });
+                    table.PrimaryKey("PK_DogParks", x => new { x.DogLikesId, x.FavParksId });
                     table.ForeignKey(
-                        name: "FK_DogPark_Dogs_DogLikesId",
+                        name: "FK_DogParks_Dogs_DogLikesId",
                         column: x => x.DogLikesId,
                         principalTable: "Dogs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DogPark_Parks_FavParksId",
+                        name: "FK_DogParks_Parks_FavParksId",
                         column: x => x.FavParksId,
                         principalTable: "Parks",
                         principalColumn: "Id",
@@ -144,26 +136,26 @@ namespace TailBuddys.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    EntityId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EntityId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EntityType = table.Column<int>(type: "int", nullable: false),
                     Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Order = table.Column<int>(type: "int", nullable: false),
-                    DogId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ParkId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    Order = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Images", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Images_Dogs_DogId",
-                        column: x => x.DogId,
+                        name: "FK_Images_Dogs_EntityId",
+                        column: x => x.EntityId,
                         principalTable: "Dogs",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Images_Parks_ParkId",
-                        column: x => x.ParkId,
+                        name: "FK_Images_Parks_EntityId",
+                        column: x => x.EntityId,
                         principalTable: "Parks",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -172,22 +164,48 @@ namespace TailBuddys.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FromDogId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ToDogId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FromDogId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ToDogId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsLike = table.Column<bool>(type: "bit", nullable: false),
                     IsMatch = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DogId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Matches", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Matches_Dogs_DogId",
+                        name: "FK_Matches_Dogs_FromDogId",
+                        column: x => x.FromDogId,
+                        principalTable: "Dogs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Matches_Dogs_ToDogId",
+                        column: x => x.ToDogId,
+                        principalTable: "Dogs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DogId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UnreadMessages = table.Column<int>(type: "int", nullable: false),
+                    LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Dogs_DogId",
                         column: x => x.DogId,
                         principalTable: "Dogs",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -213,13 +231,19 @@ namespace TailBuddys.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_DogId",
+                name: "IX_Chats_FromDogId_ToDogId",
                 table: "Chats",
-                column: "DogId");
+                columns: new[] { "FromDogId", "ToDogId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_DogPark_FavParksId",
-                table: "DogPark",
+                name: "IX_Chats_ToDogId",
+                table: "Chats",
+                column: "ToDogId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DogParks_FavParksId",
+                table: "DogParks",
                 column: "FavParksId");
 
             migrationBuilder.CreateIndex(
@@ -228,31 +252,36 @@ namespace TailBuddys.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Images_DogId",
+                name: "IX_Images_EntityId",
                 table: "Images",
-                column: "DogId");
+                column: "EntityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Images_ParkId",
-                table: "Images",
-                column: "ParkId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Matches_DogId",
+                name: "IX_Matches_FromDogId",
                 table: "Matches",
-                column: "DogId");
+                column: "FromDogId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Matches_ToDogId",
+                table: "Matches",
+                column: "ToDogId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messeges_ChatID",
                 table: "Messeges",
                 column: "ChatID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_DogId",
+                table: "Notifications",
+                column: "DogId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DogPark");
+                name: "DogParks");
 
             migrationBuilder.DropTable(
                 name: "Images");

@@ -7,6 +7,8 @@
         public EntityType EntityType { get; set; }
         public string Url { get; set; }
         public int Order { get; set; }
+        public Dog Dog { get; set; }
+        public Park Park { get; set; }
     }
 
     public enum EntityType

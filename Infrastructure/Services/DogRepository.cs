@@ -54,7 +54,7 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                List<Dog> list = await _context.Dogs.Where(d => d.Matches.All(m => m.FromDogId != dogId)).ToListAsync();
+                List<Dog> list = await _context.Dogs.Where(d => d.MatchesAsFrom.All(m => m.FromDogId != dogId)).ToListAsync();
                 return list;
             }
             catch (Exception ex)

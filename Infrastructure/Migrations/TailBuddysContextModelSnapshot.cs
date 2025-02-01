@@ -34,7 +34,7 @@ namespace TailBuddys.Infrastructure.Migrations
 
                     b.HasIndex("FavParksId");
 
-                    b.ToTable("DogPark");
+                    b.ToTable("DogParks", (string)null);
                 });
 
             modelBuilder.Entity("TailBuddys.Core.Models.Chat", b =>
@@ -42,23 +42,23 @@ namespace TailBuddys.Infrastructure.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("DogId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("FromDogId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("ToDogId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DogId");
+                    b.HasIndex("ToDogId");
+
+                    b.HasIndex("FromDogId", "ToDogId")
+                        .IsUnique();
 
                     b.ToTable("Chats");
                 });
@@ -123,12 +123,9 @@ namespace TailBuddys.Infrastructure.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("DogId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("EntityId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("EntityType")
                         .HasColumnType("int");
@@ -136,20 +133,17 @@ namespace TailBuddys.Infrastructure.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
-                    b.Property<string>("ParkId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DogId");
-
-                    b.HasIndex("ParkId");
+                    b.HasIndex("EntityId");
 
                     b.ToTable("Images");
+
+                    b.HasDiscriminator<int>("EntityType").HasValue(1);
                 });
 
             modelBuilder.Entity("TailBuddys.Core.Models.Match", b =>
@@ -163,12 +157,9 @@ namespace TailBuddys.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("DogId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("FromDogId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsLike")
                         .HasColumnType("bit");
@@ -178,14 +169,16 @@ namespace TailBuddys.Infrastructure.Migrations
 
                     b.Property<string>("ToDogId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DogId");
+                    b.HasIndex("FromDogId");
+
+                    b.HasIndex("ToDogId");
 
                     b.ToTable("Matches");
                 });
@@ -226,7 +219,7 @@ namespace TailBuddys.Infrastructure.Migrations
 
                     b.Property<string>("DogId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("LastUpdated")
                         .HasColumnType("datetime2");
@@ -235,6 +228,8 @@ namespace TailBuddys.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DogId");
 
                     b.ToTable("Notifications");
                 });
@@ -339,9 +334,21 @@ namespace TailBuddys.Infrastructure.Migrations
 
             modelBuilder.Entity("TailBuddys.Core.Models.Chat", b =>
                 {
-                    b.HasOne("TailBuddys.Core.Models.Dog", null)
-                        .WithMany("Chats")
-                        .HasForeignKey("DogId");
+                    b.HasOne("TailBuddys.Core.Models.Dog", "FromDog")
+                        .WithMany("ChatsAsFrom")
+                        .HasForeignKey("FromDogId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TailBuddys.Core.Models.Dog", "ToDog")
+                        .WithMany("ChatsAsTo")
+                        .HasForeignKey("ToDogId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FromDog");
+
+                    b.Navigation("ToDog");
                 });
 
             modelBuilder.Entity("TailBuddys.Core.Models.Dog", b =>
@@ -357,20 +364,40 @@ namespace TailBuddys.Infrastructure.Migrations
 
             modelBuilder.Entity("TailBuddys.Core.Models.Image", b =>
                 {
-                    b.HasOne("TailBuddys.Core.Models.Dog", null)
+                    b.HasOne("TailBuddys.Core.Models.Dog", "Dog")
                         .WithMany("Images")
-                        .HasForeignKey("DogId");
+                        .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("TailBuddys.Core.Models.Park", null)
+                    b.HasOne("TailBuddys.Core.Models.Park", "Park")
                         .WithMany("Images")
-                        .HasForeignKey("ParkId");
+                        .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dog");
+
+                    b.Navigation("Park");
                 });
 
             modelBuilder.Entity("TailBuddys.Core.Models.Match", b =>
                 {
-                    b.HasOne("TailBuddys.Core.Models.Dog", null)
-                        .WithMany("Matches")
-                        .HasForeignKey("DogId");
+                    b.HasOne("TailBuddys.Core.Models.Dog", "FromDog")
+                        .WithMany("MatchesAsFrom")
+                        .HasForeignKey("FromDogId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TailBuddys.Core.Models.Dog", "ToDog")
+                        .WithMany("MatchesAsTo")
+                        .HasForeignKey("ToDogId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FromDog");
+
+                    b.Navigation("ToDog");
                 });
 
             modelBuilder.Entity("TailBuddys.Core.Models.Message", b =>
@@ -384,6 +411,17 @@ namespace TailBuddys.Infrastructure.Migrations
                     b.Navigation("Chat");
                 });
 
+            modelBuilder.Entity("TailBuddys.Core.Models.Notification", b =>
+                {
+                    b.HasOne("TailBuddys.Core.Models.Dog", "Dog")
+                        .WithMany("Notifications")
+                        .HasForeignKey("DogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dog");
+                });
+
             modelBuilder.Entity("TailBuddys.Core.Models.Chat", b =>
                 {
                     b.Navigation("Messages");
@@ -391,11 +429,17 @@ namespace TailBuddys.Infrastructure.Migrations
 
             modelBuilder.Entity("TailBuddys.Core.Models.Dog", b =>
                 {
-                    b.Navigation("Chats");
+                    b.Navigation("ChatsAsFrom");
+
+                    b.Navigation("ChatsAsTo");
 
                     b.Navigation("Images");
 
-                    b.Navigation("Matches");
+                    b.Navigation("MatchesAsFrom");
+
+                    b.Navigation("MatchesAsTo");
+
+                    b.Navigation("Notifications");
                 });
 
             modelBuilder.Entity("TailBuddys.Core.Models.Park", b =>

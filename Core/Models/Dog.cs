@@ -18,9 +18,12 @@
         public bool Vaccinated { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public ICollection<Match> Matches { get; set; } = new List<Match>();
+        public ICollection<Match> MatchesAsFrom { get; set; } = new List<Match>();
+        public ICollection<Match> MatchesAsTo { get; set; } = new List<Match>();
         public ICollection<Park> FavParks { get; set; } = new List<Park>();
-        public ICollection<Chat> Chats { get; set; } = new List<Chat>();
+        public ICollection<Chat> ChatsAsFrom { get; set; } = new List<Chat>();
+        public ICollection<Chat> ChatsAsTo { get; set; } = new List<Chat>(); 
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 
     public enum DogType

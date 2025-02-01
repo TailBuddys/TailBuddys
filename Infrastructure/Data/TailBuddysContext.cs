@@ -17,5 +17,89 @@ namespace TailBuddys.Infrastructure.Data
         {
 
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // User - Dog (One-to-Many)
+            modelBuilder.Entity<Dog>()
+                .HasOne(d => d.User)
+                .WithMany(u => u.Dogs)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Image>()
+                .HasDiscriminator<EntityType>("EntityType")
+                .HasValue<Image>(EntityType.Dog)
+                .HasValue<Image>(EntityType.Park);
+
+            // 🔹 Image - Dog (One-to-Many)
+            modelBuilder.Entity<Image>()
+                .HasOne(i => i.Dog)
+                .WithMany(d => d.Images)
+                .HasForeignKey(i => i.EntityId)
+                .HasPrincipalKey(d => d.Id)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // 🔹 Image - Park (One-to-Many)
+            modelBuilder.Entity<Image>()
+                .HasOne(i => i.Park)
+                .WithMany(p => p.Images)
+                .HasForeignKey(i => i.EntityId)
+                .HasPrincipalKey(p => p.Id)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Chat - Dog Relationship (Self-Referencing Many-to-One)
+            modelBuilder.Entity<Chat>()
+                .HasOne(c => c.FromDog)
+                .WithMany(d => d.ChatsAsFrom)  // ✅ Keep track of chats where Dog is the sender
+                .HasForeignKey(c => c.FromDogId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Chat>()
+                .HasOne(c => c.ToDog)
+                .WithMany(d => d.ChatsAsTo)  // ✅ Keep track of chats where Dog is the receiver
+                .HasForeignKey(c => c.ToDogId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // 🔹 Ensure only ONE chat exists between two dogs (avoid duplicate chat records)
+            modelBuilder.Entity<Chat>()
+                .HasIndex(c => new { c.FromDogId, c.ToDogId })
+                .IsUnique();
+
+            // Message - Chat (One-to-Many)
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Chat)
+                .WithMany(c => c.Messages)
+                .HasForeignKey(m => m.ChatID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Match - Dog Relationship (Self-Referencing)
+            modelBuilder.Entity<Match>()
+                .HasOne(m => m.FromDog)
+                .WithMany(d => d.MatchesAsFrom) // ✅ FromDog will now have a list of matches
+                .HasForeignKey(m => m.FromDogId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Match>()
+                .HasOne(m => m.ToDog)
+                .WithMany(d => d.MatchesAsTo) // ✅ ToDog will now have a list of matches
+                .HasForeignKey(m => m.ToDogId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Park - Dog (Many-to-Many)
+            modelBuilder.Entity<Park>()
+                .HasMany(p => p.DogLikes)
+                .WithMany(d => d.FavParks)
+                .UsingEntity(j => j.ToTable("DogParks"));
+
+            // Notification - Dog (One-to-Many)
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Dog)
+                .WithMany(d => d.Notifications)
+                .HasForeignKey(n => n.DogId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
