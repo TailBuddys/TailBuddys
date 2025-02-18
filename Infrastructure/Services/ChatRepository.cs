@@ -22,26 +22,32 @@ namespace TailBuddys.Infrastructure.Services
         }
         public async Task<Chat?> GetChatById(string chatId)
         {
+            return new Chat();
 
         }
         public async Task<Chat?> UpdateChat(string chatId, Chat chat)
         {
+            return new Chat();
 
         }
         public async Task<Chat?> DeleteChat(string chatId)
         {
+            return new Chat();
 
         }
         public async Task<Chat?> AddMessageToChat(string chatId, Message message)
         {
+            return new Chat();
 
         }
         public async Task<List<Message>> GetMessagesByChatId(string chatId)
         {
+            return new List<Message>();
 
         }
         public async Task<Message?> MarkMessageAsRead(string messageId)
         {
+            return new Message();
 
         }
     }
