@@ -1,7 +1,8 @@
 
 using Microsoft.EntityFrameworkCore;
+using TailBuddys.Application.Interfaces;
+using TailBuddys.Application.Services;
 using TailBuddys.Core.Interfaces;
-using TailBuddys.Hubs;
 using TailBuddys.Infrastructure.Data;
 using TailBuddys.Infrastructure.Services;
 
@@ -25,6 +26,7 @@ namespace TailBuddys
             builder.Services.AddDbContext<TailBuddysContext>(options => options.UseSqlServer(ConnectionString));
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IDogRepository, DogRepository>();
             builder.Services.AddScoped<IMatchRepository, MatchRepository>();
             builder.Services.AddScoped<IParkRepository, ParkRepository>();
@@ -61,11 +63,14 @@ namespace TailBuddys
             app.UseCors();
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapHub<NotificationHub>("/NotificationHub");
-            });
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
+            //    endpoints.MapHub<NotificationHub>("/NotificationHub");
+            //});
+
+            app.MapControllers();
+
 
             app.Run();
         }

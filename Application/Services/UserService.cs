@@ -20,14 +20,14 @@ namespace TailBuddys.Application.Services
 
         }
 
-        public async Task<string?> Login()
+        public async Task<string?> Login(string email)
         {
             try
             {
-                User? u = await _userReposetory.GetUserByEmail("");
+                User? u = await _userReposetory.GetUserByEmail(email);
                 if (u != null)
                 {
-                    return "";
+                    return "yay";
                 }
                 return null;
             }
@@ -38,6 +38,33 @@ namespace TailBuddys.Application.Services
             }
         }
 
-
+        public async Task<List<User>> GetAll()
+        {
+            return await _userReposetory.GetAllUsers();
+        }
+        public async Task<User?> GetOne(string id)
+        {
+            return await _userReposetory.GetUserById(id);
+        }
+        public async Task<User?> Update(string id, User user)
+        {
+            if (user == null)
+            {
+                return null;
+            }
+            return await _userReposetory.UpdateUser(id, user);
+        }
+        public async Task<User?> Delete(string id)
+        {
+            try
+            {
+                return await _userReposetory.DeleteUser(id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
+        }
     }
 }
