@@ -17,6 +17,7 @@ namespace TailBuddys.Application.Services
         {
             if (user == null) return null;
             return await _userReposetory.CreateUser(user);
+
         }
 
         public async Task<string?> Login()
