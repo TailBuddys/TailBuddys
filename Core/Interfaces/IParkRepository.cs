@@ -9,6 +9,6 @@ namespace TailBuddys.Core.Interfaces
         public Task<Park?> GetParkById(string parkId);
         public Task<Park?> UpdatePark(string parkId, Park park);
         public Task<Park?> DeletePark(string parkId);
-        public Task<Park?> LikeUnlikePark(string parkId, string dogId);
+        public Task<Park?> LikeUnlikePark(string parkId, Dog dog);
     }
 }

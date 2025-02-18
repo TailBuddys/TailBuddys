@@ -1,9 +1,10 @@
-﻿using TailBuddys.Core.Models;
+﻿using TailBuddys.Core.Interfaces;
+using TailBuddys.Core.Models;
 using TailBuddys.Infrastructure.Data;
 
 namespace TailBuddys.Infrastructure.Services
 {
-    public class ChatRepository
+    public class ChatRepository : IChatRepository
     {
         private readonly TailBuddysContext _context;
         public ChatRepository(TailBuddysContext context)

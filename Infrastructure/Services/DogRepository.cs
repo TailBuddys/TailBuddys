@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
 using TailBuddys.Infrastructure.Data;
 
 namespace TailBuddys.Infrastructure.Services
 {
-    public class DogRepository
+    public class DogRepository : IDogRepository
     {
         private readonly TailBuddysContext _context;
         public DogRepository(TailBuddysContext context)

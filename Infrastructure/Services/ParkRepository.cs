@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
 using TailBuddys.Infrastructure.Data;
 
 namespace TailBuddys.Infrastructure.Services
 {
-    public class ParkRepository
+    public class ParkRepository : IParkRepository
     {
         private readonly TailBuddysContext _context;
         public ParkRepository(TailBuddysContext context)

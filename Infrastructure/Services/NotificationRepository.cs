@@ -1,6 +1,8 @@
-﻿namespace TailBuddys.Infrastructure.Services
+﻿using TailBuddys.Core.Interfaces;
+
+namespace TailBuddys.Infrastructure.Services
 {
-    public class NotificationRepository
+    public class NotificationRepository : INotificationRepository
     {
     }
 }
