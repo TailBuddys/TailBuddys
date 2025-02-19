@@ -8,7 +8,7 @@ using TailBuddys.Infrastructure.Data;
 
 #nullable disable
 
-namespace TailBuddys.Infrastructure.Migrations
+namespace TailBuddys.InfraStructure.Migrations
 {
     [DbContext(typeof(TailBuddysContext))]
     partial class TailBuddysContextModelSnapshot : ModelSnapshot
@@ -292,6 +292,9 @@ namespace TailBuddys.Infrastructure.Migrations
 
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LastLoginDogId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
                         .IsRequired()

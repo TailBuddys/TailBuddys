@@ -20,7 +20,10 @@ namespace TailBuddys.Core.Models
         public string GoogleId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
+        // ביצירה של כלב לעדכן אותו ככלב הפעיל כרגע
+        // במחיקה של כלב צריך קיים ובהכרח שבחור כרגע, צריך להגדיר כלב אחר מהרשימה ככלב הפעיל כרגע
+        // או במידה ואין כלבים כרגע יש לשלוח אל חלונית צור כלב
+        public string? LastLoginDogId { get; set; }
 
     }
 

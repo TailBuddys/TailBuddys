@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
 using TailBuddys.Infrastructure.Data;
@@ -69,7 +68,7 @@ namespace TailBuddys.Infrastructure.Services
             try
             {
                 Dog? d = await _context.Dogs.Include(d => d.FavParks).FirstOrDefaultAsync(d => d.Id == dogId);
-                if(d == null)
+                if (d == null)
                 {
                     return null;
                 }

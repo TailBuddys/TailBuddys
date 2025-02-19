@@ -4,7 +4,7 @@
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string UserId { get; set; }
-        public User User { get; set; } // לבדוק למה צריך יוזר בתוך המודול של כלב
+        public User? User { get; set; } // לבדוק למה צריך יוזר בתוך המודול של כלב
         public string Name { get; set; }
         public string Description { get; set; }
         public DogType Type { get; set; }
@@ -22,7 +22,7 @@
         public ICollection<Match> MatchesAsTo { get; set; } = new List<Match>();
         public ICollection<Park> FavParks { get; set; } = new List<Park>();
         public ICollection<Chat> ChatsAsFrom { get; set; } = new List<Chat>();
-        public ICollection<Chat> ChatsAsTo { get; set; } = new List<Chat>(); 
+        public ICollection<Chat> ChatsAsTo { get; set; } = new List<Chat>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 

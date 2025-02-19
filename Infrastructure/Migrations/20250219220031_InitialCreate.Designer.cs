@@ -9,11 +9,11 @@ using TailBuddys.Infrastructure.Data;
 
 #nullable disable
 
-namespace TailBuddys.Infrastructure.Migrations
+namespace TailBuddys.InfraStructure.Migrations
 {
     [DbContext(typeof(TailBuddysContext))]
-    [Migration("20250201154249_Initial")]
-    partial class Initial
+    [Migration("20250219220031_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -295,6 +295,9 @@ namespace TailBuddys.Infrastructure.Migrations
 
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LastLoginDogId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
                         .IsRequired()

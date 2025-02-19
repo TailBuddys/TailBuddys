@@ -15,9 +15,17 @@ namespace TailBuddys.Application.Services
 
         public async Task<User?> Register(User user)
         {
-            if (user == null) return null;
-            return await _userReposetory.CreateUser(user);
+            try
+            {
 
+                if (user == null) return null;
+                return await _userReposetory.CreateUser(user);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
         }
 
         public async Task<string?> Login(string email)

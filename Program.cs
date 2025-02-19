@@ -28,6 +28,7 @@ namespace TailBuddys
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IDogRepository, DogRepository>();
+            builder.Services.AddScoped<IDogService, DogService>();
             builder.Services.AddScoped<IMatchRepository, MatchRepository>();
             builder.Services.AddScoped<IParkRepository, ParkRepository>();
             builder.Services.AddScoped<IChatRepository, ChatRepository>();
