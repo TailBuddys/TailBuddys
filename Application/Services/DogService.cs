@@ -53,6 +53,20 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
+        public async Task<List<Dog>> GetUnmatchedDogs(string dogId)
+        {
+            try
+            {
+
+                return await _dogRepository.GetUnMatchedDogs(dogId);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
+        }
+
         public async Task<Dog?> GetOne(string id)
         {
             try

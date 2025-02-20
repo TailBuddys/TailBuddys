@@ -58,6 +58,17 @@ namespace TailBuddys.Presentation.Controllers
             return Ok(result);
         }
 
+        [HttpGet("match/{id}")]
+        public async Task<IActionResult> GetUnmatchedDogs(string id)
+        {
+            List<Dog> result = await _dogService.GetUnmatchedDogs(id);
+            if (result == null)
+            {
+                return BadRequest();
+            }
+            return Ok(result);
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, [FromBody] Dog dog)
         {

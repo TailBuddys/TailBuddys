@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace TailBuddys.Core.Models
 {
@@ -16,6 +17,7 @@ namespace TailBuddys.Core.Models
         public DateTime BirthDate { get; set; }
         public Gender Gender { get; set; }
         public bool IsAdmin { get; set; }
+        [JsonIgnore]
         public ICollection<Dog> Dogs { get; set; } = new List<Dog>();
         public string GoogleId { get; set; }
         public DateTime CreatedAt { get; set; }

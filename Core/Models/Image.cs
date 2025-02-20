@@ -1,4 +1,6 @@
-﻿namespace TailBuddys.Core.Models
+﻿using System.Text.Json.Serialization;
+
+namespace TailBuddys.Core.Models
 {
     public class Image
     {
@@ -7,8 +9,10 @@
         public EntityType EntityType { get; set; }
         public string Url { get; set; }
         public int Order { get; set; }
-        public Dog Dog { get; set; }
-        public Park Park { get; set; }
+        [JsonIgnore]
+        public Dog? Dog { get; set; }
+        [JsonIgnore]
+        public Park? Park { get; set; }
     }
 
     public enum EntityType

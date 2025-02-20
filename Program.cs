@@ -30,9 +30,13 @@ namespace TailBuddys
             builder.Services.AddScoped<IDogRepository, DogRepository>();
             builder.Services.AddScoped<IDogService, DogService>();
             builder.Services.AddScoped<IMatchRepository, MatchRepository>();
+            builder.Services.AddScoped<IMatchService, MatchService>();
             builder.Services.AddScoped<IParkRepository, ParkRepository>();
+            builder.Services.AddScoped<IParkService, ParkService>();
             builder.Services.AddScoped<IChatRepository, ChatRepository>();
+            builder.Services.AddScoped<IChatService, ChatService>();
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
 
 
             builder.Services.AddSignalR();

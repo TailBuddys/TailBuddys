@@ -1,6 +1,8 @@
-﻿namespace TailBuddys.Application.Services
+﻿using TailBuddys.Application.Interfaces;
+
+namespace TailBuddys.Application.Services
 {
-    public class NotificationService
+    public class NotificationService : INotificationService
     {
     }
 }
