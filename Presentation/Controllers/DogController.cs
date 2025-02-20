@@ -36,6 +36,16 @@ namespace TailBuddys.Presentation.Controllers
             }
             return Ok(result);
         }
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetAllUserDogs(string userId)
+        {
+            List<Dog> result = await _dogService.GetAll(userId);
+            if (result == null)
+            {
+                return BadRequest();
+            }
+            return Ok(result);
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDogById(string id)

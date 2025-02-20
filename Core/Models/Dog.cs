@@ -11,7 +11,7 @@
         public DogSize Size { get; set; }
         public bool Geneder { get; set; }
         public DateTime Birthdate { get; set; }
-        public ICollection<Image> Images { get; set; }
+        public ICollection<Image>? Images { get; set; }
         public string Address { get; set; }
         public decimal Lon { get; set; } // מה זה?
         public decimal Lat { get; set; } // מה זה?
