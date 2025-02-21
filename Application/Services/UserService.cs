@@ -6,11 +6,11 @@ namespace TailBuddys.Application.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository _userReposetory;
+        private readonly IUserRepository _userRepository;
 
-        public UserService(IUserRepository userReposetory)
+        public UserService(IUserRepository userRepository)
         {
-            _userReposetory = userReposetory;
+            _userRepository = userRepository;
         }
 
         public async Task<User?> Register(User user)
@@ -19,7 +19,7 @@ namespace TailBuddys.Application.Services
             {
 
                 if (user == null) return null;
-                return await _userReposetory.CreateUserDb(user);
+                return await _userRepository.CreateUserDb(user);
             }
             catch (Exception e)
             {
@@ -32,7 +32,7 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-                User? u = await _userReposetory.GetUserByEmailDb(email);
+                User? u = await _userRepository.GetUserByEmailDb(email);
                 if (u != null)
                 {
                     return "yay";
@@ -48,11 +48,11 @@ namespace TailBuddys.Application.Services
 
         public async Task<List<User>> GetAll()
         {
-            return await _userReposetory.GetAllUsersDb();
+            return await _userRepository.GetAllUsersDb();
         }
         public async Task<User?> GetOne(string id)
         {
-            return await _userReposetory.GetUserByIdDb(id);
+            return await _userRepository.GetUserByIdDb(id);
         }
         public async Task<User?> Update(string id, User user)
         {
@@ -60,13 +60,13 @@ namespace TailBuddys.Application.Services
             {
                 return null;
             }
-            return await _userReposetory.UpdateUserDb(id, user);
+            return await _userRepository.UpdateUserDb(id, user);
         }
         public async Task<User?> Delete(string id)
         {
             try
             {
-                return await _userReposetory.DeleteUserDb(id);
+                return await _userRepository.DeleteUserDb(id);
             }
             catch (Exception ex)
             {

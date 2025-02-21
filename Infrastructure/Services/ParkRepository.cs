@@ -103,12 +103,13 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Park?> LikeUnlikeParkDb(string parkId, Dog dog)
+        public async Task<Park?> LikeUnlikeParkDb(string parkId, string dogId)
         {
             try
             {
                 Park? park = await _context.Parks.Include(p => p.DogLikes).FirstOrDefaultAsync(p => p.Id == parkId);
-                if (park == null)
+                Dog? dog = await _context.Dogs.Include(d => d.FavParks).FirstOrDefaultAsync(d => d.Id == dogId);
+                if (park == null || dog == null) 
                     return null;
 
                 if (park.DogLikes.Any(d => d.Id == dog.Id))
