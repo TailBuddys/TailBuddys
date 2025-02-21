@@ -17,7 +17,7 @@ namespace TailBuddys.Application.Services
 
         public async Task<Dog?> Create(Dog dog, string userId)
         {
-            // לעדכן ליוזרת את הכלב הפעיל האחרון
+            // לעדכן ליוזר את הכלב הפעיל האחרון
             try
             {
                 if (dog == null) return null;
