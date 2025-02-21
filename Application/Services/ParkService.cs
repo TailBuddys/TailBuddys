@@ -1,7 +1,6 @@
 ﻿using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
-using TailBuddys.Infrastructure.Services;
 
 namespace TailBuddys.Application.Services
 {
@@ -15,7 +14,7 @@ namespace TailBuddys.Application.Services
         }
         //לבדוק שמי שמנסה להקים פארק הוא מנהל 
         //כנ"ל לגבי עריכה + מחיקה של פארק
-        public async Task<Park?> CreateParkDb(Park park)
+        public async Task<Park?> CreatePark(Park park)
         {
             try
             {
@@ -28,8 +27,8 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        public async Task<List<Park>> GetAllParksDb()
-            {
+        public async Task<List<Park>> GetAllParks()
+        {
             try
             {
                 return await _parkRepository.GetAllParksDb();
@@ -41,7 +40,7 @@ namespace TailBuddys.Application.Services
             }
 
         }
-        public async Task<Park?> GetParkByIdDb(string parkId)
+        public async Task<Park?> GetParkById(string parkId)
         {
             try
             {
@@ -52,9 +51,9 @@ namespace TailBuddys.Application.Services
                 Console.WriteLine(e);
                 return null;
             }
-        }                 
-        public async Task<Park?> UpdateParkDb(string parkId, Park park)
-            {
+        }
+        public async Task<Park?> UpdatePark(string parkId, Park park)
+        {
             try
             {
                 return await _parkRepository.UpdateParkDb(parkId, park);
@@ -65,8 +64,8 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        public async Task<Park?> DeleteParkDb(string parkId)
-            {
+        public async Task<Park?> DeletePark(string parkId)
+        {
             try
             {
                 return await _parkRepository.DeleteParkDb(parkId);
@@ -77,8 +76,8 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        public async Task<Park?> LikeUnlikeParkDb(string parkId, string dogId)
-            {
+        public async Task<Park?> LikeUnlikePark(string parkId, string dogId)
+        {
             try
             {
                 return await _parkRepository.LikeUnlikeParkDb(parkId, dogId);
@@ -88,6 +87,6 @@ namespace TailBuddys.Application.Services
                 Console.WriteLine(e);
                 return null;
             }
-              }
+        }
     }
 }

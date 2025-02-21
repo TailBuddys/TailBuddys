@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using TailBuddys.Application.Interfaces;
+﻿using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
 
@@ -40,7 +38,6 @@ namespace TailBuddys.Application.Services
                     {
                         chat.Messages.First().ChatID = foreignChat.Id;
                         await _chatRepository.AddMessageToChatDb(chat.Messages.First());
-                        
                     }
 
                     return foreignChat;
@@ -107,6 +104,7 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
+        // לוודא שהכלב השולח קיים בצ'אט איי די ולבדוק האם הוא הסנדר איי די
         public async Task<Message?> AddMessageToChat(Message message)
         {
             return new Message();
