@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -87,22 +86,22 @@ namespace TailBuddys.InfraStructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FromDogId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ToDogId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SenderDogId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ReciverDogId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Chats", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Chats_Dogs_FromDogId",
-                        column: x => x.FromDogId,
+                        name: "FK_Chats_Dogs_ReciverDogId",
+                        column: x => x.ReciverDogId,
                         principalTable: "Dogs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Chats_Dogs_ToDogId",
-                        column: x => x.ToDogId,
+                        name: "FK_Chats_Dogs_SenderDogId",
+                        column: x => x.SenderDogId,
                         principalTable: "Dogs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -165,8 +164,8 @@ namespace TailBuddys.InfraStructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FromDogId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ToDogId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SenderDogId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ReciverDogId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsLike = table.Column<bool>(type: "bit", nullable: false),
                     IsMatch = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -176,14 +175,14 @@ namespace TailBuddys.InfraStructure.Migrations
                 {
                     table.PrimaryKey("PK_Matches", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Matches_Dogs_FromDogId",
-                        column: x => x.FromDogId,
+                        name: "FK_Matches_Dogs_ReciverDogId",
+                        column: x => x.ReciverDogId,
                         principalTable: "Dogs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Matches_Dogs_ToDogId",
-                        column: x => x.ToDogId,
+                        name: "FK_Matches_Dogs_SenderDogId",
+                        column: x => x.SenderDogId,
                         principalTable: "Dogs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -215,7 +214,7 @@ namespace TailBuddys.InfraStructure.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ChatID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    IsFromDog = table.Column<bool>(type: "bit", nullable: false),
+                    IsSender = table.Column<bool>(type: "bit", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsRead = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -232,15 +231,15 @@ namespace TailBuddys.InfraStructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_FromDogId_ToDogId",
+                name: "IX_Chats_ReciverDogId",
                 table: "Chats",
-                columns: new[] { "FromDogId", "ToDogId" },
-                unique: true);
+                column: "ReciverDogId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_ToDogId",
+                name: "IX_Chats_SenderDogId_ReciverDogId",
                 table: "Chats",
-                column: "ToDogId");
+                columns: new[] { "SenderDogId", "ReciverDogId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DogParks_FavParksId",
@@ -258,14 +257,14 @@ namespace TailBuddys.InfraStructure.Migrations
                 column: "EntityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_FromDogId",
+                name: "IX_Matches_ReciverDogId",
                 table: "Matches",
-                column: "FromDogId");
+                column: "ReciverDogId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_ToDogId",
+                name: "IX_Matches_SenderDogId",
                 table: "Matches",
-                column: "ToDogId");
+                column: "SenderDogId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messeges_ChatID",

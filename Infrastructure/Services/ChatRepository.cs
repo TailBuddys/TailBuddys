@@ -1,4 +1,5 @@
-﻿using TailBuddys.Core.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
 using TailBuddys.Infrastructure.Data;
 
@@ -11,43 +12,143 @@ namespace TailBuddys.Infrastructure.Services
         {
             _context = context;
         }
-        public async Task<Chat?> CreateChat(string fromDogId, string toDogId)
+        public async Task<Chat?> CreateChatDb(Chat chat)
         {
-            return new Chat();
+            try
+            {
+                _context.Chats.Add(chat);
+                //_context.Messeges.Add(chat.Messages.FirstOrDefault());  ????
+                await _context.SaveChangesAsync();
+                return chat;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
         }
-        public async Task<List<Chat?>> GetAllDogChats(string dogId)
+        public async Task<List<Chat>> GetAllDogChatsDb(string dogId)
         {
-            return new List<Chat>();
+            try
+            {
+                List<Chat> list = await _context.Chats
+                    .Where(c => c.SenderDogId == dogId || c.ReciverDogId == dogId).ToListAsync();
+                return list;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return new List<Chat>();
+            }
+        }
+        public async Task<Chat?> GetChatByIdDb(string chatId)
+        {
+            try
+            {
+                Chat? chat = await _context.Chats.FirstOrDefaultAsync(c => c.Id == chatId);
+                return chat;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
+        }
+        public async Task<Chat?> UpdateChatDb(string chatId, Chat chat)
+        {
+            try
+            {
+                Chat? chatToUpdate = await _context.Chats.FirstOrDefaultAsync(c => c.Id == chatId);
+                if (chatToUpdate == null)
+                {
+                    return null;
+                }
+
+                chatToUpdate.IsActive = chat.IsActive;
+
+                _context.Chats.Update(chatToUpdate);
+                await _context.SaveChangesAsync();
+                return chatToUpdate;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
 
         }
-        public async Task<Chat?> GetChatById(string chatId)
+        public async Task<Chat?> DeleteChatDb(string chatId)
         {
-            return new Chat();
+            try
+            {
+                Chat? chatToRemove = await _context.Chats
+                    .Include(c => c.Messages)
+                    .FirstOrDefaultAsync(c => c.Id == chatId);
+
+                if (chatToRemove == null)
+                {
+                    return null;
+                }
+
+                _context.Chats.Remove(chatToRemove);
+                await _context.SaveChangesAsync();
+                return chatToRemove;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
 
         }
-        public async Task<Chat?> UpdateChat(string chatId, Chat chat)
+        public async Task<Message?> AddMessageToChatDb(Message message)
         {
-            return new Chat();
-
+            try
+            {
+                _context.Messeges.Add(message);
+                await _context.SaveChangesAsync();
+                return message;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
         }
-        public async Task<Chat?> DeleteChat(string chatId)
+        public async Task<List<Message>> GetMessagesByChatIdDb(string chatId)
         {
-            return new Chat();
-
+            try
+            {
+                List<Message> messages = await _context.Messeges.Where(m => m.Id == chatId).ToListAsync();
+                return messages;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return new List<Message>();
+            }
         }
-        public async Task<Chat?> AddMessageToChat(string chatId, Message message)
+        public async Task<Message?> MarkMessageAsReadDb(string messageId)
         {
-            return new Chat();
+            try
+            {
+                Message? messageToUpdate = await _context.Messeges.FirstOrDefaultAsync(m => m.Id == messageId);
+                if (messageToUpdate == null)
+                {
+                    return null;
+                }
 
-        }
-        public async Task<List<Message>> GetMessagesByChatId(string chatId)
-        {
-            return new List<Message>();
+                messageToUpdate.IsRead = true;
 
-        }
-        public async Task<Message?> MarkMessageAsRead(string messageId)
-        {
-            return new Message();
+                _context.Messeges.Update(messageToUpdate);
+                await _context.SaveChangesAsync();
+                return messageToUpdate;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
 
         }
     }

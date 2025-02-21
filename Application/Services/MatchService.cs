@@ -21,12 +21,12 @@ namespace TailBuddys.Application.Services
                 match.CreatedAt = DateTime.Now;
                 match.UpdatedAt = DateTime.Now;
 
-                Match? foreignMatch = _matchRepository.GetAllMatchesFromDog(match.ToDogId)
-                    .Result.Where(m => m.ToDogId == match.FromDogId).FirstOrDefault();
+                Match? foreignMatch = _matchRepository.GetAllMatchesAsSenderDogDb(match.ReciverDogId)
+                    .Result.Where(m => m.ReciverDogId == match.SenderDogId).FirstOrDefault();
 
                 if (foreignMatch == null)
                 {
-                    return await _matchRepository.CreateMatch(match);
+                    return await _matchRepository.CreateMatchDb(match);
                 }
 
                 if (match.IsLike && foreignMatch.IsLike)
@@ -34,10 +34,10 @@ namespace TailBuddys.Application.Services
                     match.IsMatch = true;
                     foreignMatch.IsMatch = true;
                     foreignMatch.UpdatedAt = DateTime.Now;
-                    await _matchRepository.UpdateMatch(foreignMatch.Id, foreignMatch);
-                    return await _matchRepository.CreateMatch(match);
+                    await _matchRepository.UpdateMatchDb(foreignMatch.Id, foreignMatch);
+                    return await _matchRepository.CreateMatchDb(match);
                 }
-                return await _matchRepository.CreateMatch(match);
+                return await _matchRepository.CreateMatchDb(match);
             }
             catch (Exception e)
             {
@@ -51,19 +51,19 @@ namespace TailBuddys.Application.Services
             // לבנות מודל DTO
             try
             {
-                return await _matchRepository.GetAllMutualMatches(dogId);
+                return await _matchRepository.GetAllMutualMatchesDb(dogId);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return null;
+                return new List<Match>();
             }
         }
         public async Task<List<Match>> GetAllMatchesFromDog(string dogId)
         {
             try
             {
-                return await _matchRepository.GetAllMatchesFromDog(dogId);
+                return await _matchRepository.GetAllMatchesAsSenderDogDb(dogId);
             }
             catch (Exception e)
             {
@@ -75,7 +75,7 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-                return await _matchRepository.GetAllMatchesToDog(dogId);
+                return await _matchRepository.GetAllMatchesAsReciverDogDb(dogId);
             }
             catch (Exception e)
             {
@@ -87,7 +87,7 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-                return await _matchRepository.GetMatchById(matchId);
+                return await _matchRepository.GetMatchByIdDb(matchId);
             }
             catch (Exception e)
             {
@@ -99,7 +99,7 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-                return await _matchRepository.UpdateMatch(matchId, newMatch);
+                return await _matchRepository.UpdateMatchDb(matchId, newMatch);
             }
             catch (Exception e)
             {
@@ -111,7 +111,7 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-                return await _matchRepository.DeleteMatch(matchId);
+                return await _matchRepository.DeleteMatchDb(matchId);
             }
             catch (Exception e)
             {

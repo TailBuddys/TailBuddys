@@ -12,7 +12,7 @@ namespace TailBuddys.Infrastructure.Services
         {
             _context = context;
         }
-        public async Task<Park?> CreatePark(Park park)
+        public async Task<Park?> CreateParkDb(Park park)
         {
             try
             {
@@ -26,7 +26,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<List<Park>> GetAllParks()
+        public async Task<List<Park>> GetAllParksDb()
         {
             try
             {
@@ -38,7 +38,7 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<Park>();
             }
         }
-        public async Task<Park?> GetParkById(string parkId)
+        public async Task<Park?> GetParkByIdDb(string parkId)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Park?> UpdatePark(string parkId, Park park)
+        public async Task<Park?> UpdateParkDb(string parkId, Park park)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace TailBuddys.Infrastructure.Services
                 parkToUpdate.Lon = park.Lon;
                 parkToUpdate.Lat = park.Lat;
                 parkToUpdate.UpdatedDate = DateTime.Now;
-      
+
                 _context.Parks.Update(parkToUpdate);
                 await _context.SaveChangesAsync();
                 return parkToUpdate;
@@ -75,7 +75,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Park?> DeletePark(string parkId)
+        public async Task<Park?> DeleteParkDb(string parkId)
         {
             try
             {
@@ -85,14 +85,14 @@ namespace TailBuddys.Infrastructure.Services
                     return null;
                 }
 
-                foreach (Dog dog in parkToRemove.DogLikes.ToList()) 
+                foreach (Dog dog in parkToRemove.DogLikes.ToList())
                 {
-                    dog.FavParks.Remove(parkToRemove); 
+                    dog.FavParks.Remove(parkToRemove);
                 }
 
                 parkToRemove.DogLikes.Clear();
 
-                _context.Parks.Remove(parkToRemove); 
+                _context.Parks.Remove(parkToRemove);
                 await _context.SaveChangesAsync();
 
                 return parkToRemove;
@@ -103,7 +103,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Park?> LikeUnlikePark(string parkId, Dog dog)
+        public async Task<Park?> LikeUnlikeParkDb(string parkId, Dog dog)
         {
             try
             {
@@ -122,7 +122,7 @@ namespace TailBuddys.Infrastructure.Services
                     dog.FavParks.Add(park);
                 }
 
-                await _context.SaveChangesAsync(); 
+                await _context.SaveChangesAsync();
                 return park;
             }
             catch (Exception ex)

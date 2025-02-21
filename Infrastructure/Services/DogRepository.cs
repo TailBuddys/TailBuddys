@@ -12,7 +12,7 @@ namespace TailBuddys.Infrastructure.Services
         {
             _context = context;
         }
-        public async Task<Dog?> CreateDog(Dog dog)
+        public async Task<Dog?> CreateDogDb(Dog dog)
         {
             try
             {
@@ -26,7 +26,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<List<Dog>> GetAllDogs()
+        public async Task<List<Dog>> GetAllDogsDb()
         {
             try
             {
@@ -38,7 +38,7 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<Dog>();
             }
         }
-        public async Task<List<Dog>> GetAllUserDogs(string userId)
+        public async Task<List<Dog>> GetAllUserDogsDb(string userId)
         {
             try
             {
@@ -50,18 +50,18 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<Dog>();
             }
         }
-        public async Task<List<Dog>> GetUnMatchedDogs(string dogId)
+        public async Task<List<Dog>> GetUnMatchedDogsDb(string dogId)
         {
             try
             {
                 Dog? myDog = await _context.Dogs
-                    .Include(d => d.MatchesAsFrom)
+                    .Include(d => d.MatchesAsSender)
                     .FirstOrDefaultAsync(db => db.Id == dogId);
 
                 if (myDog == null)
                     return new List<Dog>();
 
-                List<string> matchedDogIds = myDog.MatchesAsFrom.Select(m => m.ToDogId).ToList();
+                List<string> matchedDogIds = myDog.MatchesAsSender.Select(m => m.ReciverDogId).ToList();
 
                 List<Dog> list = await _context.Dogs
                     .Where(db => !matchedDogIds.Contains(db.Id) && db.UserId != myDog.UserId)
@@ -75,7 +75,7 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<Dog>();
             }
         }
-        public async Task<Dog?> GetDogById(string dogId)
+        public async Task<Dog?> GetDogByIdDb(string dogId)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Dog?> UpdateDog(string dogId, Dog dog)
+        public async Task<Dog?> UpdateDogDb(string dogId, Dog dog)
         {
             try
             {
@@ -124,7 +124,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Dog?> DeleteDog(string dogId)
+        public async Task<Dog?> DeleteDogDb(string dogId)
         {
             try
             {

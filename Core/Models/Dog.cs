@@ -23,15 +23,15 @@ namespace TailBuddys.Core.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         [JsonIgnore]
-        public ICollection<Match> MatchesAsFrom { get; set; } = new List<Match>();
+        public ICollection<Match> MatchesAsSender { get; set; } = new List<Match>();
         [JsonIgnore]
-        public ICollection<Match> MatchesAsTo { get; set; } = new List<Match>();
+        public ICollection<Match> MatchesAsReciver { get; set; } = new List<Match>();
         [JsonIgnore]
         public ICollection<Park> FavParks { get; set; } = new List<Park>();
         [JsonIgnore]
-        public ICollection<Chat> ChatsAsFrom { get; set; } = new List<Chat>();
+        public ICollection<Chat> ChatsAsSender { get; set; } = new List<Chat>();
         [JsonIgnore]
-        public ICollection<Chat> ChatsAsTo { get; set; } = new List<Chat>();
+        public ICollection<Chat> ChatsAsReciver { get; set; } = new List<Chat>();
         [JsonIgnore]
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }

@@ -12,7 +12,7 @@ namespace TailBuddys.Infrastructure.Services
         {
             _context = context;
         }
-        public async Task<User?> CreateUser(User user)
+        public async Task<User?> CreateUserDb(User user)
         {
             try
             {
@@ -26,7 +26,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<User?> GetUserById(string userId)
+        public async Task<User?> GetUserByIdDb(string userId)
         {
             try
             {
@@ -38,7 +38,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<User?> GetUserByEmail(string email)
+        public async Task<User?> GetUserByEmailDb(string email)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace TailBuddys.Infrastructure.Services
             }
         }
 
-        public async Task<List<User>> GetAllUsers()
+        public async Task<List<User>> GetAllUsersDb()
         {
             try
             {
@@ -63,7 +63,7 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<User>();
             }
         }
-        public async Task<User?> UpdateUser(string userId, User user)
+        public async Task<User?> UpdateUserDb(string userId, User user)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace TailBuddys.Infrastructure.Services
             }
         }
 
-        public async Task<User?> DeleteUser(string userId)
+        public async Task<User?> DeleteUserDb(string userId)
         {
             try
             {

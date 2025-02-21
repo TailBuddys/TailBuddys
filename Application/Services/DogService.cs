@@ -4,6 +4,8 @@ using TailBuddys.Core.Models;
 
 namespace TailBuddys.Application.Services
 {
+    // בגלל שבמיגרציה מחיקת אובייקט מוגדר כריסטריקט
+    // יש לדאוג למחוק את כל תת הישוייות של כלב לפני שמוחקים את הכלב עצמו צ'אטים, מאצ'ים, הודעות וכו
     public class DogService : IDogService
     {
         private readonly IDogRepository _dogRepository;
@@ -20,7 +22,7 @@ namespace TailBuddys.Application.Services
             {
                 if (dog == null) return null;
                 dog.UserId = userId;
-                return await _dogRepository.CreateDog(dog);
+                return await _dogRepository.CreateDogDb(dog);
             }
             catch (Exception e)
             {
@@ -32,7 +34,7 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-                return await _dogRepository.GetAllDogs();
+                return await _dogRepository.GetAllDogsDb();
             }
             catch (Exception e)
             {
@@ -45,7 +47,7 @@ namespace TailBuddys.Application.Services
             try
             {
 
-                return await _dogRepository.GetAllUserDogs(userId);
+                return await _dogRepository.GetAllUserDogsDb(userId);
             }
             catch (Exception e)
             {
@@ -58,7 +60,7 @@ namespace TailBuddys.Application.Services
             try
             {
 
-                return await _dogRepository.GetUnMatchedDogs(dogId);
+                return await _dogRepository.GetUnMatchedDogsDb(dogId);
             }
             catch (Exception e)
             {
@@ -71,7 +73,7 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-                return await _dogRepository.GetDogById(id);
+                return await _dogRepository.GetDogByIdDb(id);
             }
             catch (Exception e)
             {
@@ -83,7 +85,7 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-                return await _dogRepository.UpdateDog(id, dog);
+                return await _dogRepository.UpdateDogDb(id, dog);
             }
             catch (Exception e)
             {
@@ -95,7 +97,7 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-                return await _dogRepository.DeleteDog(id);
+                return await _dogRepository.DeleteDogDb(id);
             }
             catch (Exception e)
             {

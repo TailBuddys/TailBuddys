@@ -4,14 +4,14 @@ namespace TailBuddys.Core.Interfaces
 {
     public interface IDogRepository
     {
-        public Task<Dog?> CreateDog(Dog dog);
-        public Task<List<Dog>> GetAllDogs();
-        public Task<List<Dog>> GetAllUserDogs(string userId);
+        public Task<Dog?> CreateDogDb(Dog dog);
+        public Task<List<Dog>> GetAllDogsDb();
+        public Task<List<Dog>> GetAllUserDogsDb(string userId);
         // return all new dogs that this dog didn't like/ unlike
-        public Task<List<Dog>> GetUnMatchedDogs(string dogId);
-        public Task<Dog?> GetDogById(string dogId);
-        public Task<Dog?> UpdateDog(string dogId, Dog dog);
-        public Task<Dog?> DeleteDog(string dogId);
+        public Task<List<Dog>> GetUnMatchedDogsDb(string dogId);
+        public Task<Dog?> GetDogByIdDb(string dogId);
+        public Task<Dog?> UpdateDogDb(string dogId, Dog dog);
+        public Task<Dog?> DeleteDogDb(string dogId);
 
     }
 }

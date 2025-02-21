@@ -12,7 +12,7 @@ namespace TailBuddys.Infrastructure.Services
         {
             _context = context;
         }
-        public async Task<Match?> CreateMatch(Match match)
+        public async Task<Match?> CreateMatchDb(Match match)
         {
             try
             {
@@ -26,11 +26,11 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<List<Match>> GetAllMutualMatches(string dogId)
+        public async Task<List<Match>> GetAllMutualMatchesDb(string dogId)
         {
             try
             {
-                List<Match> list = await _context.Matches.Where(m=>m.FromDogId == dogId && m.IsMatch == true).ToListAsync();
+                List<Match> list = await _context.Matches.Where(m => m.SenderDogId == dogId && m.IsMatch == true).ToListAsync();
                 return list;
             }
             catch (Exception ex)
@@ -40,11 +40,11 @@ namespace TailBuddys.Infrastructure.Services
             }
         }
         // get async all dog matches that he like / unlike 
-        public async Task<List<Match>> GetAllMatchesFromDog(string dogId)
+        public async Task<List<Match>> GetAllMatchesAsSenderDogDb(string dogId)
         {
             try
             {
-                List<Match> list = await _context.Matches.Where(m => m.FromDogId == dogId).ToListAsync();
+                List<Match> list = await _context.Matches.Where(m => m.SenderDogId == dogId).ToListAsync();
                 return list;
             }
             catch (Exception ex)
@@ -54,11 +54,11 @@ namespace TailBuddys.Infrastructure.Services
             }
         }
         // get all dog that like me
-        public async Task<List<Match>> GetAllMatchesToDog(string dogId)
+        public async Task<List<Match>> GetAllMatchesAsReciverDogDb(string dogId)
         {
             try
             {
-                List<Match> list = await _context.Matches.Where(m => m.ToDogId == dogId && m.IsLike == true).ToListAsync();
+                List<Match> list = await _context.Matches.Where(m => m.ReciverDogId == dogId && m.IsLike == true).ToListAsync();
                 return list;
             }
             catch (Exception ex)
@@ -67,7 +67,7 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<Match>();
             }
         }
-        public async Task<Match?> GetMatchById(int matchId)
+        public async Task<Match?> GetMatchByIdDb(int matchId)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Match?> UpdateMatch(int matchId, Match newMatch)
+        public async Task<Match?> UpdateMatchDb(int matchId, Match newMatch)
         {
             try
             {
@@ -89,11 +89,11 @@ namespace TailBuddys.Infrastructure.Services
                 {
                     return null;
                 }
-                
+
                 matchToUpdate.IsMatch = newMatch.IsMatch;
                 matchToUpdate.IsLike = newMatch.IsLike;
                 matchToUpdate.UpdatedAt = DateTime.Now;
-                
+
                 _context.Matches.Update(matchToUpdate);
                 await _context.SaveChangesAsync();
                 return matchToUpdate;
@@ -104,7 +104,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Match?> DeleteMatch(int matchId)
+        public async Task<Match?> DeleteMatchDb(int matchId)
         {
             try
             {

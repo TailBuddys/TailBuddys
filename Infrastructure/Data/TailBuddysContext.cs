@@ -50,20 +50,20 @@ namespace TailBuddys.Infrastructure.Data
 
             // Chat - Dog Relationship (Self-Referencing Many-to-One)
             modelBuilder.Entity<Chat>()
-                .HasOne(c => c.FromDog)
-                .WithMany(d => d.ChatsAsFrom)  // ✅ Keep track of chats where Dog is the sender
-                .HasForeignKey(c => c.FromDogId)
+                .HasOne(c => c.SenderDog)
+                .WithMany(d => d.ChatsAsSender)  // ✅ Keep track of chats where Dog is the sender
+                .HasForeignKey(c => c.SenderDogId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Chat>()
-                .HasOne(c => c.ToDog)
-                .WithMany(d => d.ChatsAsTo)  // ✅ Keep track of chats where Dog is the receiver
-                .HasForeignKey(c => c.ToDogId)
+                .HasOne(c => c.ReciverDog)
+                .WithMany(d => d.ChatsAsReciver)  // ✅ Keep track of chats where Dog is the receiver
+                .HasForeignKey(c => c.ReciverDogId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // 🔹 Ensure only ONE chat exists between two dogs (avoid duplicate chat records)
             modelBuilder.Entity<Chat>()
-                .HasIndex(c => new { c.FromDogId, c.ToDogId })
+                .HasIndex(c => new { c.SenderDogId, c.ReciverDogId })
                 .IsUnique();
 
             // Message - Chat (One-to-Many)
@@ -75,15 +75,15 @@ namespace TailBuddys.Infrastructure.Data
 
             // Match - Dog Relationship (Self-Referencing)
             modelBuilder.Entity<Match>()
-                .HasOne(m => m.FromDog)
-                .WithMany(d => d.MatchesAsFrom) // ✅ FromDog will now have a list of matches
-                .HasForeignKey(m => m.FromDogId)
+                .HasOne(m => m.SenderDog)
+                .WithMany(d => d.MatchesAsSender) // ✅ FromDog will now have a list of matches
+                .HasForeignKey(m => m.SenderDogId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Match>()
-                .HasOne(m => m.ToDog)
-                .WithMany(d => d.MatchesAsTo) // ✅ ToDog will now have a list of matches
-                .HasForeignKey(m => m.ToDogId)
+                .HasOne(m => m.ReciverDog)
+                .WithMany(d => d.MatchesAsReciver) // ✅ ToDog will now have a list of matches
+                .HasForeignKey(m => m.ReciverDogId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Park - Dog (Many-to-Many)

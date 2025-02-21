@@ -19,7 +19,7 @@ namespace TailBuddys.Application.Services
             {
 
                 if (user == null) return null;
-                return await _userReposetory.CreateUser(user);
+                return await _userReposetory.CreateUserDb(user);
             }
             catch (Exception e)
             {
@@ -32,7 +32,7 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-                User? u = await _userReposetory.GetUserByEmail(email);
+                User? u = await _userReposetory.GetUserByEmailDb(email);
                 if (u != null)
                 {
                     return "yay";
@@ -48,11 +48,11 @@ namespace TailBuddys.Application.Services
 
         public async Task<List<User>> GetAll()
         {
-            return await _userReposetory.GetAllUsers();
+            return await _userReposetory.GetAllUsersDb();
         }
         public async Task<User?> GetOne(string id)
         {
-            return await _userReposetory.GetUserById(id);
+            return await _userReposetory.GetUserByIdDb(id);
         }
         public async Task<User?> Update(string id, User user)
         {
@@ -60,13 +60,13 @@ namespace TailBuddys.Application.Services
             {
                 return null;
             }
-            return await _userReposetory.UpdateUser(id, user);
+            return await _userReposetory.UpdateUserDb(id, user);
         }
         public async Task<User?> Delete(string id)
         {
             try
             {
-                return await _userReposetory.DeleteUser(id);
+                return await _userReposetory.DeleteUserDb(id);
             }
             catch (Exception ex)
             {
