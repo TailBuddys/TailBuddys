@@ -12,6 +12,8 @@ namespace TailBuddys.Infrastructure.Services
         {
             _context = context;
         }
+        // החלפה של כלבים
+        //public async Task<Dog?> SwitchDog(int currentDogId, int switchDogId)
         public async Task<Dog?> CreateDogDb(Dog dog)
         {
             try

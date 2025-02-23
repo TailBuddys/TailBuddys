@@ -16,6 +16,7 @@ namespace TailBuddys.Application.Services
 
         public async Task<Chat?> CreateChat(Chat chat)
         {
+            // צריך להכליל בפונקציה הזו גם עדכון של נוטיפיקיישן סרוויס
             try
             {
                 Match? myMatch = _matchRepository.GetAllMatchesAsSenderDogDb(chat.SenderDogId)

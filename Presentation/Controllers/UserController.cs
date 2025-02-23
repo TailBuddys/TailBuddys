@@ -27,6 +27,9 @@ namespace TailBuddys.Presentation.Controllers
         }
 
         [HttpPost("login")]
+        // להוסיף לוג.אין מודל
+        // יהיה בנוי מאימייל + סיסמא או לחלופין אימייל + מגוגל איי.די
+        // להוסיף קבלת סיסמא בהתחברות
         public async Task<IActionResult> Login(string email)
         {
             string? result = await _userService.Login(email);

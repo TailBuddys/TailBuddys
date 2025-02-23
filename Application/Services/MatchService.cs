@@ -14,6 +14,7 @@ namespace TailBuddys.Application.Services
         }
         public async Task<Match?> CreateMatch(Match match)
         {
+            // צריך להכליל בפונקציה הזו גם עדכון של נוטיפיקיישן סרוויס
             // לדאוג שאם מאץ' קיים לכלב הממאצ'מץ' לא ליצור עוד אחד אלא לעדכן את הקיים
             try
             {

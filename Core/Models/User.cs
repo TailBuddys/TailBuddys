@@ -6,20 +6,24 @@ namespace TailBuddys.Core.Models
     public class User
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        [Required, StringLength(20, MinimumLength = 2)]
+        public string? FirstName { get; set; }
+        [Required, StringLength(20, MinimumLength = 2)]
+        public string? LastName { get; set; }
         [Required, EmailAddress]
-        public string Email { get; set; }
+        public string? Email { get; set; }
         [Phone]
-        public string Phone { get; set; }
-        public string PasswordHash { get; set; }
-        public string PasswordSalt { get; set; } // צריך להבין מה זה
+        public string? Phone { get; set; }
+        // סיסמא מצריכה התאמות בהמשך זמינת הוגדרה כנאלל
+        public string? PasswordHash { get; set; }
+        [Required]
         public DateTime BirthDate { get; set; }
+        [Required]
         public Gender Gender { get; set; }
         public bool IsAdmin { get; set; }
         [JsonIgnore]
         public ICollection<Dog> Dogs { get; set; } = new List<Dog>();
-        public string GoogleId { get; set; }
+        // public string GoogleId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         // ביצירה של כלב לעדכן אותו ככלב הפעיל כרגע

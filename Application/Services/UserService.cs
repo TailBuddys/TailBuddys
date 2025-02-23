@@ -13,6 +13,7 @@ namespace TailBuddys.Application.Services
             _userRepository = userRepository;
         }
 
+        // להתייחס לאדמין גם פה וגם בסרוויסים אחרים כמו פארק וכו
         public async Task<User?> Register(User user)
         {
             try

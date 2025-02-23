@@ -1,24 +1,32 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace TailBuddys.Core.Models
 {
     public class Dog
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        public string UserId { get; set; }
+        [ForeignKey(nameof(User))]
+        // לבדוק שהנאלל לא בא לנו בהפוכה בהמשך
+        public string? UserId { get; set; }
         [JsonIgnore]
         public User? User { get; set; } // לבדוק למה צריך יוזר בתוך המודול של כלב
-        public string Name { get; set; }
-        public string Description { get; set; }
+        [Required, StringLength(20, MinimumLength = 2)]
+        public string? Name { get; set; }
+        [Required, StringLength(500, MinimumLength = 2)]
+        public string? Description { get; set; }
         public DogType Type { get; set; }
         public DogSize Size { get; set; }
         public bool Geneder { get; set; }
         public DateTime Birthdate { get; set; }
         [JsonIgnore]
         public ICollection<Image>? Images { get; set; }
-        public string Address { get; set; }
+        [Required]
+        public string? Address { get; set; }
         public decimal Lon { get; set; } // מה זה?
         public decimal Lat { get; set; } // מה זה?
+        [Required]
         public bool Vaccinated { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -39,8 +47,85 @@ namespace TailBuddys.Core.Models
     public enum DogType
     {
         Mixed,
-        labrador,
-        other
+        LabradorRetriever,
+        GoldenRetriever,
+        GermanShepherd,
+        Bulldog,
+        Poodle,
+        Beagle,
+        Rottweiler,
+        YorkshireTerrier,
+        Boxer,
+        Dachshund,
+        SiberianHusky,
+        DobermanPinscher,
+        ShihTzu,
+        BorderCollie,
+        AustralianShepherd,
+        CockerSpaniel,
+        GreatDane,
+        Chihuahua,
+        Pug,
+        PembrokeWelshCorgi,
+        Akita,
+        SaintBernard,
+        BichonFrise,
+        Maltese,
+        ShetlandSheepdog,
+        BostonTerrier,
+        BerneseMountainDog,
+        MiniatureSchnauzer,
+        WestHighlandWhiteTerrier,
+        ShibaInu,
+        Havanese,
+        CaneCorso,
+        Newfoundland,
+        EnglishSpringerSpaniel,
+        Collie,
+        BassetHound,
+        Weimaraner,
+        RhodesianRidgeback,
+        AlaskanMalamute,
+        ScottishTerrier,
+        Bullmastiff,
+        AustralianCattleDog,
+        BelgianMalinois,
+        AfghanHound,
+        AmericanBulldog,
+        IrishSetter,
+        CavalierKingCharlesSpaniel,
+        AmericanStaffordshireTerrier,
+        Bloodhound,
+        JackRussellTerrier,
+        Vizsla,
+        BorderTerrier,
+        Samoyed,
+        GreatPyrenees,
+        ChowChow,
+        ItalianGreyhound,
+        Whippet,
+        Keeshond,
+        Leonberger,
+        NorwegianElkhound,
+        Papillon,
+        Pointer,
+        StandardSchnauzer,
+        ToyPoodle,
+        IrishWolfhound,
+        EnglishFoxhound,
+        GiantSchnauzer,
+        LhasaApso,
+        JapaneseChin,
+        TibetanMastiff,
+        AmericanEskimoDog,
+        PortugueseWaterDog,
+        Saluki,
+        Borzoi,
+        CurlyCoatedRetriever,
+        Komondor,
+        Otterhound,
+        FlatCoatedRetriever,
+        Other
     }
 
     public enum DogSize
