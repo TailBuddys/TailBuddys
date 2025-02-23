@@ -109,7 +109,7 @@ namespace TailBuddys.Infrastructure.Services
             {
                 Park? park = await _context.Parks.Include(p => p.DogLikes).FirstOrDefaultAsync(p => p.Id == parkId);
                 Dog? dog = await _context.Dogs.Include(d => d.FavParks).FirstOrDefaultAsync(d => d.Id == dogId);
-                if (park == null || dog == null) 
+                if (park == null || dog == null)
                     return null;
 
                 if (park.DogLikes.Any(d => d.Id == dog.Id))

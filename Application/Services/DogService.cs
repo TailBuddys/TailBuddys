@@ -39,7 +39,7 @@ namespace TailBuddys.Application.Services
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return null;
+                return new List<Dog>();
             }
         }
         public async Task<List<Dog>> GetAll(string userId)

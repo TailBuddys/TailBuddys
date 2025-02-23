@@ -66,7 +66,7 @@ namespace TailBuddys.Application.Services
                 return new List<Chat>();
             }
         }
-        public async Task<Chat?> GetChatById(string chatId)
+        public async Task<Chat?> GetChatById(int chatId)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace TailBuddys.Application.Services
             }
         }
         //צריך לבדוק מה לעשות אם יוזר מוחק את הצאט 
-        public async Task<Chat?> UpdateChat(string chatId, Chat chat)
+        public async Task<Chat?> UpdateChat(int chatId, Chat chat)
         {
             try
             {
@@ -93,7 +93,7 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        public async Task<Chat?> DeleteChat(string chatId)
+        public async Task<Chat?> DeleteChat(int chatId)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace TailBuddys.Application.Services
         {
             return new Message();
         }
-        public async Task<List<Message>> GetMessagesByChatId(string chatId)
+        public async Task<List<Message>> GetMessagesByChatId(int chatId)
         {
             try
             {
@@ -125,7 +125,8 @@ namespace TailBuddys.Application.Services
             }
 
         }
-        public async Task<Message?> MarkMessageAsRead(string messageId)
+        // ליישם את הפונקציה
+        public async Task<Message?> MarkMessageAsRead(int messageId)
         {
             return new Message();
 

@@ -41,7 +41,7 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<Chat>();
             }
         }
-        public async Task<Chat?> GetChatByIdDb(string chatId)
+        public async Task<Chat?> GetChatByIdDb(int chatId)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Chat?> UpdateChatDb(string chatId, Chat chat)
+        public async Task<Chat?> UpdateChatDb(int chatId, Chat chat)
         {
             try
             {
@@ -64,7 +64,8 @@ namespace TailBuddys.Infrastructure.Services
                     return null;
                 }
 
-                chatToUpdate.IsActive = chat.IsActive;
+                // ככל הנראה יבוטל
+                //chatToUpdate.IsActive = chat.IsActive;
 
                 _context.Chats.Update(chatToUpdate);
                 await _context.SaveChangesAsync();
@@ -77,7 +78,7 @@ namespace TailBuddys.Infrastructure.Services
             }
 
         }
-        public async Task<Chat?> DeleteChatDb(string chatId)
+        public async Task<Chat?> DeleteChatDb(int chatId)
         {
             try
             {
@@ -115,7 +116,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<List<Message>> GetMessagesByChatIdDb(string chatId)
+        public async Task<List<Message>> GetMessagesByChatIdDb(int chatId)
         {
             try
             {
@@ -128,7 +129,7 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<Message>();
             }
         }
-        public async Task<Message?> MarkMessageAsReadDb(string messageId)
+        public async Task<Message?> MarkMessageAsReadDb(int messageId)
         {
             try
             {
