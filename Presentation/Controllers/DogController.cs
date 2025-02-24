@@ -17,9 +17,12 @@ namespace TailBuddys.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Dog dog, string userId)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             Dog? result = await _dogService.Create(dog, userId);
-            //if (!ModelState.IsValid)
-            if (dog == null)
+            if (result == null)
             {
                 return BadRequest();
             }
@@ -72,6 +75,10 @@ namespace TailBuddys.Presentation.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, [FromBody] Dog dog)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             Dog? result = await _dogService.Update(id, dog);
             if (result == null)
             {

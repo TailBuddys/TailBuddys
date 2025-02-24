@@ -17,16 +17,17 @@ namespace TailBuddys.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Park park)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             Park? result = await _parkService.CreatePark(park);
-            //if (!ModelState.IsValid)
-            if (park == null)
+            if (result == null)
             {
                 return BadRequest();
             }
             return Ok(result);
         }
-
-
 
         [HttpGet]
         public async Task<IActionResult> GetAllParks()
@@ -53,6 +54,10 @@ namespace TailBuddys.Presentation.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, [FromBody] Park park)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             Park? result = await _parkService.UpdatePark(id, park);
             if (result == null)
             {

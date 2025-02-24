@@ -108,14 +108,23 @@ namespace TailBuddys.Application.Services
         // לוודא שהכלב השולח קיים בצ'אט איי די ולבדוק האם הוא הסנדר איי די
         public async Task<Message?> AddMessageToChat(Message message)
         {
-            return new Message();
+            try
+            {
+                return await _chatRepository.AddMessageToChatDb(message);
+
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
         }
         public async Task<List<Message>> GetMessagesByChatId(int chatId)
         {
             try
             {
                 return await _chatRepository.GetMessagesByChatIdDb(chatId);
-
             }
 
             catch (Exception e)
@@ -129,7 +138,6 @@ namespace TailBuddys.Application.Services
         public async Task<Message?> MarkMessageAsRead(int messageId)
         {
             return new Message();
-
         }
 
     }

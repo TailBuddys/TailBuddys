@@ -12,7 +12,7 @@ using TailBuddys.Infrastructure.Data;
 namespace TailBuddys.InfraStructure.Migrations
 {
     [DbContext(typeof(TailBuddysContext))]
-    [Migration("20250221174334_InitialCreate")]
+    [Migration("20250224191523_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -42,18 +42,16 @@ namespace TailBuddys.InfraStructure.Migrations
 
             modelBuilder.Entity("TailBuddys.Core.Models.Chat", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ReciverDogId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("SenderDogId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -61,7 +59,8 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.HasIndex("ReciverDogId");
 
                     b.HasIndex("SenderDogId", "ReciverDogId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[SenderDogId] IS NOT NULL AND [ReciverDogId] IS NOT NULL");
 
                     b.ToTable("Chats");
                 });
@@ -83,7 +82,8 @@ namespace TailBuddys.InfraStructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("Geneder")
                         .HasColumnType("bit");
@@ -96,7 +96,8 @@ namespace TailBuddys.InfraStructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("Size")
                         .HasColumnType("int");
@@ -108,7 +109,6 @@ namespace TailBuddys.InfraStructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("Vaccinated")
@@ -123,11 +123,13 @@ namespace TailBuddys.InfraStructure.Migrations
 
             modelBuilder.Entity("TailBuddys.Core.Models.Image", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("EntityId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("EntityType")
@@ -167,11 +169,9 @@ namespace TailBuddys.InfraStructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("ReciverDogId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("SenderDogId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -188,16 +188,19 @@ namespace TailBuddys.InfraStructure.Migrations
 
             modelBuilder.Entity("TailBuddys.Core.Models.Message", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("ChatID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChatID")
+                        .HasColumnType("int");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -205,8 +208,8 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsSender")
-                        .HasColumnType("bit");
+                    b.Property<string>("SenderDogId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -221,7 +224,6 @@ namespace TailBuddys.InfraStructure.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("DogId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("LastUpdated")
@@ -284,14 +286,11 @@ namespace TailBuddys.InfraStructure.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("Gender")
                         .HasColumnType("int");
-
-                    b.Property<string>("GoogleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("bit");
@@ -301,18 +300,13 @@ namespace TailBuddys.InfraStructure.Migrations
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordSalt")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -343,14 +337,12 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.HasOne("TailBuddys.Core.Models.Dog", "ReciverDog")
                         .WithMany("ChatsAsReciver")
                         .HasForeignKey("ReciverDogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("TailBuddys.Core.Models.Dog", "SenderDog")
                         .WithMany("ChatsAsSender")
                         .HasForeignKey("SenderDogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ReciverDog");
 
@@ -362,8 +354,7 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.HasOne("TailBuddys.Core.Models.User", "User")
                         .WithMany("Dogs")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });
@@ -373,14 +364,12 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.HasOne("TailBuddys.Core.Models.Dog", "Dog")
                         .WithMany("Images")
                         .HasForeignKey("EntityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("TailBuddys.Core.Models.Park", "Park")
                         .WithMany("Images")
                         .HasForeignKey("EntityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Dog");
 
@@ -392,14 +381,12 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.HasOne("TailBuddys.Core.Models.Dog", "ReciverDog")
                         .WithMany("MatchesAsReciver")
                         .HasForeignKey("ReciverDogId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("TailBuddys.Core.Models.Dog", "SenderDog")
                         .WithMany("MatchesAsSender")
                         .HasForeignKey("SenderDogId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ReciverDog");
 
@@ -422,8 +409,7 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.HasOne("TailBuddys.Core.Models.Dog", "Dog")
                         .WithMany("Notifications")
                         .HasForeignKey("DogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Dog");
                 });

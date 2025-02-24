@@ -120,7 +120,7 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                List<Message> messages = await _context.Messeges.Where(m => m.Id == chatId).ToListAsync();
+                List<Message> messages = await _context.Messeges.Where(m => m.ChatID == chatId).ToListAsync();
                 return messages;
             }
             catch (Exception ex)

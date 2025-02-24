@@ -17,9 +17,12 @@ namespace TailBuddys.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Match match)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             Match? result = await _matchService.CreateMatch(match);
-            //if (!ModelState.IsValid)
-            if (match == null)
+            if (result == null)
             {
                 return BadRequest();
             }
@@ -51,6 +54,10 @@ namespace TailBuddys.Presentation.Controllers
         [HttpPut("{matchId}")]
         public async Task<IActionResult> Put(int matchId, [FromBody] Match newMatch)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             Match? result = await _matchService.UpdateMatch(matchId, newMatch);
             if (result == null)
             {
