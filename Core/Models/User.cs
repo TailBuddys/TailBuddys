@@ -23,7 +23,7 @@ namespace TailBuddys.Core.Models
         public bool IsAdmin { get; set; }
         [JsonIgnore]
         public ICollection<Dog> Dogs { get; set; } = new List<Dog>();
-        // public string GoogleId { get; set; }
+        public string GoogleId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         // ביצירה של כלב לעדכן אותו ככלב הפעיל כרגע

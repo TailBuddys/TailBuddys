@@ -1,4 +1,5 @@
 ﻿using TailBuddys.Application.Interfaces;
+using TailBuddys.Application.Utils;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
 
@@ -7,10 +8,15 @@ namespace TailBuddys.Application.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IAuth _jwtAuthService;
+        private readonly GoogleAuthService _googleAuthService;
 
-        public UserService(IUserRepository userRepository)
+
+        public UserService(IUserRepository userRepository, IAuth jwtAuthService, GoogleAuthService googleAuthService)
         {
             _userRepository = userRepository;
+            _jwtAuthService = jwtAuthService;
+            _googleAuthService = googleAuthService;
         }
 
         // להתייחס לאדמין גם פה וגם בסרוויסים אחרים כמו פארק וכו
@@ -18,7 +24,6 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-
                 if (user == null) return null;
                 return await _userRepository.CreateUserDb(user);
             }
@@ -29,20 +34,39 @@ namespace TailBuddys.Application.Services
             }
         }
 
-        public async Task<string?> Login(string email)
+        public async Task<string?> Login(string email, string? password = null, string? googleToken = null)
         {
             try
             {
-                User? u = await _userRepository.GetUserByEmailDb(email);
-                if (u != null)
+                User? user = null;
+
+                if (googleToken != null)
                 {
-                    return "yay";
+                    // Authenticate via Google
+                    user = await _googleAuthService.AuthGoogleUser(googleToken);
                 }
-                return null;
+                else if (password != null)
+                {
+                    // Authenticate via Email/Password
+                    user = await _userRepository.GetUserByEmailDb(email);
+                    if (user == null || !PasswordHelper.VerifyPassword(password, user.PasswordHash, user))
+                    {
+                        return null; // Invalid credentials
+                    }
+                }
+
+                if (user == null)
+                {
+                    return null; // User not found or invalid login
+                }
+
+                // Generate JWT Token
+                // להכניס את הכלבים לקליימס
+                return _jwtAuthService.GenerateToken(user);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
+                Console.WriteLine($"Failed to login {ex.Message}");
                 return null;
             }
         }
