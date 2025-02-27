@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.Models;
+using TailBuddys.Core.Models.SubModels;
 
 namespace TailBuddys.Presentation.Controllers
 {
@@ -33,9 +36,9 @@ namespace TailBuddys.Presentation.Controllers
         // להוסיף לוג.אין מודל
         // יהיה בנוי מאימייל + סיסמא או לחלופין אימייל + מגוגל איי.די
         // להוסיף קבלת סיסמא בהתחברות
-        public async Task<IActionResult> Login(string email)
+        public async Task<IActionResult> Login(LoginModel loginModel)
         {
-            string? result = await _userService.Login(email);
+            string? result = await _userService.Login(loginModel);
             if (result == null)
             {
                 return Unauthorized();
@@ -44,8 +47,13 @@ namespace TailBuddys.Presentation.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "MustBeAdmin")]
         public async Task<IActionResult> GetAllUsers()
         {
+            Claim? userIdClaims = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
+            card.UserId = userIdClaims.Value;
+
+            // לבדוק ברמת הקונטרולר שהמשתמש תקין ומורשה לבקשה
             List<User> result = await _userService.GetAll();
             if (result == null)
             {

@@ -11,7 +11,7 @@ namespace TailBuddys.Core.Models
         [Required, StringLength(20, MinimumLength = 2)]
         public string? LastName { get; set; }
         [Required, EmailAddress]
-        public string? Email { get; set; }
+        public string Email { get; set; }
         [Phone]
         public string? Phone { get; set; }
         // סיסמא מצריכה התאמות בהמשך זמינת הוגדרה כנאלל
@@ -19,11 +19,12 @@ namespace TailBuddys.Core.Models
         [Required]
         public DateTime BirthDate { get; set; }
         [Required]
-        public Gender Gender { get; set; }
-        public bool IsAdmin { get; set; }
+        public Gender? Gender { get; set; }
+        [JsonIgnore]
+        public bool IsAdmin { get; set; } = false;
         [JsonIgnore]
         public ICollection<Dog> Dogs { get; set; } = new List<Dog>();
-        public string GoogleId { get; set; }
+        public string? GoogleId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         // ביצירה של כלב לעדכן אותו ככלב הפעיל כרגע

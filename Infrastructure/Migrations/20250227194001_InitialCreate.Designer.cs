@@ -12,7 +12,7 @@ using TailBuddys.Infrastructure.Data;
 namespace TailBuddys.InfraStructure.Migrations
 {
     [DbContext(typeof(TailBuddysContext))]
-    [Migration("20250224191523_InitialCreate")]
+    [Migration("20250227194001_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -291,6 +291,9 @@ namespace TailBuddys.InfraStructure.Migrations
 
                     b.Property<int>("Gender")
                         .HasColumnType("int");
+
+                    b.Property<string>("GoogleId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("bit");

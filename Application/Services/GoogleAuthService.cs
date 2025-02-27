@@ -1,11 +1,12 @@
 ﻿using System.Text.Json;
+using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
 using TailBuddys.Core.Models.SubModels;
 
 namespace TailBuddys.Application.Services
 {
-    public class GoogleAuthService
+    public class GoogleAuthService : IGoogleAuthService
     {
         private readonly HttpClient _httpClient;
         private readonly IUserRepository _userRepository;

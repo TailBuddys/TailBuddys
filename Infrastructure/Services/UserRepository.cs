@@ -42,7 +42,9 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                return await _context.Users
+                    .Include(u => u.Dogs)
+                    .FirstOrDefaultAsync(u => u.Email == email);
             }
             catch (Exception ex)
             {

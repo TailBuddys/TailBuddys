@@ -2,6 +2,7 @@
 using TailBuddys.Application.Utils;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
+using TailBuddys.Core.Models.SubModels;
 
 namespace TailBuddys.Application.Services
 {
@@ -9,10 +10,10 @@ namespace TailBuddys.Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IAuth _jwtAuthService;
-        private readonly GoogleAuthService _googleAuthService;
+        private readonly IGoogleAuthService _googleAuthService;
 
 
-        public UserService(IUserRepository userRepository, IAuth jwtAuthService, GoogleAuthService googleAuthService)
+        public UserService(IUserRepository userRepository, IAuth jwtAuthService, IGoogleAuthService googleAuthService)
         {
             _userRepository = userRepository;
             _jwtAuthService = jwtAuthService;
@@ -24,7 +25,14 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-                if (user == null) return null;
+
+                if (user == null || user.Email == null || await _userRepository.GetUserByEmailDb(user.Email) != null) return null;
+
+
+                if (user.PasswordHash == null) return null;
+                user.PasswordHash = PasswordHelper.GenerateHashPassword(user.PasswordHash, user);
+
+
                 return await _userRepository.CreateUserDb(user);
             }
             catch (Exception e)
@@ -34,35 +42,30 @@ namespace TailBuddys.Application.Services
             }
         }
 
-        public async Task<string?> Login(string email, string? password = null, string? googleToken = null)
+        public async Task<string?> Login(LoginModel loginModel)
         {
             try
             {
+                if (loginModel.Email != null && loginModel.Password != null && loginModel.GoogleId != null)
+                    return null; // Invalid request, all fields shouldn't be filled
+
                 User? user = null;
 
-                if (googleToken != null)
+                if (!string.IsNullOrEmpty(loginModel.GoogleId))
                 {
-                    // Authenticate via Google
-                    user = await _googleAuthService.AuthGoogleUser(googleToken);
+                    user = await _googleAuthService.AuthGoogleUser(loginModel.GoogleId);
                 }
-                else if (password != null)
+                else if (!string.IsNullOrEmpty(loginModel.Email) && !string.IsNullOrEmpty(loginModel.Password))
                 {
-                    // Authenticate via Email/Password
-                    user = await _userRepository.GetUserByEmailDb(email);
-                    if (user == null || !PasswordHelper.VerifyPassword(password, user.PasswordHash, user))
+                    user = await _userRepository.GetUserByEmailDb(loginModel.Email);
+                    if (user == null || string.IsNullOrEmpty(user.PasswordHash) ||
+                        !PasswordHelper.VerifyPassword(loginModel.Password, user.PasswordHash, user))
                     {
                         return null; // Invalid credentials
                     }
                 }
 
-                if (user == null)
-                {
-                    return null; // User not found or invalid login
-                }
-
-                // Generate JWT Token
-                // להכניס את הכלבים לקליימס
-                return _jwtAuthService.GenerateToken(user);
+                return user != null ? _jwtAuthService.GenerateToken(user) : null;
             }
             catch (Exception ex)
             {
