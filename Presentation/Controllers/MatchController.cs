@@ -87,6 +87,12 @@ namespace TailBuddys.Presentation.Controllers
 
             if (SenderDogId != null)
             {
+                Match? matchToUpdate = await _matchService.GetMatchById(matchId);
+                if (matchToUpdate == null || matchToUpdate.SenderDogId != SenderDogId)
+                {
+                    return Unauthorized();
+                }
+
                 Match? result = await _matchService.UpdateMatch(matchId, newMatch);
                 if (result == null)
                 {

@@ -16,6 +16,8 @@ namespace TailBuddys.Application.Services
         {
             // צריך להכליל בפונקציה הזו גם עדכון של נוטיפיקיישן סרוויס
             // לדאוג שאם מאץ' קיים לכלב הממאצ'מץ' לא ליצור עוד אחד אלא לעדכן את הקיים
+            // לדאוג שכלב של יוזר נתון לא יוכל לעשות מאץ' עם כלב אחר של אותו יוזר או לעצמו
+            // לא לאפשר יצירת מאץ' לאותו יוזר פעמיים
             try
             {
                 if (match == null) return null;
@@ -96,6 +98,7 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
+        // לדאוג שאןמאץ' מבטל את המאץ' גם מהצד של הכלב המקבל
         public async Task<Match?> UpdateMatch(int matchId, Match newMatch)
         {
             try
