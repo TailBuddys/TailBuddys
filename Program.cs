@@ -70,12 +70,29 @@ namespace TailBuddys
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                             "31cb3b1a-f4f3-466e-9099-d4f49a0dd4b8"))
                     };
+
+                    // שורת דיבאג - להסיר בסוף השימוש
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            Console.WriteLine("Authentication failed: " + context.Exception.Message);
+                            return Task.CompletedTask;
+                        },
+                        OnTokenValidated = context =>
+                        {
+                            Console.WriteLine("Token validated successfully.");
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             builder.Services.AddAuthorization(options =>
             {
-                // להוסיף קליימס מתאימים לביצוע בדיקות וולידציה בקונטרולרים
-                options.AddPolicy("MustBeAdmin", policy => policy.RequireClaim("isAdmin", "True"));
+                options.AddPolicy("MustBeAdmin", policy => policy.RequireClaim("IsAdmin", "True"));
+                options.AddPolicy("MustHaveDog", policy
+                    => policy.RequireAssertion(context
+                    => context.User.Claims.Any(c => c.Type == "DogId")));
             });
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -93,10 +110,13 @@ namespace TailBuddys
 
             app.UseCors("myCorsPolicy");
 
+
             app.UseHttpsRedirection();
             app.UseCors();
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
             //app.UseEndpoints(endpoints =>
             //{
             //    endpoints.MapControllers();

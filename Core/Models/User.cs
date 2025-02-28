@@ -14,7 +14,6 @@ namespace TailBuddys.Core.Models
         public string Email { get; set; }
         [Phone]
         public string? Phone { get; set; }
-        // סיסמא מצריכה התאמות בהמשך זמינת הוגדרה כנאלל
         public string? PasswordHash { get; set; }
         [Required]
         public DateTime BirthDate { get; set; }

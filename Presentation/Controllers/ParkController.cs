@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.Models;
 
@@ -15,6 +16,7 @@ namespace TailBuddys.Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "MustBeAdmin")]
         public async Task<IActionResult> Post([FromBody] Park park)
         {
             if (!ModelState.IsValid)
@@ -52,6 +54,7 @@ namespace TailBuddys.Presentation.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Policy = "MustBeAdmin")]
         public async Task<IActionResult> Put(string id, [FromBody] Park park)
         {
             if (!ModelState.IsValid)
@@ -67,6 +70,7 @@ namespace TailBuddys.Presentation.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "MustBeAdmin")]
         public async Task<IActionResult> Delete(string id)
         {
             Park? result = await _parkService.DeletePark(id);
@@ -78,14 +82,21 @@ namespace TailBuddys.Presentation.Controllers
         }
 
         [HttpPost("{parkId}")]
+        [Authorize]
         public async Task<IActionResult> Post(string parkId, [FromBody] string dogId)
         {
-            Park? result = await _parkService.LikeUnlikePark(parkId, dogId);
-            if (result == null)
+            string? clientDogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == dogId)?.Value;
+            if (clientDogId == dogId)
             {
-                return BadRequest();
+                Park? result = await _parkService.LikeUnlikePark(parkId, dogId);
+                if (result == null)
+                {
+                    return BadRequest();
+                }
+                return Ok(result);
             }
-            return Ok(result);
+            return Unauthorized();
+
         }
     }
 }

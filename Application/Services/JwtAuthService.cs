@@ -26,6 +26,7 @@ namespace TailBuddys.Application.Services
             JwtSecurityToken token = new JwtSecurityToken(
                 issuer: "TailBuddysServer",
                 audience: "TailBuddysApp",
+                expires: DateTime.Now.AddDays(365),
                 claims: claims,
                 signingCredentials: credentials
                 );

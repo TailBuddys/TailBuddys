@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.Models;
 
@@ -15,21 +16,29 @@ namespace TailBuddys.Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Post([FromBody] Dog dog, string userId)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            Dog? result = await _dogService.Create(dog, userId);
-            if (result == null)
+            string? ClientId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+
+            if (ClientId != null && ClientId == userId)
             {
-                return BadRequest();
+                Dog? result = await _dogService.Create(dog, userId);
+                if (result == null)
+                {
+                    return BadRequest();
+                }
+                return Ok(result);
             }
-            return Ok(result);
+            else return Unauthorized();
         }
 
         [HttpGet]
+        [Authorize(Policy = "MustBeAdmin")]
         public async Task<IActionResult> GetAllDogs()
         {
             List<Dog> result = await _dogService.GetAll();
@@ -39,18 +48,28 @@ namespace TailBuddys.Presentation.Controllers
             }
             return Ok(result);
         }
+
         [HttpGet("user/{userId}")]
+        [Authorize]
         public async Task<IActionResult> GetAllUserDogs(string userId)
         {
-            List<Dog> result = await _dogService.GetAll(userId);
-            if (result == null)
+            string? clientId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            string? isUserAdmin = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value;
+
+            if (isUserAdmin == "True" || clientId == userId)
             {
-                return BadRequest();
+                List<Dog> result = await _dogService.GetAll(userId);
+                if (result == null)
+                {
+                    return BadRequest();
+                }
+                return Ok(result);
             }
-            return Ok(result);
+            else return Unauthorized();
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetDogById(string id)
         {
             Dog? result = await _dogService.GetOne(id);
@@ -62,40 +81,63 @@ namespace TailBuddys.Presentation.Controllers
         }
 
         [HttpGet("match/{id}")]
+        [Authorize]
         public async Task<IActionResult> GetUnmatchedDogs(string id)
         {
-            List<Dog> result = await _dogService.GetUnmatchedDogs(id);
-            if (result == null)
+            string? dogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == id)?.Value;
+
+            if (dogId == id)
             {
-                return BadRequest();
+                List<Dog> result = await _dogService.GetUnmatchedDogs(id);
+                if (result == null)
+                {
+                    return BadRequest();
+                }
+                return Ok(result);
             }
-            return Ok(result);
+            else return Unauthorized();
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Put(string id, [FromBody] Dog dog)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            Dog? result = await _dogService.Update(id, dog);
-            if (result == null)
+            string? dogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == id)?.Value;
+            string? isUserAdmin = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value;
+
+            if (isUserAdmin == "True" || dogId == id)
             {
-                return BadRequest();
+                Dog? result = await _dogService.Update(id, dog);
+                if (result == null)
+                {
+                    return BadRequest();
+                }
+                return Ok(result);
             }
-            return Ok(result);
+            else return Unauthorized();
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
-            Dog? result = await _dogService.Delete(id);
-            if (result == null)
+            string? dogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == id)?.Value;
+            string? isUserAdmin = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value;
+
+            if (isUserAdmin == "True" || dogId == id)
             {
-                return BadRequest();
+                Dog? result = await _dogService.Delete(id);
+                if (result == null)
+                {
+                    return BadRequest();
+                }
+                return Ok(result);
             }
-            return Ok(result);
+            else return Unauthorized();
         }
     }
 }

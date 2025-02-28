@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.Models;
 
@@ -15,6 +16,7 @@ namespace TailBuddys.Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Post([FromBody] Chat chat)
         {
             if (!ModelState.IsValid)
@@ -32,6 +34,7 @@ namespace TailBuddys.Presentation.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAllDogChates(string dogId)
         {
             List<Chat> result = await _chatService.GetAllDogChats(dogId);
@@ -43,6 +46,7 @@ namespace TailBuddys.Presentation.Controllers
         }
 
         [HttpGet("{chatId}")]
+        [Authorize]
         public async Task<IActionResult> GetChatById(int chatId)
         {
             Chat? result = await _chatService.GetChatById(chatId);
@@ -53,7 +57,9 @@ namespace TailBuddys.Presentation.Controllers
             return Ok(result);
         }
 
+        // ??? LAMA ???
         [HttpPut("{chatId}")]
+        [Authorize]
         public async Task<IActionResult> Put(int chatId, [FromBody] Chat newChat)
         {
             if (!ModelState.IsValid)
@@ -68,7 +74,9 @@ namespace TailBuddys.Presentation.Controllers
             return Ok(result);
         }
 
+        // ??? LAMA ???
         [HttpDelete("{chatId}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int chatId)
         {
             Chat? result = await _chatService.DeleteChat(chatId);
@@ -78,6 +86,7 @@ namespace TailBuddys.Presentation.Controllers
             }
             return Ok(result);
         }
+
         [HttpPost("message")]
         public async Task<IActionResult> AddMessageToChat([FromBody] Message message)
         {
@@ -103,6 +112,7 @@ namespace TailBuddys.Presentation.Controllers
             return Ok(result);
         }
         [HttpPost("message/{messageId}")]
+        // לשנות את הפונקציה לעבוד כפאטץ' מכיוון ועובד מהר יותר
         public async Task<IActionResult> MarkMessageAsRead(int messageId)
         {
             Message? result = await _chatService.MarkMessageAsRead(messageId);
