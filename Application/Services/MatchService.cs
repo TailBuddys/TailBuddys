@@ -15,19 +15,23 @@ namespace TailBuddys.Application.Services
         public async Task<Match?> CreateMatch(Match match)
         {
             // צריך להכליל בפונקציה הזו גם עדכון של נוטיפיקיישן סרוויס
-            // לדאוג שאם מאץ' קיים לכלב הממאצ'מץ' לא ליצור עוד אחד אלא לעדכן את הקיים
-            // לדאוג שכלב של יוזר נתון לא יוכל לעשות מאץ' עם כלב אחר של אותו יוזר או לעצמו
-            // לא לאפשר יצירת מאץ' לאותו יוזר פעמיים
+            // לדאוג שאם מאץ' קיים לכלב השולח לא ליצור עוד אחד אלא לעדכן את הקיים??
             try
             {
-                if (match == null) return null;
+
+                if (match == null || match.SenderDog.UserId == match.ReciverDog.UserId) return null;
+                // בודק שאני לא עושה לעצמי -- לא מביא את הכלב -- לא תקין
                 match.CreatedAt = DateTime.Now;
                 match.UpdatedAt = DateTime.Now;
+
+                if ((await _matchRepository.GetAllMatchesAsSenderDogDb(match.SenderDogId)) // בודק שאני לא עושה מאץ' כפול
+                    .Any(m => m.SenderDogId == match.ReciverDogId))
+                    return null;
 
                 Match? foreignMatch = _matchRepository.GetAllMatchesAsSenderDogDb(match.ReciverDogId)
                     .Result.Where(m => m.ReciverDogId == match.SenderDogId).FirstOrDefault();
 
-                if (foreignMatch == null)
+                if (foreignMatch == null) // בודק אם קיים בצד של המקבל
                 {
                     return await _matchRepository.CreateMatchDb(match);
                 }
@@ -40,7 +44,7 @@ namespace TailBuddys.Application.Services
                     await _matchRepository.UpdateMatchDb(foreignMatch.Id, foreignMatch);
                     return await _matchRepository.CreateMatchDb(match);
                 }
-                return await _matchRepository.CreateMatchDb(match);
+                return await _matchRepository.CreateMatchDb(match); // במידה וקיים בצד המקבל אבל הוא לא אהב אותי
             }
             catch (Exception e)
             {

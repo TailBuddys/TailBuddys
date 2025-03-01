@@ -35,7 +35,6 @@ namespace TailBuddys.Presentation.Controllers
                 return Ok(result);
             }
             return Unauthorized();
-
         }
 
         [HttpGet]
