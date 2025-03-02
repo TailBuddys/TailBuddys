@@ -9,10 +9,14 @@ namespace TailBuddys.Application.Services
     public class DogService : IDogService
     {
         private readonly IDogRepository _dogRepository;
+        private readonly IMatchRepository _matchRepository;
+        private readonly IChatRepository _chatRepository;
 
-        public DogService(IDogRepository dogRepository)
+        public DogService(IDogRepository dogRepository, IMatchRepository matchRepository, IChatRepository chatRepository)
         {
             _dogRepository = dogRepository;
+            _matchRepository = matchRepository;
+            _chatRepository = chatRepository;
         }
 
         public async Task<Dog?> Create(Dog dog, string userId)
@@ -97,6 +101,21 @@ namespace TailBuddys.Application.Services
         {
             try
             {
+                Dog? dogToDelete = await _dogRepository.GetDogByIdDb(id);
+                if (dogToDelete == null) return null;
+
+                List<Match> allMatches = dogToDelete.MatchesAsSender.Concat(dogToDelete.MatchesAsReciver).ToList();
+                List<Chat> allChats = dogToDelete.ChatsAsSender.Concat(dogToDelete.ChatsAsReciver).ToList();
+
+                foreach (Match match in allMatches)
+                {
+                    await _matchRepository.DeleteMatchDb(match.Id);
+                }
+                foreach (Chat chat in allChats)
+                {
+                    await _chatRepository.DeleteChatDb(chat.Id);
+                }
+
                 return await _dogRepository.DeleteDogDb(id);
             }
             catch (Exception e)

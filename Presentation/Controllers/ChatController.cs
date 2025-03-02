@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using TailBuddys.Application.Interfaces;
-using TailBuddys.Application.Services;
 using TailBuddys.Core.Models;
 
 namespace TailBuddys.Presentation.Controllers
@@ -37,7 +35,7 @@ namespace TailBuddys.Presentation.Controllers
                 return Ok(result);
             }
             return Unauthorized();
-            
+
         }
 
         [HttpGet]
@@ -55,7 +53,7 @@ namespace TailBuddys.Presentation.Controllers
                 return Ok(result);
             }
             return Unauthorized();
-            
+
         }
 
         [HttpGet("{chatId}")]
@@ -68,7 +66,7 @@ namespace TailBuddys.Presentation.Controllers
                 return BadRequest();
             }
 
-            string? ClientDogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" 
+            string? ClientDogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId"
             && (c.Value == result.SenderDogId || c.Value == result.ReciverDogId))?.Value;
             if (ClientDogId != null)
             {
@@ -99,14 +97,14 @@ namespace TailBuddys.Presentation.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int chatId)
         {
-            
+
             Chat? chatToDelete = await _chatService.GetChatById(chatId);
             if (chatToDelete == null)
             {
                 return BadRequest();
             }
 
-            string? ClientDogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" 
+            string? ClientDogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId"
             && (c.Value == chatToDelete.SenderDogId || c.Value == chatToDelete.ReciverDogId))?.Value;
             if (ClientDogId != null)
             {
@@ -134,7 +132,7 @@ namespace TailBuddys.Presentation.Controllers
                 return BadRequest();
             }
             string? ClientDogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == message.SenderDogId)?.Value;
-            if (ClientDogId == null || (ClientDogId != chatToUpdate.SenderDogId || ClientDogId != chatToUpdate.ReciverDogId)) return Unauthorized();   
+            if (ClientDogId == null || (ClientDogId != chatToUpdate.SenderDogId && ClientDogId != chatToUpdate.ReciverDogId)) return Unauthorized();
 
             Message? result = await _chatService.AddMessageToChat(message);
             if (result == null)

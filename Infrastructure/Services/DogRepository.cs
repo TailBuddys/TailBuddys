@@ -81,7 +81,14 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                Dog? d = await _context.Dogs.Include(d => d.FavParks).FirstOrDefaultAsync(d => d.Id == dogId);
+                Dog? d = await _context.Dogs
+                    .Include(d => d.FavParks)
+                    .Include(d => d.MatchesAsSender)
+                    .Include(d => d.MatchesAsReciver)
+                    .Include(d => d.ChatsAsSender)
+                    .Include(d => d.ChatsAsReciver)
+                    .FirstOrDefaultAsync(d => d.Id == dogId);
+
                 if (d == null)
                 {
                     return null;
@@ -130,7 +137,10 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                Dog? dogToRemove = await _context.Dogs.Include(p => p.FavParks).FirstOrDefaultAsync(p => p.Id == dogId);
+                Dog? dogToRemove = await _context.Dogs
+                    .Include(p => p.FavParks)
+                    .FirstOrDefaultAsync(p => p.Id == dogId);
+
                 if (dogToRemove == null)
                 {
                     return null;

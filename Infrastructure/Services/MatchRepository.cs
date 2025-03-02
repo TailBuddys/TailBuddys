@@ -30,7 +30,10 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                List<Match> list = await _context.Matches.Where(m => m.SenderDogId == dogId && m.IsMatch == true).ToListAsync();
+                List<Match> list = await _context.Matches
+                    .Include(m => m.SenderDog)
+                    .Include(m => m.ReciverDog)
+                    .Where(m => m.SenderDogId == dogId && m.IsMatch == true).ToListAsync();
                 return list;
             }
             catch (Exception ex)
@@ -44,7 +47,10 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                List<Match> list = await _context.Matches.Where(m => m.SenderDogId == dogId).ToListAsync();
+                List<Match> list = await _context.Matches
+                    .Include(m => m.SenderDog)
+                    .Include(m => m.ReciverDog)
+                    .Where(m => m.SenderDogId == dogId).ToListAsync();
                 return list;
             }
             catch (Exception ex)
@@ -58,7 +64,10 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                List<Match> list = await _context.Matches.Where(m => m.ReciverDogId == dogId).ToListAsync();
+                List<Match> list = await _context.Matches
+                    .Include(m => m.SenderDog)
+                    .Include(m => m.ReciverDog)
+                    .Where(m => m.ReciverDogId == dogId).ToListAsync();
                 return list;
             }
             catch (Exception ex)
@@ -71,7 +80,10 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                Match? match = await _context.Matches.FirstOrDefaultAsync(m => m.Id == matchId);
+                Match? match = await _context.Matches
+                    .Include(m => m.SenderDog)
+                    .Include(m => m.ReciverDog)
+                    .FirstOrDefaultAsync(m => m.Id == matchId);
                 return match;
             }
             catch (Exception ex)
