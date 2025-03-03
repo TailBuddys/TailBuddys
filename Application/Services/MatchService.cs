@@ -70,7 +70,7 @@ namespace TailBuddys.Application.Services
                 return new List<Match>();
             }
         }
-        public async Task<List<Match>> GetAllMatchesFromDog(string dogId)
+        public async Task<List<Match>> GetAllMatchesAsSenderDog(string dogId)
         {
             try
             {
@@ -79,10 +79,10 @@ namespace TailBuddys.Application.Services
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return null;
+                return new List<Match>();
             }
         }
-        public async Task<List<Match>> GetAllMatchesToDog(string dogId)
+        public async Task<List<Match>> GetAllMatchesAsReciverDog(string dogId)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace TailBuddys.Application.Services
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return null;
+                return new List<Match>();
             }
         }
         public async Task<Match?> GetMatchById(int matchId)

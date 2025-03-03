@@ -17,6 +17,7 @@ namespace TailBuddys.Application.Services
         public async Task<Chat?> CreateChat(Chat chat)
         {
             // צריך להכליל בפונקציה הזו גם עדכון של נוטיפיקיישן סרוויס
+            // להגדיר שליחת הודעה ראשונה בעת פתיחת צ'אט חדש
             try
             {
                 Match? myMatch = _matchRepository.GetAllMatchesAsSenderDogDb(chat.SenderDogId)
@@ -111,7 +112,6 @@ namespace TailBuddys.Application.Services
             try
             {
                 return await _chatRepository.AddMessageToChatDb(message);
-
             }
 
             catch (Exception e)

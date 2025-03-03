@@ -87,6 +87,7 @@ namespace TailBuddys.Infrastructure.Services
                     .Include(d => d.MatchesAsReciver)
                     .Include(d => d.ChatsAsSender)
                     .Include(d => d.ChatsAsReciver)
+                    .Include(d => d.Images)
                     .FirstOrDefaultAsync(d => d.Id == dogId);
 
                 if (d == null)

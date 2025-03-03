@@ -42,7 +42,10 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                return await _context.Parks.Include(p => p.DogLikes).FirstOrDefaultAsync(p => p.Id == parkId);
+                return await _context.Parks
+                    .Include(p => p.DogLikes)
+                    .Include(p => p.Images)
+                    .FirstOrDefaultAsync(p => p.Id == parkId);
             }
             catch (Exception ex)
             {

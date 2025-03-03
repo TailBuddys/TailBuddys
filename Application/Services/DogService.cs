@@ -4,8 +4,7 @@ using TailBuddys.Core.Models;
 
 namespace TailBuddys.Application.Services
 {
-    // בגלל שבמיגרציה מחיקת אובייקט מוגדר כריסטריקט
-    // יש לדאוג למחוק את כל תת הישוייות של כלב לפני שמוחקים את הכלב עצמו צ'אטים, מאצ'ים, הודעות וכו
+    // סינון כלבים לפי מרחקים - גט אןמאץ'ד דוגס
     public class DogService : IDogService
     {
         private readonly IDogRepository _dogRepository;
