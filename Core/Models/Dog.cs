@@ -21,7 +21,7 @@ namespace TailBuddys.Core.Models
         public bool Geneder { get; set; }
         public DateTime Birthdate { get; set; }
         [JsonIgnore]
-        public ICollection<Image>? Images { get; set; }
+        public ICollection<Image> Images { get; set; } = new List<Image>();
         [Required]
         public string? Address { get; set; }
         public decimal Lon { get; set; } // מה זה?

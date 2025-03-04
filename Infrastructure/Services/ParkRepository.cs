@@ -44,7 +44,7 @@ namespace TailBuddys.Infrastructure.Services
             {
                 return await _context.Parks
                     .Include(p => p.DogLikes)
-                    .Include(p => p.Images)
+                    .Include(p => p.Images.Where(i => i.EntityType == EntityType.Park))
                     .FirstOrDefaultAsync(p => p.Id == parkId);
             }
             catch (Exception ex)
