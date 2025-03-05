@@ -60,12 +60,13 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<IActionResult> GetUserById(string id)
+        public async Task<IActionResult> GetUserById(int id)
         {
-            string? userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            int userId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value, out userId);
             string? isUserAdmin = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value;
 
-            if (isUserAdmin == "True" || userId == id)
+            if (isUserAdmin == "True" || (userId == id && userId != 0))
             {
                 User? result = await _userService.GetOne(id);
                 if (result == null)
@@ -79,16 +80,17 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> Put(string id, [FromBody] User user)
+        public async Task<IActionResult> Put(int id, [FromBody] User user)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            string? userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            int userId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value, out userId);
             string? isUserAdmin = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value;
 
-            if (isUserAdmin == "True" || userId == id)
+            if (isUserAdmin == "True" || (userId == id && userId != 0))
             {
                 User? result = await _userService.Update(id, user);
                 if (result == null)
@@ -102,12 +104,13 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpDelete("{id}")]
         [Authorize]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
-            string? userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            int userId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value, out userId);
             string? isUserAdmin = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value;
 
-            if (isUserAdmin == "True" || userId == id)
+            if (isUserAdmin == "True" || (userId == id && userId != 0))
             {
                 User? result = await _userService.Delete(id);
                 if (result == null)

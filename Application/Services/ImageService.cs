@@ -21,7 +21,7 @@ namespace TailBuddys.Application.Services
             _imageRepository = imageRepository;
         }
 
-        public async Task<string?> UploadImage(IFormFile file, string entityId, EntityType entityType)
+        public async Task<string?> UploadImage(IFormFile file, int entityId, EntityType entityType)
         {
             if (file == null || file.Length == 0) return null;
 
@@ -51,7 +51,7 @@ namespace TailBuddys.Application.Services
             return fileUrl;
         }
 
-        public async Task<string?> RemoveImage(int imageId, string entityId, EntityType entityType)
+        public async Task<string?> RemoveImage(int imageId, int entityId, EntityType entityType)
         {
             Image? imageToDelete = await _imageRepository.GetImageByIdDb(imageId);
             if (imageToDelete == null || imageToDelete.Url == null)

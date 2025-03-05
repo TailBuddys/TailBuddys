@@ -43,7 +43,7 @@ namespace TailBuddys.Presentation.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetParkById(string id)
+        public async Task<IActionResult> GetParkById(int id)
         {
             Park? result = await _parkService.GetParkById(id);
             if (result == null)
@@ -55,7 +55,7 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Policy = "MustBeAdmin")]
-        public async Task<IActionResult> Put(string id, [FromBody] Park park)
+        public async Task<IActionResult> Put(int id, [FromBody] Park park)
         {
             if (!ModelState.IsValid)
             {
@@ -71,7 +71,7 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Policy = "MustBeAdmin")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
             Park? result = await _parkService.DeletePark(id);
             if (result == null)
@@ -83,10 +83,12 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpPost("{parkId}")]
         [Authorize]
-        public async Task<IActionResult> Post(string parkId, [FromBody] string dogId)
+        public async Task<IActionResult> Post(int parkId, [FromBody] int dogId)
         {
-            string? clientDogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == dogId)?.Value;
-            if (clientDogId == dogId)
+            int clientDogId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == dogId.ToString())?.Value, out clientDogId);
+
+            if (clientDogId == dogId && clientDogId != 0)
             {
                 Park? result = await _parkService.LikeUnlikePark(parkId, dogId);
                 if (result == null)

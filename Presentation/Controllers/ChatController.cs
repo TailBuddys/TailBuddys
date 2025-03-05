@@ -23,8 +23,11 @@ namespace TailBuddys.Presentation.Controllers
             {
                 return BadRequest(ModelState);
             }
-            string? dogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == chat.SenderDogId)?.Value;
-            if (dogId != null)
+            int dogId;
+            int.TryParse(HttpContext.User.Claims
+               .FirstOrDefault(c => c.Type == "DogId" && c.Value == chat.SenderDogId.ToString())?.Value, out dogId);
+
+            if (dogId != 0)
             {
                 Chat? result = await _chatService.CreateChat(chat);
 
@@ -40,10 +43,13 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllDogChates(string dogId)
+        public async Task<IActionResult> GetAllDogChates(int dogId)
         {
-            string? ClientDogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == dogId)?.Value;
-            if (dogId != null)
+            int ClientDogId;
+            int.TryParse(HttpContext.User.Claims
+               .FirstOrDefault(c => c.Type == "DogId" && c.Value == dogId.ToString())?.Value, out ClientDogId);
+
+            if (dogId != 0)
             {
                 List<Chat> result = await _chatService.GetAllDogChats(dogId);
                 if (result == null)
@@ -66,9 +72,11 @@ namespace TailBuddys.Presentation.Controllers
                 return BadRequest();
             }
 
-            string? ClientDogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId"
-            && (c.Value == result.SenderDogId || c.Value == result.ReciverDogId))?.Value;
-            if (ClientDogId != null)
+            int ClientDogId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId"
+            && (c.Value == result.SenderDogId.ToString() || c.Value == result.ReciverDogId.ToString()))?.Value, out ClientDogId);
+
+            if (ClientDogId != 0)
             {
                 return Ok(result);
             }
@@ -104,9 +112,11 @@ namespace TailBuddys.Presentation.Controllers
                 return BadRequest();
             }
 
-            string? ClientDogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId"
-            && (c.Value == chatToDelete.SenderDogId || c.Value == chatToDelete.ReciverDogId))?.Value;
-            if (ClientDogId != null)
+            int ClientDogId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId"
+            && (c.Value == chatToDelete.SenderDogId.ToString() || c.Value == chatToDelete.ReciverDogId.ToString()))?.Value, out ClientDogId);
+
+            if (ClientDogId != 0)
             {
                 Chat? result = await _chatService.DeleteChat(chatId);
                 if (result == null)
@@ -131,8 +141,11 @@ namespace TailBuddys.Presentation.Controllers
             {
                 return BadRequest();
             }
-            string? ClientDogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == message.SenderDogId)?.Value;
-            if (ClientDogId == null || (ClientDogId != chatToUpdate.SenderDogId && ClientDogId != chatToUpdate.ReciverDogId)) return Unauthorized();
+            int ClientDogId;
+            int.TryParse(HttpContext.User.Claims
+               .FirstOrDefault(c => c.Type == "DogId" && c.Value == message.SenderDogId.ToString())?.Value, out ClientDogId);
+
+            if (ClientDogId == 0 || (ClientDogId != chatToUpdate.SenderDogId && ClientDogId != chatToUpdate.ReciverDogId)) return Unauthorized();
 
             Message? result = await _chatService.AddMessageToChat(message);
             if (result == null)

@@ -23,9 +23,13 @@ namespace TailBuddys.Presentation.Controllers
             {
                 return BadRequest(ModelState);
             }
-            string? dogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == match.SenderDogId)?.Value;
+            int dogId;
+            int.TryParse(HttpContext.User.Claims
+               .FirstOrDefault(c => c.Type == "DogId" && c.Value == match.SenderDogId.ToString())?.Value, out dogId);
 
-            if (dogId != null)
+
+
+            if (dogId != 0)
             {
                 Match? result = await _matchService.CreateMatch(match);
                 if (result == null)
@@ -39,11 +43,13 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllMutualMatches(string dogId)
+        public async Task<IActionResult> GetAllMutualMatches(int dogId)
         {
-            string? clientDogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == dogId)?.Value;
+            int clientDogId;
+            int.TryParse(HttpContext.User.Claims
+               .FirstOrDefault(c => c.Type == "DogId" && c.Value == dogId.ToString())?.Value, out clientDogId);
 
-            if (clientDogId != null)
+            if (clientDogId != 0)
             {
                 List<Match> result = await _matchService.GetAllMutualMatches(dogId);
                 if (result == null)
@@ -82,9 +88,11 @@ namespace TailBuddys.Presentation.Controllers
             {
                 return BadRequest(ModelState);
             }
-            string? SenderDogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == newMatch.SenderDogId)?.Value;
+            int SenderDogId;
+            int.TryParse(HttpContext.User.Claims
+               .FirstOrDefault(c => c.Type == "DogId" && c.Value == newMatch.SenderDogId.ToString())?.Value, out SenderDogId);
 
-            if (SenderDogId != null)
+            if (SenderDogId != 0)
             {
                 Match? matchToUpdate = await _matchService.GetMatchById(matchId);
                 if (matchToUpdate == null || matchToUpdate.SenderDogId != SenderDogId)

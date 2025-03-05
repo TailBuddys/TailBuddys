@@ -40,7 +40,7 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<Dog>();
             }
         }
-        public async Task<List<Dog>> GetAllUserDogsDb(string userId)
+        public async Task<List<Dog>> GetAllUserDogsDb(int userId)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<Dog>();
             }
         }
-        public async Task<List<Dog>> GetUnMatchedDogsDb(string dogId)
+        public async Task<List<Dog>> GetUnMatchedDogsDb(int dogId)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace TailBuddys.Infrastructure.Services
                 if (myDog == null)
                     return new List<Dog>();
 
-                List<string> matchedDogIds = myDog.MatchesAsSender.Select(m => m.ReciverDogId).ToList();
+                List<int> matchedDogIds = myDog.MatchesAsSender.Select(m => m.ReciverDogId).ToList();
 
                 List<Dog> list = await _context.Dogs
                     .Where(db => !matchedDogIds.Contains(db.Id) && db.UserId != myDog.UserId)
@@ -77,7 +77,7 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<Dog>();
             }
         }
-        public async Task<Dog?> GetDogByIdDb(string dogId)
+        public async Task<Dog?> GetDogByIdDb(int dogId)
         {
             try
             {
@@ -102,7 +102,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Dog?> UpdateDogDb(string dogId, Dog dog)
+        public async Task<Dog?> UpdateDogDb(int dogId, Dog dog)
         {
             try
             {
@@ -134,7 +134,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Dog?> DeleteDogDb(string dogId)
+        public async Task<Dog?> DeleteDogDb(int dogId)
         {
             try
             {

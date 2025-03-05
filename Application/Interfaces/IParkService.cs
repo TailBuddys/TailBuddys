@@ -6,9 +6,9 @@ namespace TailBuddys.Application.Interfaces
     {
         Task<Park?> CreatePark(Park park);
         Task<List<Park>> GetAllParks();
-        Task<Park?> GetParkById(string parkId);
-        Task<Park?> UpdatePark(string parkId, Park park);
-        Task<Park?> DeletePark(string parkId);
-        Task<Park?> LikeUnlikePark(string parkId, string dogId);
+        Task<Park?> GetParkById(int parkId);
+        Task<Park?> UpdatePark(int parkId, Park park);
+        Task<Park?> DeletePark(int parkId);
+        Task<Park?> LikeUnlikePark(int parkId, int dogId);
     }
 }

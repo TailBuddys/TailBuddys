@@ -38,7 +38,7 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<Park>();
             }
         }
-        public async Task<Park?> GetParkByIdDb(string parkId)
+        public async Task<Park?> GetParkByIdDb(int parkId)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Park?> UpdateParkDb(string parkId, Park park)
+        public async Task<Park?> UpdateParkDb(int parkId, Park park)
         {
             try
             {
@@ -78,7 +78,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Park?> DeleteParkDb(string parkId)
+        public async Task<Park?> DeleteParkDb(int parkId)
         {
             try
             {
@@ -106,7 +106,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Park?> LikeUnlikeParkDb(string parkId, string dogId)
+        public async Task<Park?> LikeUnlikeParkDb(int parkId, int dogId)
         {
             try
             {

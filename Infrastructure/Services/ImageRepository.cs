@@ -26,7 +26,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<List<Image>> GetAllEntityImagesDb(string entityId, EntityType entityType)
+        public async Task<List<Image>> GetAllEntityImagesDb(int entityId, EntityType entityType)
         {
             try
             {

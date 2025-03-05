@@ -26,7 +26,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<User?> GetUserByIdDb(string userId)
+        public async Task<User?> GetUserByIdDb(int userId)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<User>();
             }
         }
-        public async Task<User?> UpdateUserDb(string userId, User user)
+        public async Task<User?> UpdateUserDb(int userId, User user)
         {
             try
             {
@@ -93,7 +93,7 @@ namespace TailBuddys.Infrastructure.Services
             }
         }
 
-        public async Task<User?> DeleteUserDb(string userId)
+        public async Task<User?> DeleteUserDb(int userId)
         {
             try
             {

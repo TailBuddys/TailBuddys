@@ -40,7 +40,7 @@ namespace TailBuddys.Application.Services
             }
 
         }
-        public async Task<Park?> GetParkById(string parkId)
+        public async Task<Park?> GetParkById(int parkId)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        public async Task<Park?> UpdatePark(string parkId, Park park)
+        public async Task<Park?> UpdatePark(int parkId, Park park)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        public async Task<Park?> DeletePark(string parkId)
+        public async Task<Park?> DeletePark(int parkId)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        public async Task<Park?> LikeUnlikePark(string parkId, string dogId)
+        public async Task<Park?> LikeUnlikePark(int parkId, int dogId)
         {
             try
             {

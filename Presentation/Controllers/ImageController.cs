@@ -17,7 +17,7 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Post([FromBody] IFormFile file, string entityId, EntityType entityType)
+        public async Task<IActionResult> Post([FromBody] IFormFile file, int entityId, EntityType entityType)
         {
             if (entityType == EntityType.Park && HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value == "True")
             {
@@ -34,8 +34,10 @@ namespace TailBuddys.Presentation.Controllers
                 return Unauthorized();
             }
 
-            string? dogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == entityId)?.Value;
-            if (dogId == null)
+            int dogId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == entityId.ToString())?.Value, out dogId);
+
+            if (dogId == 0)
             {
                 return Unauthorized();
             }
@@ -51,7 +53,7 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> Put([FromBody] int imageId1, int imageId2, EntityType entityType, string entityId)
+        public async Task<IActionResult> Put([FromBody] int imageId1, int imageId2, EntityType entityType, int entityId)
         {
             if (entityType == EntityType.Park && HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value == "True")
             {
@@ -68,8 +70,10 @@ namespace TailBuddys.Presentation.Controllers
                 return Unauthorized();
             }
 
-            string? dogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == entityId)?.Value;
-            if (dogId == null)
+            int dogId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == entityId.ToString())?.Value, out dogId);
+
+            if (dogId == 0)
             {
                 return Unauthorized();
             }
@@ -85,7 +89,7 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpDelete("{chatId}")]
         [Authorize]
-        public async Task<IActionResult> Delete([FromBody] int imageId, string entityId, EntityType entityType)
+        public async Task<IActionResult> Delete([FromBody] int imageId, int entityId, EntityType entityType)
         {
             if (entityType == EntityType.Park && HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value == "True")
             {
@@ -102,8 +106,10 @@ namespace TailBuddys.Presentation.Controllers
                 return Unauthorized();
             }
 
-            string? dogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == entityId)?.Value;
-            if (dogId == null)
+            int dogId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == entityId.ToString())?.Value, out dogId);
+
+            if (dogId == 0)
             {
                 return Unauthorized();
             }

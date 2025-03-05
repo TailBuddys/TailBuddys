@@ -6,7 +6,7 @@ namespace TailBuddys.Core.Models
     public class Image
     {
         public int Id { get; set; }
-        public string? EntityId { get; set; }
+        public int EntityId { get; set; }
         public EntityType EntityType { get; set; }
         [Required, Url]
         public string? Url { get; set; }

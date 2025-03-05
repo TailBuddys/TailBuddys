@@ -8,11 +8,11 @@ namespace TailBuddys.Core.Models
     {
         public int Id { get; set; }
         [ForeignKey(nameof(SenderDog))]
-        public string? SenderDogId { get; set; }
+        public int SenderDogId { get; set; }
         [JsonIgnore]
         public Dog? SenderDog { get; set; }
         [ForeignKey(nameof(ReciverDog))]
-        public string? ReciverDogId { get; set; }
+        public int ReciverDogId { get; set; }
         [JsonIgnore]
         public Dog? ReciverDog { get; set; }
         [Required]

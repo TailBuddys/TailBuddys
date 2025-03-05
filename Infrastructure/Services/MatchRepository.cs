@@ -26,7 +26,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<List<Match>> GetAllMutualMatchesDb(string dogId)
+        public async Task<List<Match>> GetAllMutualMatchesDb(int dogId)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace TailBuddys.Infrastructure.Services
             }
         }
         // get async all dog matches that he like / unlike 
-        public async Task<List<Match>> GetAllMatchesAsSenderDogDb(string dogId)
+        public async Task<List<Match>> GetAllMatchesAsSenderDogDb(int dogId)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace TailBuddys.Infrastructure.Services
             }
         }
         // get all dog that like me
-        public async Task<List<Match>> GetAllMatchesAsReciverDogDb(string dogId)
+        public async Task<List<Match>> GetAllMatchesAsReciverDogDb(int dogId)
         {
             try
             {

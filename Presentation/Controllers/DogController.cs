@@ -17,15 +17,16 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Post([FromBody] Dog dog, string userId)
+        public async Task<IActionResult> Post([FromBody] Dog dog, int userId)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            string? ClientId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            int ClientId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value, out ClientId);
 
-            if (ClientId != null && ClientId == userId)
+            if (ClientId != 0 && ClientId == userId)
             {
                 Dog? result = await _dogService.Create(dog, userId);
                 if (result == null)
@@ -51,9 +52,11 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpGet("user/{userId}")]
         [Authorize]
-        public async Task<IActionResult> GetAllUserDogs(string userId)
+        public async Task<IActionResult> GetAllUserDogs(int userId)
         {
-            string? clientId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            int clientId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value, out clientId);
+
             string? isUserAdmin = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value;
 
             if (isUserAdmin == "True" || clientId == userId)
@@ -70,7 +73,7 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<IActionResult> GetDogById(string id)
+        public async Task<IActionResult> GetDogById(int id)
         {
             Dog? result = await _dogService.GetOne(id);
             if (result == null)
@@ -82,9 +85,10 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpGet("match/{id}")]
         [Authorize]
-        public async Task<IActionResult> GetUnmatchedDogs(string id)
+        public async Task<IActionResult> GetUnmatchedDogs(int id)
         {
-            string? dogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == id)?.Value;
+            int dogId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == id.ToString())?.Value, out dogId);
 
             if (dogId == id)
             {
@@ -100,13 +104,15 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> Put(string id, [FromBody] Dog dog)
+        public async Task<IActionResult> Put(int id, [FromBody] Dog dog)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            string? dogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == id)?.Value;
+            int dogId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == id.ToString())?.Value, out dogId);
+
             string? isUserAdmin = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value;
 
             if (isUserAdmin == "True" || dogId == id)
@@ -123,9 +129,11 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpDelete("{id}")]
         [Authorize]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
-            string? dogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == id)?.Value;
+            int dogId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == id.ToString())?.Value, out dogId);
+
             string? isUserAdmin = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value;
 
             if (isUserAdmin == "True" || dogId == id)

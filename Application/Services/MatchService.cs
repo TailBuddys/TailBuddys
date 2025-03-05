@@ -20,7 +20,7 @@ namespace TailBuddys.Application.Services
             try
             {
 
-                if (match?.ReciverDogId == null || match.SenderDogId == null) return null;
+                if (match.ReciverDogId == 0 || match.SenderDogId == 0) return null;
 
                 (Dog? reciverDog, Dog? senderDog) = (await _dogRepository.GetDogByIdDb(match.ReciverDogId),
                     await _dogRepository.GetDogByIdDb(match.SenderDogId));
@@ -56,7 +56,7 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        public async Task<List<Match>> GetAllMutualMatches(string dogId)
+        public async Task<List<Match>> GetAllMutualMatches(int dogId)
         {
             // ליצור מודל של כלב עם תמונה ושם להחזרה לפרונט
             // לבנות מודל DTO
@@ -70,7 +70,7 @@ namespace TailBuddys.Application.Services
                 return new List<Match>();
             }
         }
-        public async Task<List<Match>> GetAllMatchesAsSenderDog(string dogId)
+        public async Task<List<Match>> GetAllMatchesAsSenderDog(int dogId)
         {
             try
             {
@@ -82,7 +82,7 @@ namespace TailBuddys.Application.Services
                 return new List<Match>();
             }
         }
-        public async Task<List<Match>> GetAllMatchesAsReciverDog(string dogId)
+        public async Task<List<Match>> GetAllMatchesAsReciverDog(int dogId)
         {
             try
             {
@@ -116,7 +116,7 @@ namespace TailBuddys.Application.Services
 
                 if (newMatch.IsLike == false && matchToUpdate.IsMatch == true)
                 {
-                    Match? foreignMatch = _matchRepository.GetAllMatchesAsSenderDogDb(newMatch.ReciverDogId ?? "")
+                    Match? foreignMatch = _matchRepository.GetAllMatchesAsSenderDogDb(newMatch.ReciverDogId)
                     .Result.Where(m => m.ReciverDogId == newMatch.SenderDogId).FirstOrDefault();
 
                     if (foreignMatch != null)

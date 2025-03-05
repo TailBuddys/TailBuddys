@@ -25,7 +25,7 @@ namespace TailBuddys.Infrastructure.Data
                 .HasOne(d => d.User)
                 .WithMany(u => u.Dogs)
                 .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.Cascade); // לבדוק שאפשר לבצע מחיקה
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Image>()
                 .HasDiscriminator<EntityType>("EntityType")

@@ -15,7 +15,8 @@ namespace TailBuddys.InfraStructure.Migrations
                 name: "Parks",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Lon = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -32,7 +33,8 @@ namespace TailBuddys.InfraStructure.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -55,8 +57,9 @@ namespace TailBuddys.InfraStructure.Migrations
                 name: "Dogs",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
@@ -87,8 +90,8 @@ namespace TailBuddys.InfraStructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SenderDogId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ReciverDogId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    SenderDogId = table.Column<int>(type: "int", nullable: false),
+                    ReciverDogId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -111,8 +114,8 @@ namespace TailBuddys.InfraStructure.Migrations
                 name: "DogParks",
                 columns: table => new
                 {
-                    DogLikesId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FavParksId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    DogLikesId = table.Column<int>(type: "int", nullable: false),
+                    FavParksId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -137,7 +140,7 @@ namespace TailBuddys.InfraStructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EntityId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    EntityId = table.Column<int>(type: "int", nullable: false),
                     EntityType = table.Column<int>(type: "int", nullable: false),
                     Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Order = table.Column<int>(type: "int", nullable: false)
@@ -165,8 +168,8 @@ namespace TailBuddys.InfraStructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SenderDogId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ReciverDogId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    SenderDogId = table.Column<int>(type: "int", nullable: false),
+                    ReciverDogId = table.Column<int>(type: "int", nullable: false),
                     IsLike = table.Column<bool>(type: "bit", nullable: false),
                     IsMatch = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -193,8 +196,9 @@ namespace TailBuddys.InfraStructure.Migrations
                 name: "Notifications",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    DogId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DogId = table.Column<int>(type: "int", nullable: false),
                     UnreadMessages = table.Column<int>(type: "int", nullable: false),
                     LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -216,7 +220,7 @@ namespace TailBuddys.InfraStructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ChatID = table.Column<int>(type: "int", nullable: false),
-                    SenderDogId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SenderDogId = table.Column<int>(type: "int", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     IsRead = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -241,8 +245,7 @@ namespace TailBuddys.InfraStructure.Migrations
                 name: "IX_Chats_SenderDogId_ReciverDogId",
                 table: "Chats",
                 columns: new[] { "SenderDogId", "ReciverDogId" },
-                unique: true,
-                filter: "[SenderDogId] IS NOT NULL AND [ReciverDogId] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DogParks_FavParksId",

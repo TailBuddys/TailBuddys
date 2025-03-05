@@ -5,7 +5,7 @@ namespace TailBuddys.Core.Interfaces
     public interface IChatRepository
     {
         public Task<Chat?> CreateChatDb(Chat chat);
-        public Task<List<Chat>> GetAllDogChatsDb(string dogId);
+        public Task<List<Chat>> GetAllDogChatsDb(int dogId);
         public Task<Chat?> GetChatByIdDb(int chatId);
         public Task<Chat?> UpdateChatDb(int chatId, Chat chat);
         public Task<Chat?> DeleteChatDb(int chatId);

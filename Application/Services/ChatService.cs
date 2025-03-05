@@ -53,7 +53,7 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        public async Task<List<Chat>> GetAllDogChats(string dogId)
+        public async Task<List<Chat>> GetAllDogChats(int dogId)
         {
             try
             {

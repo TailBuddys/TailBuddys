@@ -5,13 +5,13 @@ namespace TailBuddys.Core.Models
 {
     public class User
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public int Id { get; set; }
         [Required, StringLength(20, MinimumLength = 2)]
         public string? FirstName { get; set; }
         [Required, StringLength(20, MinimumLength = 2)]
         public string? LastName { get; set; }
         [Required, EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; set; } // לטפל
         [Phone]
         public string? Phone { get; set; }
         public string? PasswordHash { get; set; }

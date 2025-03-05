@@ -5,7 +5,7 @@ namespace TailBuddys.Core.Models
 {
     public class Park
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public int Id { get; set; }
         [Required]
         public string? Name { get; set; }
         [Required]

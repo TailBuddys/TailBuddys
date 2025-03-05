@@ -6,10 +6,10 @@ namespace TailBuddys.Core.Models
 {
     public class Dog
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public int Id { get; set; }
         [ForeignKey(nameof(User))]
         // לבדוק שהנאלל לא בא לנו בהפוכה בהמשך
-        public string? UserId { get; set; }
+        public int UserId { get; set; }
         [JsonIgnore]
         public User? User { get; set; } // לבדוק למה צריך יוזר בתוך המודול של כלב
         [Required, StringLength(20, MinimumLength = 2)]

@@ -78,11 +78,11 @@ namespace TailBuddys.Application.Services
         {
             return await _userRepository.GetAllUsersDb();
         }
-        public async Task<User?> GetOne(string id)
+        public async Task<User?> GetOne(int id)
         {
             return await _userRepository.GetUserByIdDb(id);
         }
-        public async Task<User?> Update(string id, User user)
+        public async Task<User?> Update(int id, User user)
         {
             if (user == null)
             {
@@ -90,7 +90,7 @@ namespace TailBuddys.Application.Services
             }
             return await _userRepository.UpdateUserDb(id, user);
         }
-        public async Task<User?> Delete(string id)
+        public async Task<User?> Delete(int id)
         {
             try
             {

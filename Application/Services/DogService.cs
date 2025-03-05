@@ -18,7 +18,7 @@ namespace TailBuddys.Application.Services
             _chatRepository = chatRepository;
         }
 
-        public async Task<Dog?> Create(Dog dog, string userId)
+        public async Task<Dog?> Create(Dog dog, int userId)
         {
             // לעדכן ליוזר את הכלב הפעיל האחרון
             try
@@ -45,20 +45,19 @@ namespace TailBuddys.Application.Services
                 return new List<Dog>();
             }
         }
-        public async Task<List<Dog>> GetAll(string userId)
+        public async Task<List<Dog>> GetAll(int userId)
         {
             try
             {
-
                 return await _dogRepository.GetAllUserDogsDb(userId);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return null;
+                return new List<Dog>();
             }
         }
-        public async Task<List<Dog>> GetUnmatchedDogs(string dogId)
+        public async Task<List<Dog>> GetUnmatchedDogs(int dogId)
         {
             try
             {
@@ -68,11 +67,11 @@ namespace TailBuddys.Application.Services
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return null;
+                return new List<Dog>();
             }
         }
 
-        public async Task<Dog?> GetOne(string id)
+        public async Task<Dog?> GetOne(int id)
         {
             try
             {
@@ -84,7 +83,7 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        public async Task<Dog?> Update(string id, Dog dog)
+        public async Task<Dog?> Update(int id, Dog dog)
         {
             try
             {
@@ -96,7 +95,7 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        public async Task<Dog?> Delete(string id)
+        public async Task<Dog?> Delete(int id)
         {
             try
             {

@@ -27,7 +27,7 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<List<Chat>> GetAllDogChatsDb(string dogId)
+        public async Task<List<Chat>> GetAllDogChatsDb(int dogId)
         {
             try
             {

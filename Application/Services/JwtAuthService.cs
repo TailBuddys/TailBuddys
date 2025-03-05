@@ -13,12 +13,12 @@ namespace TailBuddys.Application.Services
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim("id", user.Id),
+                new Claim("id", user.Id.ToString()),
                 new Claim("IsAdmin", user.IsAdmin.ToString()),
             };
             foreach (Dog dog in user.Dogs)
             {
-                claims.Add(new Claim("DogId", dog.Id));
+                claims.Add(new Claim("DogId", dog.Id.ToString()));
             }
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("31cb3b1a-f4f3-466e-9099-d4f49a0dd4b8"));
             SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
