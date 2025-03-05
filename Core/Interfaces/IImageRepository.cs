@@ -5,7 +5,7 @@ namespace TailBuddys.Core.Interfaces
     public interface IImageRepository
     {
         public Task<Image?> CreateImageDb(Image image);
-        public Task<List<Image>> GetAllEntityImagesDb(int entityId, EntityType entityType);
+        public Task<List<Image>> GetAllEntityImagesDb(int entityId, int? entityType);
         public Task<Image?> GetImageByIdDb(int imageId);
         public Task<Image?> UpdateImageDb(int imageId, Image newImage);
         public Task<Image?> DeleteImageDb(int imageId);

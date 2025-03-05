@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace TailBuddys.Core.Models
@@ -6,8 +7,10 @@ namespace TailBuddys.Core.Models
     public class Image
     {
         public int Id { get; set; }
-        public int EntityId { get; set; }
-        public EntityType EntityType { get; set; }
+        [ForeignKey(nameof(Dog))]
+        public int? DogId { get; set; }
+        [ForeignKey(nameof(Park))]
+        public int? ParkId { get; set; }
         [Required, Url]
         public string? Url { get; set; }
         [Required]
@@ -18,9 +21,5 @@ namespace TailBuddys.Core.Models
         public Park? Park { get; set; }
     }
 
-    public enum EntityType
-    {
-        Dog,
-        Park
-    }
+
 }

@@ -128,13 +128,13 @@ namespace TailBuddys.InfraStructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("EntityId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EntityType")
+                    b.Property<int?>("DogId")
                         .HasColumnType("int");
 
                     b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ParkId")
                         .HasColumnType("int");
 
                     b.Property<string>("Url")
@@ -143,11 +143,11 @@ namespace TailBuddys.InfraStructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EntityId");
+                    b.HasIndex("DogId");
+
+                    b.HasIndex("ParkId");
 
                     b.ToTable("Images");
-
-                    b.HasDiscriminator<int>("EntityType").HasValue(1);
                 });
 
             modelBuilder.Entity("TailBuddys.Core.Models.Match", b =>
@@ -377,15 +377,13 @@ namespace TailBuddys.InfraStructure.Migrations
                 {
                     b.HasOne("TailBuddys.Core.Models.Dog", "Dog")
                         .WithMany("Images")
-                        .HasForeignKey("EntityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DogId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("TailBuddys.Core.Models.Park", "Park")
                         .WithMany("Images")
-                        .HasForeignKey("EntityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ParkId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Dog");
 

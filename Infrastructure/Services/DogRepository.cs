@@ -87,7 +87,7 @@ namespace TailBuddys.Infrastructure.Services
                     .Include(d => d.MatchesAsReciver)
                     .Include(d => d.ChatsAsSender)
                     .Include(d => d.ChatsAsReciver)
-                    .Include(d => d.Images.Where(i => i.EntityType == EntityType.Dog))
+                    .Include(d => d.Images)
                     .FirstOrDefaultAsync(d => d.Id == dogId);
 
                 if (d == null)
@@ -151,6 +151,7 @@ namespace TailBuddys.Infrastructure.Services
                 {
                     park.DogLikes.Remove(dogToRemove);
                 }
+
 
                 dogToRemove.FavParks.Clear();
 

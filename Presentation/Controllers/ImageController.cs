@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TailBuddys.Application.Interfaces;
-using TailBuddys.Core.Models;
 
 namespace TailBuddys.Presentation.Controllers
 {
@@ -17,19 +16,19 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Post([FromBody] IFormFile file, int entityId, EntityType entityType)
+        public async Task<IActionResult> Post(IFormFile file, [FromQuery] int entityId, int? entityType)
         {
-            if (entityType == EntityType.Park && HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value == "True")
+            if (entityType == 1 && HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value == "True")
             {
                 string? ParkResult = await _imageService.UploadImage(file, entityId, entityType);
 
                 if (ParkResult == null)
                 {
-                    return BadRequest();
+                    return BadRequest("park bad");
                 }
                 return Ok(ParkResult);
             }
-            else if (entityType == EntityType.Park)
+            else if (entityType == 1 || entityType == null)
             {
                 return Unauthorized();
             }
@@ -37,25 +36,25 @@ namespace TailBuddys.Presentation.Controllers
             int dogId;
             int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == entityId.ToString())?.Value, out dogId);
 
-            if (dogId == 0)
+            if (dogId == 0 || entityType != 0)
             {
                 return Unauthorized();
             }
 
             string? dogResult = await _imageService.UploadImage(file, entityId, entityType);
-
+            Console.WriteLine(entityId + " " + entityType.ToString());
             if (dogResult == null)
             {
-                return BadRequest();
+                return BadRequest("dog result bad");
             }
             return Ok(dogResult);
         }
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> Put([FromBody] int imageId1, int imageId2, EntityType entityType, int entityId)
+        public async Task<IActionResult> Put([FromBody] int imageId1, int imageId2, int? entityType, int entityId)
         {
-            if (entityType == EntityType.Park && HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value == "True")
+            if (entityType == 0 && HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value == "True")
             {
                 string? ParkResult = await _imageService.ReOrderImages(imageId1, imageId2);
 
@@ -65,7 +64,7 @@ namespace TailBuddys.Presentation.Controllers
                 }
                 return Ok(ParkResult);
             }
-            else if (entityType == EntityType.Park)
+            else if (entityType == 0 || entityType == null)
             {
                 return Unauthorized();
             }
@@ -87,11 +86,11 @@ namespace TailBuddys.Presentation.Controllers
             return Ok(dogResult);
         }
 
-        [HttpDelete("{chatId}")]
+        [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> Delete([FromBody] int imageId, int entityId, EntityType entityType)
+        public async Task<IActionResult> Delete([FromQuery] int imageId, [FromQuery] int entityId, [FromQuery] int? entityType)
         {
-            if (entityType == EntityType.Park && HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value == "True")
+            if (entityType == 1 && HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value == "True")
             {
                 string? ParkResult = await _imageService.RemoveImage(imageId, entityId, entityType);
 
@@ -101,7 +100,7 @@ namespace TailBuddys.Presentation.Controllers
                 }
                 return Ok(ParkResult);
             }
-            else if (entityType == EntityType.Park)
+            else if (entityType == 1 || entityType == null)
             {
                 return Unauthorized();
             }
@@ -109,7 +108,7 @@ namespace TailBuddys.Presentation.Controllers
             int dogId;
             int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == entityId.ToString())?.Value, out dogId);
 
-            if (dogId == 0)
+            if (dogId == 0 || entityType != 0)
             {
                 return Unauthorized();
             }

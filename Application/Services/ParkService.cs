@@ -7,10 +7,12 @@ namespace TailBuddys.Application.Services
     public class ParkService : IParkService
     {
         private readonly IParkRepository _parkRepository;
+        private readonly IImageService _imageService;
 
-        public ParkService(IParkRepository parkRepository)
+        public ParkService(IParkRepository parkRepository, IImageService imageService)
         {
             _parkRepository = parkRepository;
+            _imageService = imageService;
         }
         //לבדוק שמי שמנסה להקים פארק הוא מנהל 
         //כנ"ל לגבי עריכה + מחיקה של פארק
@@ -66,8 +68,18 @@ namespace TailBuddys.Application.Services
         }
         public async Task<Park?> DeletePark(int parkId)
         {
+            Park? parkToDelete = await _parkRepository.GetParkByIdDb(parkId);
+            if (parkToDelete == null) return null;
+
             try
             {
+                List<Image> imagesList = parkToDelete.Images.ToList();
+
+                foreach (Image image in imagesList)
+                {
+                    await _imageService.RemoveImage(image.Id, parkToDelete.Id, 1);
+                }
+
                 return await _parkRepository.DeleteParkDb(parkId);
             }
             catch (Exception e)

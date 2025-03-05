@@ -26,12 +26,14 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<List<Image>> GetAllEntityImagesDb(int entityId, EntityType entityType)
+        public async Task<List<Image>> GetAllEntityImagesDb(int entityId, int? entityType)
         {
             try
             {
+                string propertyName = entityType == 0 ? "DogId" : "ParkId";
+
                 return await _context.Images
-                    .Where(i => i.EntityId == entityId && i.EntityType == entityType)
+                    .Where(i => EF.Property<int?>(i, propertyName) == entityId)
                     .OrderBy(i => i.Order)
                     .ToListAsync();
             }

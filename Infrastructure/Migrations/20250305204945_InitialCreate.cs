@@ -140,8 +140,8 @@ namespace TailBuddys.InfraStructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EntityId = table.Column<int>(type: "int", nullable: false),
-                    EntityType = table.Column<int>(type: "int", nullable: false),
+                    DogId = table.Column<int>(type: "int", nullable: true),
+                    ParkId = table.Column<int>(type: "int", nullable: true),
                     Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Order = table.Column<int>(type: "int", nullable: false)
                 },
@@ -149,14 +149,14 @@ namespace TailBuddys.InfraStructure.Migrations
                 {
                     table.PrimaryKey("PK_Images", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Images_Dogs_EntityId",
-                        column: x => x.EntityId,
+                        name: "FK_Images_Dogs_DogId",
+                        column: x => x.DogId,
                         principalTable: "Dogs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Images_Parks_EntityId",
-                        column: x => x.EntityId,
+                        name: "FK_Images_Parks_ParkId",
+                        column: x => x.ParkId,
                         principalTable: "Parks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -258,9 +258,14 @@ namespace TailBuddys.InfraStructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Images_EntityId",
+                name: "IX_Images_DogId",
                 table: "Images",
-                column: "EntityId");
+                column: "DogId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Images_ParkId",
+                table: "Images",
+                column: "ParkId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Matches_ReciverDogId",

@@ -10,12 +10,14 @@ namespace TailBuddys.Application.Services
         private readonly IDogRepository _dogRepository;
         private readonly IMatchRepository _matchRepository;
         private readonly IChatRepository _chatRepository;
+        private readonly IImageService _imageService;
 
-        public DogService(IDogRepository dogRepository, IMatchRepository matchRepository, IChatRepository chatRepository)
+        public DogService(IDogRepository dogRepository, IMatchRepository matchRepository, IChatRepository chatRepository, IImageService imageService)
         {
             _dogRepository = dogRepository;
             _matchRepository = matchRepository;
             _chatRepository = chatRepository;
+            _imageService = imageService;
         }
 
         public async Task<Dog?> Create(Dog dog, int userId)
@@ -112,6 +114,10 @@ namespace TailBuddys.Application.Services
                 foreach (Chat chat in allChats)
                 {
                     await _chatRepository.DeleteChatDb(chat.Id);
+                }
+                foreach (Image image in dogToDelete.Images)
+                {
+                    await _imageService.RemoveImage(image.Id, dogToDelete.Id, 0);
                 }
 
                 return await _dogRepository.DeleteDogDb(id);

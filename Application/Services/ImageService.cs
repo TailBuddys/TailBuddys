@@ -13,45 +13,56 @@ namespace TailBuddys.Application.Services
 
         private readonly StorageClient _storageClient;
         private readonly IImageRepository _imageRepository;
-        private readonly string _bucketName = "your-bucket-name"; // Replace with your bucket name
+        private readonly string _bucketName = "tail_buddys_bucket"; // להסתיר במשתנה סביבה
 
         public ImageService(IImageRepository imageRepository)
         {
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "C:\\Users\\Daniel\\Downloads\\tailbuddys-af810cb65936.json");
             _storageClient = StorageClient.Create();
             _imageRepository = imageRepository;
         }
 
-        public async Task<string?> UploadImage(IFormFile file, int entityId, EntityType entityType)
+        public async Task<string?> UploadImage(IFormFile file, int entityId, int? entityType)
         {
-            if (file == null || file.Length == 0) return null;
+            if (file == null || file.Length == 0) return "file not good";
 
             List<Image> existingImages = await _imageRepository.GetAllEntityImagesDb(entityId, entityType);
 
-            if (existingImages.Count >= 5) return null;
+            if (existingImages.Count >= 5) return "gadol me 5";
 
-            string fileName = $"{entityType}_{entityId}_{DateTime.Now.ToString()}";
+            string fileName = $"{entityType}_{entityId}_{Guid.NewGuid()}";
             using var stream = file.OpenReadStream();
 
             // file.GetType();
 
             var obj = await _storageClient.UploadObjectAsync(_bucketName, fileName, file.ContentType, stream); // לבדוק שהצליחה הפעולה
+            if (obj == null || string.IsNullOrEmpty(obj.MediaLink)) return null;
+
             string fileUrl = $"https://storage.googleapis.com/{_bucketName}/{fileName}";
+
 
             Image? newImage = new Image
             {
-                EntityId = entityId,
-                EntityType = entityType,
                 Url = fileUrl,
                 Order = existingImages.Count()
             };
 
+            if (entityType == 0)
+            {
+                newImage.DogId = entityId;
+            }
+            else
+            {
+                newImage.ParkId = entityId;
+            }
+
             Image? imageToReturn = await _imageRepository.CreateImageDb(newImage);
 
-            if (imageToReturn == null) return null;
+            if (imageToReturn == null) return "repos fail";
             return fileUrl;
         }
 
-        public async Task<string?> RemoveImage(int imageId, int entityId, EntityType entityType)
+        public async Task<string?> RemoveImage(int imageId, int entityId, int? entityType)
         {
             Image? imageToDelete = await _imageRepository.GetImageByIdDb(imageId);
             if (imageToDelete == null || imageToDelete.Url == null)
@@ -89,16 +100,21 @@ namespace TailBuddys.Application.Services
         {
             Image? imageToReplace1 = await _imageRepository.GetImageByIdDb(imageId1);
             Image? imageToReplace2 = await _imageRepository.GetImageByIdDb(imageId2);
-            if (imageToReplace1 == null || imageToReplace2 == null || imageToReplace1.EntityId != imageToReplace2.EntityId)
+            if (imageToReplace1 == null || imageToReplace2 == null)
                 return null;
 
-            (imageToReplace1.Order, imageToReplace2.Order) = (imageToReplace2.Order, imageToReplace1.Order);
+            if ((imageToReplace1.DogId == imageToReplace2.DogId && imageToReplace1.DogId != null) ||
+               (imageToReplace1.ParkId == imageToReplace2.ParkId && imageToReplace1.ParkId != null))
+            {
+                (imageToReplace1.Order, imageToReplace2.Order) = (imageToReplace2.Order, imageToReplace1.Order);
 
-            if (await _imageRepository.UpdateImageDb(imageToReplace1.Id, imageToReplace1) == null ||
-                await _imageRepository.UpdateImageDb(imageToReplace2.Id, imageToReplace2) == null)
-                return "ReOrder has been failed";
+                if (await _imageRepository.UpdateImageDb(imageToReplace1.Id, imageToReplace1) == null ||
+                    await _imageRepository.UpdateImageDb(imageToReplace2.Id, imageToReplace2) == null)
+                    return "ReOrder has been failed";
 
-            return "ReOrder has been changed successfully";
+                return "ReOrder has been changed successfully";
+            }
+            return "Invallid action";
         }
     }
 }

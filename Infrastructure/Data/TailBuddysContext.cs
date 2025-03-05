@@ -28,23 +28,16 @@ namespace TailBuddys.Infrastructure.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Image>()
-                .HasDiscriminator<EntityType>("EntityType")
-                .HasValue<Image>(EntityType.Dog)
-                .HasValue<Image>(EntityType.Park);
-
-            // 🔹 Image - Dog (One-to-Many)
-            modelBuilder.Entity<Image>()
                 .HasOne(i => i.Dog)
                 .WithMany(d => d.Images)
-                .HasForeignKey(i => i.EntityId)
+                .HasForeignKey(i => i.DogId)
                 .HasPrincipalKey(d => d.Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // 🔹 Image - Park (One-to-Many)
             modelBuilder.Entity<Image>()
                 .HasOne(i => i.Park)
                 .WithMany(p => p.Images)
-                .HasForeignKey(i => i.EntityId)
+                .HasForeignKey(i => i.ParkId)
                 .HasPrincipalKey(p => p.Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
