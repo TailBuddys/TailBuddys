@@ -10,8 +10,8 @@ namespace TailBuddys.Core.Models
         public string? Name { get; set; }
         [Required]
         public string? Address { get; set; }
-        public decimal Lon { get; set; }
-        public decimal Lat { get; set; }
+        public double Lon { get; set; }
+        public double Lat { get; set; }
         [JsonIgnore]
         public ICollection<Dog> DogLikes { get; set; } = new List<Dog>();
         [JsonIgnore]

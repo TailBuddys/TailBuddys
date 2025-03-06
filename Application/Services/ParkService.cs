@@ -14,8 +14,6 @@ namespace TailBuddys.Application.Services
             _parkRepository = parkRepository;
             _imageService = imageService;
         }
-        //לבדוק שמי שמנסה להקים פארק הוא מנהל 
-        //כנ"ל לגבי עריכה + מחיקה של פארק
         public async Task<Park?> CreatePark(Park park)
         {
             try
@@ -29,6 +27,10 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
+        // להחזיר DTO של פארקים
+        // לחשב מרחקים בין כלב אל פארקים סובבים?
+        // במידה ומשתמש לא הגדיר לעצמו נק' ציון (מיקום) להחזיר רשימה של פארקים ע"פ דרגת דירוג
+        // לקבל פרמטר סינון
         public async Task<List<Park>> GetAllParks()
         {
             try

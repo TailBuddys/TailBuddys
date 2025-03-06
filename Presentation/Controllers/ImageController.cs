@@ -52,9 +52,9 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> Put([FromBody] int imageId1, int imageId2, int? entityType, int entityId)
+        public async Task<IActionResult> Put([FromQuery] int imageId1, [FromQuery] int imageId2, [FromQuery] int? entityType, [FromQuery] int entityId)
         {
-            if (entityType == 0 && HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value == "True")
+            if (entityType == 1 && HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value == "True")
             {
                 string? ParkResult = await _imageService.ReOrderImages(imageId1, imageId2);
 
@@ -64,7 +64,7 @@ namespace TailBuddys.Presentation.Controllers
                 }
                 return Ok(ParkResult);
             }
-            else if (entityType == 0 || entityType == null)
+            else if (entityType == 1 || entityType == null)
             {
                 return Unauthorized();
             }
@@ -72,7 +72,7 @@ namespace TailBuddys.Presentation.Controllers
             int dogId;
             int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == entityId.ToString())?.Value, out dogId);
 
-            if (dogId == 0)
+            if (dogId == 0 || entityType != 0)
             {
                 return Unauthorized();
             }

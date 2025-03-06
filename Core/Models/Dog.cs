@@ -24,8 +24,8 @@ namespace TailBuddys.Core.Models
         public ICollection<Image> Images { get; set; } = new List<Image>();
         [Required]
         public string? Address { get; set; }
-        public decimal Lon { get; set; } // מה זה?
-        public decimal Lat { get; set; } // מה זה?
+        public double Lon { get; set; }
+        public double Lat { get; set; }
         [Required]
         public bool Vaccinated { get; set; }
         public DateTime CreatedAt { get; set; }

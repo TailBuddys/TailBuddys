@@ -59,6 +59,9 @@ namespace TailBuddys.Application.Services
                 return new List<Dog>();
             }
         }
+        // להחזיר DTO של כלב
+        // לחשב מרחקים בין כלב אל כלבים סובבים?
+        // לקבל פרמטר סינון
         public async Task<List<Dog>> GetUnmatchedDogs(int dogId)
         {
             try
