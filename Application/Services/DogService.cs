@@ -1,6 +1,10 @@
 ﻿using TailBuddys.Application.Interfaces;
+using TailBuddys.Application.Utils;
+using TailBuddys.Core.DTO;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
+using TailBuddys.Core.Models.DTO;
+using TailBuddys.Core.Models.SubModels;
 
 namespace TailBuddys.Application.Services
 {
@@ -59,20 +63,59 @@ namespace TailBuddys.Application.Services
                 return new List<Dog>();
             }
         }
-        // להחזיר DTO של כלב
-        // לחשב מרחקים בין כלב אל כלבים סובבים?
-        // לקבל פרמטר סינון
-        public async Task<List<Dog>> GetUnmatchedDogs(int dogId)
+
+        public async Task<List<DogDTO>> GetUnmatchedDogs(int dogId, DogsFilterDTO filters)
         {
             try
             {
+                List<Dog> unmatchedDogs = await _dogRepository.GetUnMatchedDogsDb(dogId);
+                Dog? originDog = await _dogRepository.GetDogByIdDb(dogId);
+                EntityDistance originDogLocation = new EntityDistance
+                {
+                    EntityId = originDog.Id,
+                    Lat = originDog.Lat,
+                    Lon = originDog.Lon,
+                };
 
-                return await _dogRepository.GetUnMatchedDogsDb(dogId);
+                List<EntityDistance> dogsDistance = unmatchedDogs
+                    .Select(dog => new EntityDistance { EntityId = dog.Id, Lat = dog.Lat, Lon = dog.Lon }).ToList();
+
+                List<EntityDistance> updatedDogsDistance = MapDistanceHelper.CalculateDistance(originDogLocation, dogsDistance);
+
+                List<DogDTO> finalDogsList = new List<DogDTO>();
+
+                foreach (EntityDistance dog in updatedDogsDistance)
+                {
+                    Dog? currentDog = unmatchedDogs.FirstOrDefault(d => d.Id == dog.EntityId);
+
+                    if (currentDog != null
+                        && (filters.distance == null || filters.distance >= dog.Distance)
+                        && (filters.Type == null || filters.Type.Contains(currentDog.Type))
+                        && (filters.Size == null || filters.Size.Contains(currentDog.Size))
+                        && (filters.Geneder == null || filters.Geneder == currentDog.Geneder)
+                        && (filters.Vaccinated == null || filters.Vaccinated == currentDog.Vaccinated))
+                    {
+                        finalDogsList.Add(new DogDTO
+                        {
+                            Id = dog.EntityId,
+                            Name = currentDog.Name,
+                            Description = currentDog.Description,
+                            Type = currentDog.Type,
+                            Size = currentDog.Size,
+                            Geneder = currentDog.Geneder,
+                            Birthdate = currentDog.Birthdate,
+                            Distance = dog.Distance,
+                            Vaccinated = currentDog.Vaccinated,
+                            Images = currentDog.Images.Select(image => image.Url).ToList()
+                        });
+                    }
+                }
+                return finalDogsList;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return new List<Dog>();
+                return new List<DogDTO>();
             }
         }
 

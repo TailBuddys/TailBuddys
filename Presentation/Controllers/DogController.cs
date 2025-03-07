@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TailBuddys.Application.Interfaces;
+using TailBuddys.Core.DTO;
 using TailBuddys.Core.Models;
+using TailBuddys.Core.Models.DTO;
 
 namespace TailBuddys.Presentation.Controllers
 {
@@ -85,14 +87,14 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpGet("match/{id}")]
         [Authorize]
-        public async Task<IActionResult> GetUnmatchedDogs(int id)
+        public async Task<IActionResult> GetUnmatchedDogs(int id, [FromQuery] DogsFilterDTO filters)
         {
             int dogId;
             int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == id.ToString())?.Value, out dogId);
 
             if (dogId == id)
             {
-                List<Dog> result = await _dogService.GetUnmatchedDogs(id);
+                List<DogDTO> result = await _dogService.GetUnmatchedDogs(id, filters);
                 if (result == null)
                 {
                     return BadRequest();

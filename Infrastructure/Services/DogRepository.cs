@@ -66,6 +66,7 @@ namespace TailBuddys.Infrastructure.Services
                 List<int> matchedDogIds = myDog.MatchesAsSender.Select(m => m.ReciverDogId).ToList();
 
                 List<Dog> list = await _context.Dogs
+                    .Include(d => d.Images.OrderBy(i => i.Order))
                     .Where(db => !matchedDogIds.Contains(db.Id) && db.UserId != myDog.UserId)
                     .ToListAsync();
 

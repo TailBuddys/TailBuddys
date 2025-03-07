@@ -35,7 +35,8 @@ namespace TailBuddys.Application.Utils
                 result.Add(entity);
             }
 
-            return result;
+            List<EntityDistance> finalOrderdResult = result.OrderBy(e => e.Distance).ToList();
+            return finalOrderdResult;
         }
 
         private static double DegreesToRadians(double degrees)

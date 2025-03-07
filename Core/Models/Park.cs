@@ -8,6 +8,8 @@ namespace TailBuddys.Core.Models
         public int Id { get; set; }
         [Required]
         public string? Name { get; set; }
+        [Required, StringLength(500, MinimumLength = 2)]
+        public string? Description { get; set; }
         [Required]
         public string? Address { get; set; }
         public double Lon { get; set; }

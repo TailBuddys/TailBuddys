@@ -1,11 +1,13 @@
-﻿using TailBuddys.Core.Models;
+﻿using TailBuddys.Core.DTO;
+using TailBuddys.Core.Models;
+using TailBuddys.Core.Models.DTO;
 
 namespace TailBuddys.Application.Interfaces
 {
     public interface IParkService
     {
         Task<Park?> CreatePark(Park park);
-        Task<List<Park>> GetAllParks();
+        Task<List<ParkDTO>> GetAllParks(int? dogId, ParksFilterDTO filters);
         Task<Park?> GetParkById(int parkId);
         Task<Park?> UpdatePark(int parkId, Park park);
         Task<Park?> DeletePark(int parkId);

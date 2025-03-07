@@ -1,6 +1,11 @@
-﻿using TailBuddys.Application.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
+using TailBuddys.Application.Interfaces;
+using TailBuddys.Application.Utils;
+using TailBuddys.Core.DTO;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
+using TailBuddys.Core.Models.DTO;
+using TailBuddys.Core.Models.SubModels;
 
 namespace TailBuddys.Application.Services
 {
@@ -8,11 +13,13 @@ namespace TailBuddys.Application.Services
     {
         private readonly IParkRepository _parkRepository;
         private readonly IImageService _imageService;
+        private readonly IDogService _dogService;
 
-        public ParkService(IParkRepository parkRepository, IImageService imageService)
+        public ParkService(IParkRepository parkRepository, IImageService imageService, IDogService dogService)
         {
             _parkRepository = parkRepository;
             _imageService = imageService;
+            _dogService = dogService;
         }
         public async Task<Park?> CreatePark(Park park)
         {
@@ -31,18 +38,60 @@ namespace TailBuddys.Application.Services
         // לחשב מרחקים בין כלב אל פארקים סובבים?
         // במידה ומשתמש לא הגדיר לעצמו נק' ציון (מיקום) להחזיר רשימה של פארקים ע"פ דרגת דירוג
         // לקבל פרמטר סינון
-        public async Task<List<Park>> GetAllParks()
+        public async Task<List<ParkDTO>> GetAllParks(int? dogId, [FromQuery] ParksFilterDTO filters)
         {
             try
             {
-                return await _parkRepository.GetAllParksDb();
+                List<EntityDistance> updatedParksDistance = new List<EntityDistance>();
+                List<Park> parks = await _parkRepository.GetAllParksDb();
+
+                if (filters.DogLikes != null)
+                {
+                    parks = parks.Where(park => park.DogLikes.Count > filters.DogLikes).ToList();
+                }
+
+                if (dogId != null)
+                {
+                    Dog? myDog = await _dogService.GetOne(dogId.Value);
+                    EntityDistance myDogLocation = new EntityDistance
+                    {
+                        EntityId = myDog.Id,
+                        Lat = myDog.Lat,
+                        Lon = myDog.Lon,
+                    };
+
+                    List<EntityDistance> parksDistance = parks
+                    .Select(park => new EntityDistance { EntityId = park.Id, Lat = park.Lat, Lon = park.Lon }).ToList();
+
+                    updatedParksDistance = MapDistanceHelper.CalculateDistance(myDogLocation, parksDistance);
+
+                    if (filters.Distance != null)
+                    {
+                        updatedParksDistance = updatedParksDistance.Where(park => park.Distance < filters.Distance).ToList();
+                    }
+
+                    parks = parks.Where(park => updatedParksDistance.Any(ed => ed.EntityId == park.Id)).ToList();
+                }
+
+                List<ParkDTO> finalParksList = parks
+                    .Select(park => new ParkDTO
+                    {
+                        Id = park.Id,
+                        Name = park.Name,
+                        Description = park.Description,
+                        Address = park.Address,
+                        DogLikes = park.DogLikes.Count(),
+                        Images = park.Images.Select(image => image.Url).ToList(),
+                        Distance = updatedParksDistance.FirstOrDefault(ed => ed.EntityId == park.Id)?.Distance
+                    }).ToList();
+
+                return finalParksList;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return new List<Park>();
+                return new List<ParkDTO>();
             }
-
         }
         public async Task<Park?> GetParkById(int parkId)
         {

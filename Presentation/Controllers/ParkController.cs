@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TailBuddys.Application.Interfaces;
+using TailBuddys.Core.DTO;
 using TailBuddys.Core.Models;
+using TailBuddys.Core.Models.DTO;
 
 namespace TailBuddys.Presentation.Controllers
 {
@@ -32,14 +34,34 @@ namespace TailBuddys.Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllParks()
+        public async Task<IActionResult> GetAllParks([FromQuery] ParksFilterDTO filters)
         {
-            List<Park> result = await _parkService.GetAllParks();
+            List<ParkDTO> result = await _parkService.GetAllParks(null, filters);
             if (result == null)
             {
                 return BadRequest();
             }
             return Ok(result);
+        }
+
+        [HttpGet("dog/{dogId}")]
+        [Authorize]
+        public async Task<IActionResult> GetAllParks(int dogId, [FromQuery] ParksFilterDTO filters)
+        {
+            int clientDogId;
+            int.TryParse(HttpContext.User.Claims
+               .FirstOrDefault(c => c.Type == "DogId" && c.Value == dogId.ToString())?.Value, out clientDogId);
+
+            if (dogId != 0)
+            {
+                List<ParkDTO> result = await _parkService.GetAllParks(dogId, filters);
+                if (result == null)
+                {
+                    return BadRequest();
+                }
+                return Ok(result);
+            }
+            return Unauthorized();
         }
 
         [HttpGet("{id}")]

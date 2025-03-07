@@ -47,14 +47,14 @@ namespace TailBuddys.Core.Models
     public enum DogType
     {
         Mixed,
-        LabradorRetriever,
-        GoldenRetriever,
-        GermanShepherd,
+        Labrador_Retriever,
+        Golden_Retriever,
+        German_Shepherd,
         Bulldog,
         Poodle,
         Beagle,
         Rottweiler,
-        YorkshireTerrier,
+        Yorkshire_Terrier,
         Boxer,
         Dachshund,
         SiberianHusky,
