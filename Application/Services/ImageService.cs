@@ -13,11 +13,11 @@ namespace TailBuddys.Application.Services
 
         private readonly StorageClient _storageClient;
         private readonly IImageRepository _imageRepository;
-        private readonly string _bucketName = "tail_buddys_bucket"; // להסתיר במשתנה סביבה
+        private readonly string _bucketName = "tail_buddys_bucket1"; // להסתיר במשתנה סביבה
 
         public ImageService(IImageRepository imageRepository)
         {
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "C:\\Users\\Daniel\\Downloads\\tailbuddys-af810cb65936.json");
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "C:\\Users\\Daniel\\Downloads\\tailbuddys-570e8d8b9cdd.json");
             _storageClient = StorageClient.Create();
             _imageRepository = imageRepository;
         }

@@ -12,7 +12,7 @@ using TailBuddys.Infrastructure.Data;
 namespace TailBuddys.InfraStructure.Migrations
 {
     [DbContext(typeof(TailBuddysContext))]
-    [Migration("20250305204945_InitialCreate")]
+    [Migration("20250308122234_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -90,11 +90,11 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.Property<bool>("Geneder")
                         .HasColumnType("bit");
 
-                    b.Property<decimal>("Lat")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Lat")
+                        .HasColumnType("float");
 
-                    b.Property<decimal>("Lon")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Lon")
+                        .HasColumnType("float");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -259,11 +259,16 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Lat")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
-                    b.Property<decimal>("Lon")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Lat")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Lon")
+                        .HasColumnType("float");
 
                     b.Property<string>("Name")
                         .IsRequired()

@@ -18,9 +18,10 @@ namespace TailBuddys.InfraStructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Lon = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Lat = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Lon = table.Column<double>(type: "float", nullable: false),
+                    Lat = table.Column<double>(type: "float", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -67,8 +68,8 @@ namespace TailBuddys.InfraStructure.Migrations
                     Geneder = table.Column<bool>(type: "bit", nullable: false),
                     Birthdate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Lon = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Lat = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Lon = table.Column<double>(type: "float", nullable: false),
+                    Lat = table.Column<double>(type: "float", nullable: false),
                     Vaccinated = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
