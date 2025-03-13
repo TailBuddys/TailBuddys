@@ -14,5 +14,6 @@ namespace TailBuddys.Core.DTO
         public List<string> Images { get; set; } = new List<string>();
         public double? Distance { get; set; }
         public bool Vaccinated { get; set; }
+        public string? RefreshToken { get; set; }
     }
 }

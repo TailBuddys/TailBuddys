@@ -30,7 +30,7 @@ namespace TailBuddys.Presentation.Controllers
 
             if (ClientId != 0 && ClientId == userId)
             {
-                Dog? result = await _dogService.Create(dog, userId);
+                DogDTO? result = await _dogService.Create(dog, userId);
                 if (result == null)
                 {
                     return BadRequest();
@@ -140,7 +140,7 @@ namespace TailBuddys.Presentation.Controllers
 
             if (isUserAdmin == "True" || dogId == id)
             {
-                Dog? result = await _dogService.Delete(id);
+                DogDTO? result = await _dogService.Delete(id);
                 if (result == null)
                 {
                     return BadRequest();
