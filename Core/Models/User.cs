@@ -15,9 +15,7 @@ namespace TailBuddys.Core.Models
         [Phone]
         public string? Phone { get; set; }
         public string? PasswordHash { get; set; }
-        [Required]
-        public DateTime BirthDate { get; set; }
-        [Required]
+        public DateTime? BirthDate { get; set; }
         public Gender? Gender { get; set; }
         [JsonIgnore]
         public bool IsAdmin { get; set; } = false;
@@ -29,8 +27,6 @@ namespace TailBuddys.Core.Models
         // ביצירה של כלב לעדכן אותו ככלב הפעיל כרגע
         // במחיקה של כלב צריך קיים ובהכרח שבחור כרגע, צריך להגדיר כלב אחר מהרשימה ככלב הפעיל כרגע
         // או במידה ואין כלבים כרגע יש לשלוח אל חלונית צור כלב
-        public string? LastLoginDogId { get; set; }
-
     }
 
     public enum Gender

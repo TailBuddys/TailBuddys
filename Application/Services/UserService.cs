@@ -53,6 +53,7 @@ namespace TailBuddys.Application.Services
 
                 if (!string.IsNullOrEmpty(loginModel.GoogleId))
                 {
+                    Console.WriteLine("google id is not null here!!!"); //-----
                     user = await _googleAuthService.AuthGoogleUser(loginModel.GoogleId);
                 }
                 else if (!string.IsNullOrEmpty(loginModel.Email) && !string.IsNullOrEmpty(loginModel.Password))

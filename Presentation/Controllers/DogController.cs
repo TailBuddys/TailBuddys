@@ -19,25 +19,26 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Post([FromBody] Dog dog, int userId)
+        public async Task<IActionResult> Post([FromBody] Dog dog)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            int ClientId;
-            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value, out ClientId);
 
-            if (ClientId != 0 && ClientId == userId)
+            int userId = int.Parse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value ?? "0");
+
+            if (userId == 0)
             {
-                DogDTO? result = await _dogService.Create(dog, userId);
-                if (result == null)
-                {
-                    return BadRequest();
-                }
-                return Ok(result);
+                return Unauthorized();
             }
-            else return Unauthorized();
+
+            DogDTO? result = await _dogService.Create(dog, userId);
+            if (result == null)
+            {
+                return BadRequest();
+            }
+            return Ok(result);
         }
 
         [HttpGet]
@@ -52,25 +53,23 @@ namespace TailBuddys.Presentation.Controllers
             return Ok(result);
         }
 
-        [HttpGet("user/{userId}")]
+        [HttpGet("user")]
         [Authorize]
-        public async Task<IActionResult> GetAllUserDogs(int userId)
+        public async Task<IActionResult> GetAllUserDogs()
         {
-            int clientId;
-            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value, out clientId);
+            int userId = int.Parse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value ?? "0");
 
-            string? isUserAdmin = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value;
-
-            if (isUserAdmin == "True" || clientId == userId)
+            if (userId == 0)
             {
-                List<Dog> result = await _dogService.GetAll(userId);
-                if (result == null)
-                {
-                    return BadRequest();
-                }
-                return Ok(result);
+                return Unauthorized();
             }
-            else return Unauthorized();
+
+            List<Dog> result = await _dogService.GetAll(userId);
+            if (result == null)
+            {
+                return BadRequest();
+            }
+            return Ok(result);
         }
 
         [HttpGet("{id}")]

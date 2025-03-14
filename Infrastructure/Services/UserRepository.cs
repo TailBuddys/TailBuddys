@@ -44,9 +44,10 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                return await _context.Users
+                User? user = await _context.Users
                     .Include(u => u.Dogs)
                     .FirstOrDefaultAsync(u => u.Email == email);
+                return user;
             }
             catch (Exception ex)
             {

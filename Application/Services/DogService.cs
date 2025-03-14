@@ -37,7 +37,6 @@ namespace TailBuddys.Application.Services
         public async Task<DogDTO?> Create(Dog dog, int userId)
         {
             // לעדכן ליוזר את הכלב הפעיל האחרון
-            // להחזיר טוקן מעודכן ליוזר ביצירה ובמחיקה
             try
             {
                 if (dog == null) return null;
@@ -47,6 +46,7 @@ namespace TailBuddys.Application.Services
 
                 Dog? dogToCreate = await _dogRepository.CreateDogDb(dog);
                 if (dogToCreate == null) return null;
+
 
                 string? refreshToken = _jwtService.GenerateToken(user);
                 if (refreshToken == null) return null;

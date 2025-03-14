@@ -29,10 +29,12 @@ namespace TailBuddys.Application.Services
                 return null;
 
             GoogleUser? googleUser = JsonSerializer.Deserialize<GoogleUser>(await response.Content.ReadAsStringAsync());
+
             if (googleUser == null || googleUser.Audience != googleClientId)
                 return null;
 
             User? user = await _userRepository.GetUserByEmailDb(googleUser.Email);
+            Console.WriteLine(googleUser.Email);
             if (user == null)
             {
                 user = new User

@@ -12,7 +12,7 @@ using TailBuddys.Infrastructure.Data;
 namespace TailBuddys.InfraStructure.Migrations
 {
     [DbContext(typeof(TailBuddysContext))]
-    [Migration("20250308122234_InitialCreate")]
+    [Migration("20250314180428_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -290,7 +290,8 @@ namespace TailBuddys.InfraStructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("BirthDate")
+                    b.Property<DateTime?>("BirthDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedAt")

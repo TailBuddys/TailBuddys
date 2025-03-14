@@ -1,11 +1,21 @@
-﻿namespace TailBuddys.Core.Models.SubModels
+﻿using System.Text.Json.Serialization;
+
+namespace TailBuddys.Core.Models.SubModels
 {
     public class GoogleUser
     {
-        public string Sub { get; set; } = string.Empty; // Google User ID
-        public string Email { get; set; } = string.Empty;
-        public string GivenName { get; set; } = string.Empty;
-        public string FamilyName { get; set; } = string.Empty;
-        public string Audience { get; set; } = string.Empty;
+        [JsonPropertyName("sub")]
+        public string Sub { get; set; }
+        [JsonPropertyName("email")]
+        public string Email { get; set; }
+
+        [JsonPropertyName("given_name")]
+        public string GivenName { get; set; }
+
+        [JsonPropertyName("name")]
+        public string FamilyName { get; set; }
+
+        [JsonPropertyName("aud")]
+        public string Audience { get; set; }
     }
 }
