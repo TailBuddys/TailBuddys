@@ -16,6 +16,8 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
+                match.CreatedAt = DateTime.Now;
+                match.UpdatedAt = DateTime.Now;
                 _context.Matches.Add(match);
                 await _context.SaveChangesAsync();
                 return match;

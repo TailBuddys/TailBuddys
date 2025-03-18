@@ -16,6 +16,8 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
+                park.CreatedAt = DateTime.Now;
+                park.UpdatedAt = DateTime.Now;
                 _context.Parks.Add(park);
                 await _context.SaveChangesAsync();
                 return park;
@@ -68,7 +70,7 @@ namespace TailBuddys.Infrastructure.Services
                 parkToUpdate.Address = park.Address;
                 parkToUpdate.Lon = park.Lon;
                 parkToUpdate.Lat = park.Lat;
-                parkToUpdate.UpdatedDate = DateTime.Now;
+                parkToUpdate.UpdatedAt = DateTime.Now;
 
                 _context.Parks.Update(parkToUpdate);
                 await _context.SaveChangesAsync();

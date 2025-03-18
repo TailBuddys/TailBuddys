@@ -18,6 +18,8 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
+                dog.CreatedAt = DateTime.Now;
+                dog.UpdatedAt = DateTime.Now;
                 _context.Dogs.Add(dog);
                 await _context.SaveChangesAsync();
                 return dog;

@@ -9,6 +9,6 @@ namespace TailBuddys.Core.Models
         [JsonIgnore]
         public Dog? Dog { get; set; }
         public int UnreadMessages { get; set; }
-        public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
+        public DateTime LastUpdated { get; set; } = DateTime.Now;
     }
 }

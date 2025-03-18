@@ -14,20 +14,18 @@ namespace TailBuddys.Core.Models
         public User? User { get; set; } // לבדוק למה צריך יוזר בתוך המודול של כלב
         [Required, StringLength(20, MinimumLength = 2)]
         public string? Name { get; set; }
-        [Required, StringLength(500, MinimumLength = 2)]
+        [StringLength(500, MinimumLength = 2)]
         public string? Description { get; set; }
-        public DogType Type { get; set; }
-        public DogSize Size { get; set; }
-        public bool Geneder { get; set; }
-        public DateTime Birthdate { get; set; }
+        public DogType? Type { get; set; }
+        public DogSize? Size { get; set; }
+        public bool? Geneder { get; set; }
+        public DateTime? Birthdate { get; set; }
         [JsonIgnore]
         public ICollection<Image> Images { get; set; } = new List<Image>();
-        [Required]
         public string? Address { get; set; }
         public double Lon { get; set; }
         public double Lat { get; set; }
-        [Required]
-        public bool Vaccinated { get; set; }
+        public bool? Vaccinated { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         [JsonIgnore]

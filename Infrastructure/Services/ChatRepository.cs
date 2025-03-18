@@ -106,6 +106,7 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
+                message.CreatedAt = DateTime.Now;
                 _context.Messeges.Add(message);
                 await _context.SaveChangesAsync();
                 return message;

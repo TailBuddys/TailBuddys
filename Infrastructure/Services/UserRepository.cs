@@ -16,6 +16,8 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
+                user.CreatedAt = DateTime.Now;
+                user.UpdatedAt = DateTime.Now;
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
                 return user;

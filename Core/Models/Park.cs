@@ -18,7 +18,7 @@ namespace TailBuddys.Core.Models
         public ICollection<Dog> DogLikes { get; set; } = new List<Dog>();
         [JsonIgnore]
         public ICollection<Image> Images { get; set; } = new List<Image>();
-        public DateTime CreatedDate { get; set; }
-        public DateTime UpdatedDate { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 }

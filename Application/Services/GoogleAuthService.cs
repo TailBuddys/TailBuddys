@@ -42,9 +42,7 @@ namespace TailBuddys.Application.Services
                     FirstName = googleUser.GivenName,
                     LastName = googleUser.FamilyName,
                     Email = googleUser.Email,
-                    GoogleId = googleUser.Sub,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    GoogleId = googleUser.Sub
                 };
                 return await _userRepository.CreateUserDb(user);
             }
