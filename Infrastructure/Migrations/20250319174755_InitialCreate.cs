@@ -85,6 +85,27 @@ namespace TailBuddys.InfraStructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChatNotifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DogId = table.Column<int>(type: "int", nullable: false),
+                    ChatId = table.Column<int>(type: "int", nullable: false),
+                    UnreadCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatNotifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChatNotifications_Dogs_DogId",
+                        column: x => x.DogId,
+                        principalTable: "Dogs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Chats",
                 columns: table => new
                 {
@@ -193,20 +214,19 @@ namespace TailBuddys.InfraStructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Notifications",
+                name: "MatchNotification",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DogId = table.Column<int>(type: "int", nullable: false),
-                    UnreadMessages = table.Column<int>(type: "int", nullable: false),
-                    LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    MatchId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.PrimaryKey("PK_MatchNotification", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Notifications_Dogs_DogId",
+                        name: "FK_MatchNotification_Dogs_DogId",
                         column: x => x.DogId,
                         principalTable: "Dogs",
                         principalColumn: "Id",
@@ -235,6 +255,11 @@ namespace TailBuddys.InfraStructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatNotifications_DogId",
+                table: "ChatNotifications",
+                column: "DogId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Chats_ReciverDogId",
@@ -278,19 +303,22 @@ namespace TailBuddys.InfraStructure.Migrations
                 column: "SenderDogId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MatchNotification_DogId",
+                table: "MatchNotification",
+                column: "DogId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Messeges_ChatID",
                 table: "Messeges",
                 column: "ChatID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Notifications_DogId",
-                table: "Notifications",
-                column: "DogId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "ChatNotifications");
+
             migrationBuilder.DropTable(
                 name: "DogParks");
 
@@ -301,10 +329,10 @@ namespace TailBuddys.InfraStructure.Migrations
                 name: "Matches");
 
             migrationBuilder.DropTable(
-                name: "Messeges");
+                name: "MatchNotification");
 
             migrationBuilder.DropTable(
-                name: "Notifications");
+                name: "Messeges");
 
             migrationBuilder.DropTable(
                 name: "Parks");

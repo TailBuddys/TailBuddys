@@ -1,6 +1,8 @@
-﻿using TailBuddys.Application.Interfaces;
+﻿using Microsoft.AspNetCore.SignalR;
+using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
+using TailBuddys.Hubs;
 
 namespace TailBuddys.Application.Services
 {
@@ -8,11 +10,23 @@ namespace TailBuddys.Application.Services
     {
         private readonly IMatchRepository _matchRepository;
         private readonly IDogRepository _dogRepository;
+        private readonly IHubContext<NotificationHub> _hubContext;
+        private readonly INotificationService _notificationService;
+        private readonly HashSet<int> _activeDogs;
 
-        public MatchService(IMatchRepository matchRepository, IDogRepository dogRepository)
+        public MatchService(
+            IMatchRepository matchRepository,
+            IDogRepository dogRepository,
+            IHubContext<NotificationHub> hubContext,
+            INotificationService notificationService,
+            HashSet<int> activeDogs
+            )
         {
             _matchRepository = matchRepository;
             _dogRepository = dogRepository;
+            _hubContext = hubContext;
+            _notificationService = notificationService;
+            _activeDogs = activeDogs;
         }
         public async Task<Match?> CreateMatch(Match match)
         {
@@ -46,7 +60,13 @@ namespace TailBuddys.Application.Services
                     foreignMatch.IsMatch = true;
                     foreignMatch.UpdatedAt = DateTime.Now;
                     await _matchRepository.UpdateMatchDb(foreignMatch.Id, foreignMatch);
-                    return await _matchRepository.CreateMatchDb(match);
+                    Match? newMatch = await _matchRepository.CreateMatchDb(match);
+                    await HandleNewMatch(
+                        foreignMatch.SenderDogId,
+                        foreignMatch.ReciverDogId,
+                        foreignMatch.Id
+                        );
+                    return newMatch;
                 }
                 return await _matchRepository.CreateMatchDb(match);
             }
@@ -56,6 +76,25 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
+
+        public async Task HandleNewMatch(int senderDogId, int receiverDogId, int matchId)
+        {
+            bool isActive;
+            lock (_activeDogs)
+            {
+                isActive = _activeDogs.Contains(receiverDogId);
+            }
+
+            if (isActive)
+            {
+                await _hubContext.Clients.Group(receiverDogId.ToString()).SendAsync("ReceiveNewMatch", matchId);
+            }
+            else
+            {
+                await _notificationService.CreateMatchNotification(receiverDogId, matchId);
+            }
+        }
+
         public async Task<List<Match>> GetAllMutualMatches(int dogId)
         {
             // ליצור מודל של כלב עם תמונה ושם להחזרה לפרונט

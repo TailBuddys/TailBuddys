@@ -6,6 +6,7 @@ using System.Text;
 using TailBuddys.Application.Interfaces;
 using TailBuddys.Application.Services;
 using TailBuddys.Core.Interfaces;
+using TailBuddys.Hubs;
 using TailBuddys.Infrastructure.Data;
 using TailBuddys.Infrastructure.Services;
 
@@ -27,6 +28,9 @@ namespace TailBuddys
             }
             builder.Services.AddControllers();
             builder.Services.AddDbContext<TailBuddysContext>(options => options.UseSqlServer(ConnectionString));
+
+            // Register ActiveDogs as a singleton
+            builder.Services.AddSingleton<HashSet<int>>();
 
             builder.Services.AddScoped<IAuth, JwtAuthService>();
             builder.Services.AddHttpClient<IGoogleAuthService, GoogleAuthService>();
@@ -119,11 +123,13 @@ namespace TailBuddys
 
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapControllers();
-            //    endpoints.MapHub<NotificationHub>("/NotificationHub");
-            //});
+
+            //app.MapHub<NotificationHub>("/notificationHub");
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<NotificationHub>("/NotificationHub");
+                // Other endpoint mappings...
+            });
 
             app.MapControllers();
 

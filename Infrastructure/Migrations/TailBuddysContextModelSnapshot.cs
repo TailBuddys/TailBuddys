@@ -61,6 +61,30 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.ToTable("Chats");
                 });
 
+            modelBuilder.Entity("TailBuddys.Core.Models.ChatNotification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChatId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DogId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UnreadCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DogId");
+
+                    b.ToTable("ChatNotifications");
+                });
+
             modelBuilder.Entity("TailBuddys.Core.Models.Dog", b =>
                 {
                     b.Property<int>("Id")
@@ -183,6 +207,27 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.ToTable("Matches");
                 });
 
+            modelBuilder.Entity("TailBuddys.Core.Models.MatchNotification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DogId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MatchId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DogId");
+
+                    b.ToTable("MatchNotification");
+                });
+
             modelBuilder.Entity("TailBuddys.Core.Models.Message", b =>
                 {
                     b.Property<int>("Id")
@@ -213,30 +258,6 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.HasIndex("ChatID");
 
                     b.ToTable("Messeges");
-                });
-
-            modelBuilder.Entity("TailBuddys.Core.Models.Notification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DogId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UnreadMessages")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DogId");
-
-                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("TailBuddys.Core.Models.Park", b =>
@@ -362,6 +383,17 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.Navigation("SenderDog");
                 });
 
+            modelBuilder.Entity("TailBuddys.Core.Models.ChatNotification", b =>
+                {
+                    b.HasOne("TailBuddys.Core.Models.Dog", "Dog")
+                        .WithMany("UnreadChatNotification")
+                        .HasForeignKey("DogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dog");
+                });
+
             modelBuilder.Entity("TailBuddys.Core.Models.Dog", b =>
                 {
                     b.HasOne("TailBuddys.Core.Models.User", "User")
@@ -409,6 +441,17 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.Navigation("SenderDog");
                 });
 
+            modelBuilder.Entity("TailBuddys.Core.Models.MatchNotification", b =>
+                {
+                    b.HasOne("TailBuddys.Core.Models.Dog", "Dog")
+                        .WithMany("MatchNotification")
+                        .HasForeignKey("DogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dog");
+                });
+
             modelBuilder.Entity("TailBuddys.Core.Models.Message", b =>
                 {
                     b.HasOne("TailBuddys.Core.Models.Chat", "Chat")
@@ -418,17 +461,6 @@ namespace TailBuddys.InfraStructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Chat");
-                });
-
-            modelBuilder.Entity("TailBuddys.Core.Models.Notification", b =>
-                {
-                    b.HasOne("TailBuddys.Core.Models.Dog", "Dog")
-                        .WithMany("Notifications")
-                        .HasForeignKey("DogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Dog");
                 });
 
             modelBuilder.Entity("TailBuddys.Core.Models.Chat", b =>
@@ -444,11 +476,13 @@ namespace TailBuddys.InfraStructure.Migrations
 
                     b.Navigation("Images");
 
+                    b.Navigation("MatchNotification");
+
                     b.Navigation("MatchesAsReciver");
 
                     b.Navigation("MatchesAsSender");
 
-                    b.Navigation("Notifications");
+                    b.Navigation("UnreadChatNotification");
                 });
 
             modelBuilder.Entity("TailBuddys.Core.Models.Park", b =>

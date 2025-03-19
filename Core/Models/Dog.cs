@@ -39,7 +39,9 @@ namespace TailBuddys.Core.Models
         [JsonIgnore]
         public ICollection<Chat> ChatsAsReciver { get; set; } = new List<Chat>();
         [JsonIgnore]
-        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public ICollection<MatchNotification> MatchNotification { get; set; } = new List<MatchNotification>();
+        [JsonIgnore]
+        public ICollection<ChatNotification> UnreadChatNotification { get; set; } = new List<ChatNotification>();
     }
 
     public enum DogType

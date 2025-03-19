@@ -2,13 +2,12 @@
 
 namespace TailBuddys.Core.Models
 {
-    public class Notification
+    public class MatchNotification
     {
         public int Id { get; set; }
         public int DogId { get; set; }
         [JsonIgnore]
         public Dog? Dog { get; set; }
-        public int UnreadMessages { get; set; }
-        public DateTime LastUpdated { get; set; } = DateTime.Now;
+        public int MatchId { get; set; }
     }
 }

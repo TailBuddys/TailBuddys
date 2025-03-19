@@ -11,7 +11,8 @@ namespace TailBuddys.Infrastructure.Data
         public DbSet<Chat> Chats { get; set; }
         public DbSet<Message> Messeges { get; set; }
         public DbSet<Park> Parks { get; set; }
-        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<MatchNotification> MatchNotification { get; set; }
+        public DbSet<ChatNotification> ChatNotifications { get; set; } // להגדיר אנטיטיז
 
         public TailBuddysContext(DbContextOptions dbOptions) : base(dbOptions)
         {
@@ -86,9 +87,15 @@ namespace TailBuddys.Infrastructure.Data
                 .UsingEntity(j => j.ToTable("DogParks"));
 
             // Notification - Dog (One-to-Many)
-            modelBuilder.Entity<Notification>()
+            modelBuilder.Entity<MatchNotification>()
                 .HasOne(n => n.Dog)
-                .WithMany(d => d.Notifications)
+                .WithMany(d => d.MatchNotification)
+                .HasForeignKey(n => n.DogId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ChatNotification>()
+                .HasOne(n => n.Dog)
+                .WithMany(d => d.UnreadChatNotification)
                 .HasForeignKey(n => n.DogId)
                 .OnDelete(DeleteBehavior.Cascade);
 

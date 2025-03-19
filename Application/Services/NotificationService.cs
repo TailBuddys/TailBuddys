@@ -1,66 +1,75 @@
 ﻿using TailBuddys.Application.Interfaces;
+using TailBuddys.Core.Interfaces;
+using TailBuddys.Core.Models;
 
 namespace TailBuddys.Application.Services
 {
     public class NotificationService : INotificationService
     {
-        // סרוויס נוטיפקציה שנועד לעדכן את הדאטה בייס
-        //private readonly TailBuddysContext _context;
-        //private readonly ILogger<NotificationService> _logger;
 
-        //public NotificationService(AppDbContext context, ILogger<NotificationService> logger)
-        //{
-        //    _context = context;
-        //    _logger = logger;
-        //}
+        private readonly INotificationRepository _notificationRepository;
 
-        //public async Task<int> AddNotification(string dogId)
-        //{
-        //    try
-        //    {
-        //        var notification = await _context.Notifications.FirstOrDefaultAsync(n => n.DogId == dogId);
-        //        if (notification == null)
-        //        {
-        //            notification = new Notification
-        //            {
-        //                DogId = dogId,
-        //                UnreadMessages = 1,
-        //                LastUpdated = DateTime.UtcNow
-        //            };
-        //            _context.Notifications.Add(notification);
-        //        }
-        //        else
-        //        {
-        //            notification.UnreadMessages++;
-        //            notification.LastUpdated = DateTime.UtcNow;
-        //        }
-        //        await _context.SaveChangesAsync();
-        //        return notification.UnreadMessages;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Error adding notification for DogId {dogId}: {ex.Message}");
-        //        throw;
-        //    }
-        //}
+        public NotificationService(INotificationRepository notificationRepository)
+        {
+            _notificationRepository = notificationRepository;
+        }
 
-        //public async Task MarkAsRead(string dogId)
-        //{
-        //    try
-        //    {
-        //        var notification = await _context.Notifications.FirstOrDefaultAsync(n => n.DogId == dogId);
-        //        if (notification != null)
-        //        {
-        //            notification.UnreadMessages = 0;
-        //            notification.LastUpdated = DateTime.UtcNow;
-        //            await _context.SaveChangesAsync();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Error marking notification as read for DogId {dogId}: {ex.Message}");
-        //        throw;
-        //    }
-        //}
+        //CHAT//
+        public async Task<ChatNotification?> CreateOrUpdateChatNotification(int chatId, int dogId)
+        {
+            ChatNotification? chatNotify = await _notificationRepository.GetChatNotificationsByIdDB(chatId, dogId);
+
+
+            if (chatNotify == null)
+            {
+                chatNotify = new ChatNotification
+                {
+                    DogId = dogId,
+                    ChatId = chatId,
+                    UnreadCount = 1
+                };
+                return await _notificationRepository.CreateChatNotificationDB(chatNotify.ChatId, chatNotify.DogId);
+            }
+
+            return await _notificationRepository.UpdateChatNotificationsByIdDB(chatId, dogId);
+        }
+
+        public async Task<List<ChatNotification>> GetAllDogChatsNotifications(int dogId)
+        {
+            return await _notificationRepository.GetAllDogChatsNotificationsDB(dogId);
+        }
+
+        public async Task<ChatNotification?> GetChatNotificationsById(int chatId, int dogId)
+        {
+            ChatNotification? chatNotifications = await _notificationRepository.GetChatNotificationsByIdDB(chatId, dogId);
+
+            if (chatNotifications != null)
+            {
+                return chatNotifications;
+            }
+            return null;
+        }
+
+        public async Task<ChatNotification?> DeleteChatNotifications(int chatId, int dogId)
+        {
+            return await _notificationRepository.DeleteChatNotificationsDB(chatId, dogId);
+        }
+
+        //MATCH//
+
+        public async Task<MatchNotification?> CreateMatchNotification(int dogId, int chatId)
+        {
+            return await _notificationRepository.CreateMatchNotificationDB(chatId, dogId);
+        }
+
+        public async Task<List<MatchNotification>> GetDogAllMatchesNotifications(int dogId)
+        {
+            return await _notificationRepository.GetDogAllMatchesNotificationsDB(dogId);
+        }
+
+        public async Task<List<MatchNotification>> DeleteMatchesNotifications(int dogId)
+        {
+            return await _notificationRepository.DeleteMatchesNotificationsDB(dogId);
+        }
     }
 }
