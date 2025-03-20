@@ -86,11 +86,14 @@ namespace TailBuddys.Application.Services
             }
 
             if (isActive)
+
             {
+                Console.WriteLine("dog is active");
                 await _hubContext.Clients.Group(receiverDogId.ToString()).SendAsync("ReceiveNewMatch", matchId);
             }
             else
             {
+                Console.WriteLine("dog is not  active");
                 await _notificationService.CreateMatchNotification(receiverDogId, matchId);
             }
         }

@@ -17,7 +17,7 @@ namespace TailBuddys.Application.Services
 
         public ImageService(IImageRepository imageRepository)
         {
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "C:\\Users\\Daniel\\Downloads\\tailbuddys-570e8d8b9cdd.json");
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "C:\\tailbuddys-570e8d8b9cdd.json");
             _storageClient = StorageClient.Create();
             _imageRepository = imageRepository;
         }
