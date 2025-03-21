@@ -87,16 +87,31 @@ namespace TailBuddys.Infrastructure.Data
                 .UsingEntity(j => j.ToTable("DogParks"));
 
             // Notification - Dog (One-to-Many)
+            //modelBuilder.Entity<MatchNotification>()
+            //    .HasOne(n => n.Dog)
+            //    .WithMany(d => d.MatchNotification)
+            //    .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<MatchNotification>()
-                .HasOne(n => n.Dog)
-                .WithMany(d => d.MatchNotification)
-                .HasForeignKey(n => n.DogId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasKey(mn => mn.Id); // Set the primary key
+
+            modelBuilder.Entity<MatchNotification>()
+                .HasOne(mn => mn.Dog)
+                .WithMany(d => d.MatchNotification) // Dog has a collection of MatchNotifications
+                .HasForeignKey(mn => mn.DogId)
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete behavior
+
+            modelBuilder.Entity<MatchNotification>()
+                .HasOne(mn => mn.Match)
+                .WithMany(m => m.MatchNotification) // Match has a collection of MatchNotifications
+                .HasForeignKey(mn => mn.MatchId)
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete behavior
+
+
 
             modelBuilder.Entity<ChatNotification>()
                 .HasOne(n => n.Dog)
                 .WithMany(d => d.UnreadChatNotification)
-                .HasForeignKey(n => n.DogId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(modelBuilder);

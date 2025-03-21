@@ -214,26 +214,6 @@ namespace TailBuddys.InfraStructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MatchNotification",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DogId = table.Column<int>(type: "int", nullable: false),
-                    MatchId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MatchNotification", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MatchNotification_Dogs_DogId",
-                        column: x => x.DogId,
-                        principalTable: "Dogs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Messeges",
                 columns: table => new
                 {
@@ -252,6 +232,32 @@ namespace TailBuddys.InfraStructure.Migrations
                         name: "FK_Messeges_Chats_ChatID",
                         column: x => x.ChatID,
                         principalTable: "Chats",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MatchNotification",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DogId = table.Column<int>(type: "int", nullable: false),
+                    MatchId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MatchNotification", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MatchNotification_Dogs_DogId",
+                        column: x => x.DogId,
+                        principalTable: "Dogs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MatchNotification_Matches_MatchId",
+                        column: x => x.MatchId,
+                        principalTable: "Matches",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -308,6 +314,11 @@ namespace TailBuddys.InfraStructure.Migrations
                 column: "DogId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MatchNotification_MatchId",
+                table: "MatchNotification",
+                column: "MatchId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Messeges_ChatID",
                 table: "Messeges",
                 column: "ChatID");
@@ -326,9 +337,6 @@ namespace TailBuddys.InfraStructure.Migrations
                 name: "Images");
 
             migrationBuilder.DropTable(
-                name: "Matches");
-
-            migrationBuilder.DropTable(
                 name: "MatchNotification");
 
             migrationBuilder.DropTable(
@@ -336,6 +344,9 @@ namespace TailBuddys.InfraStructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Parks");
+
+            migrationBuilder.DropTable(
+                name: "Matches");
 
             migrationBuilder.DropTable(
                 name: "Chats");

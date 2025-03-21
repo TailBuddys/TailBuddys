@@ -61,11 +61,20 @@ namespace TailBuddys.Application.Services
                     foreignMatch.UpdatedAt = DateTime.Now;
                     await _matchRepository.UpdateMatchDb(foreignMatch.Id, foreignMatch);
                     Match? newMatch = await _matchRepository.CreateMatchDb(match);
-                    await HandleNewMatch(
-                        foreignMatch.SenderDogId,
-                        foreignMatch.ReciverDogId,
-                        foreignMatch.Id
-                        );
+
+                    if (newMatch != null)
+                    {
+                        await HandleNewMatch(
+                            foreignMatch.SenderDogId,
+                            foreignMatch.ReciverDogId,
+                            foreignMatch.Id
+                            );
+                        await HandleNewMatch(
+                            newMatch.SenderDogId,
+                            newMatch.ReciverDogId,
+                            newMatch.Id
+                            );
+                    }
                     return newMatch;
                 }
                 return await _matchRepository.CreateMatchDb(match);
@@ -82,19 +91,17 @@ namespace TailBuddys.Application.Services
             bool isActive;
             lock (_activeDogs)
             {
-                isActive = _activeDogs.Contains(receiverDogId);
+                isActive = _activeDogs.Contains(senderDogId);
             }
 
             if (isActive)
 
             {
-                Console.WriteLine("dog is active");
-                await _hubContext.Clients.Group(receiverDogId.ToString()).SendAsync("ReceiveNewMatch", matchId);
+                await _hubContext.Clients.Group(senderDogId.ToString()).SendAsync("ReceiveNewMatch", matchId);
             }
             else
             {
-                Console.WriteLine("dog is not  active");
-                await _notificationService.CreateMatchNotification(receiverDogId, matchId);
+                await _notificationService.CreateMatchNotification(senderDogId, matchId);
             }
         }
 

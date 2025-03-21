@@ -118,7 +118,7 @@ namespace TailBuddys.Infrastructure.Services
                     DogId = dogId,
                     MatchId = matchId
                 };
-
+                Console.WriteLine(dogId + "------------------------------------------ " + matchId);
                 _context.MatchNotification.Add(newMatch);
                 await _context.SaveChangesAsync();
                 return newMatch;

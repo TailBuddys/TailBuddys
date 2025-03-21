@@ -12,7 +12,7 @@ using TailBuddys.Infrastructure.Data;
 namespace TailBuddys.InfraStructure.Migrations
 {
     [DbContext(typeof(TailBuddysContext))]
-    [Migration("20250319174755_InitialCreate")]
+    [Migration("20250321193314_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -227,6 +227,8 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DogId");
+
+                    b.HasIndex("MatchId");
 
                     b.ToTable("MatchNotification");
                 });
@@ -452,7 +454,15 @@ namespace TailBuddys.InfraStructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TailBuddys.Core.Models.Match", "Match")
+                        .WithMany("MatchNotification")
+                        .HasForeignKey("MatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Dog");
+
+                    b.Navigation("Match");
                 });
 
             modelBuilder.Entity("TailBuddys.Core.Models.Message", b =>
@@ -486,6 +496,11 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.Navigation("MatchesAsSender");
 
                     b.Navigation("UnreadChatNotification");
+                });
+
+            modelBuilder.Entity("TailBuddys.Core.Models.Match", b =>
+                {
+                    b.Navigation("MatchNotification");
                 });
 
             modelBuilder.Entity("TailBuddys.Core.Models.Park", b =>

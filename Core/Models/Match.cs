@@ -20,5 +20,7 @@ namespace TailBuddys.Core.Models
         public bool IsMatch { get; set; } = false;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        [JsonIgnore]
+        public ICollection<MatchNotification> MatchNotification { get; set; } = new List<MatchNotification>();
     }
 }

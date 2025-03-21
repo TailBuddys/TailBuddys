@@ -57,9 +57,9 @@ namespace TailBuddys.Application.Services
 
         //MATCH//
 
-        public async Task<MatchNotification?> CreateMatchNotification(int dogId, int chatId)
+        public async Task<MatchNotification?> CreateMatchNotification(int dogId, int matchId)
         {
-            return await _notificationRepository.CreateMatchNotificationDB(chatId, dogId);
+            return await _notificationRepository.CreateMatchNotificationDB(dogId, matchId);
         }
 
         public async Task<List<MatchNotification>> GetDogAllMatchesNotifications(int dogId)

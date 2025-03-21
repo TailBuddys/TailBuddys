@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.Interfaces;
 
@@ -23,25 +22,20 @@ namespace TailBuddys.Hubs
             _notificationService = notificationService;
             _activeDogs = activeDogs;
             _jwtAuthService = jwtAuthService;
-            Console.WriteLine("SHASHASHASHASHASHASHASHASHASHASHASHASHASHASHASHASHASHASHASHA");
         }
 
         public async Task<bool> JoinDogGroup(int dogId)
         {
-            Console.WriteLine("LALALALALALALALALALALALALALA" + dogId);
             int userId = GetUserIdFromToken();
-            Console.WriteLine(userId);
             if (userId == 0) return false;
 
             var dogs = await _dogRepository.GetAllUserDogsDb(userId);
             if (!dogs.Any(d => d.Id == dogId))
             {
-                Console.WriteLine("not good ");
                 await Clients.Caller.SendAsync("Error", "Unauthorized dog access.");
                 return false;
             }
 
-            Console.WriteLine("ppppppppppppppppppppppppppppppp");
             await Groups.AddToGroupAsync(Context.ConnectionId, dogId.ToString());
             lock (_activeDogs)
             {
@@ -50,11 +44,9 @@ namespace TailBuddys.Hubs
 
             // Fetch all match notifications for the dog
             var matchNotifications = await _notificationService.GetDogAllMatchesNotifications(dogId);
-            Console.WriteLine("cckckckck");
             // Send each match notification to the frontend
             foreach (var matchNotification in matchNotifications)
             {
-                Console.WriteLine(matchNotification.MatchId.ToString());
                 await Clients.Caller.SendAsync("ReceiveNewMatch", matchNotification.MatchId);
             }
 
@@ -63,6 +55,7 @@ namespace TailBuddys.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
+            Console.WriteLine("conection disconected");
             int userId = GetUserIdFromToken();
             var dogs = await _dogRepository.GetAllUserDogsDb(userId);
             foreach (var dog in dogs)
@@ -85,16 +78,12 @@ namespace TailBuddys.Hubs
 
         public int GetUserIdFromToken()
         {
-            Console.WriteLine("lalalalalal~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             var httpContext = Context.GetHttpContext();
             var usertoken = httpContext?.Request.Query["access_token"].ToString();
-            Console.WriteLine(usertoken + "+emjfdcmkdvvjdvv+");
             if (string.IsNullOrEmpty(usertoken) || !usertoken.StartsWith("Bearer ")) return 0;
-            Console.WriteLine("na na na _______");
             var token = usertoken.Substring(7);
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
-            Console.WriteLine("token!!!!!!!" + jwtToken.ToString());
             return int.Parse(jwtToken?.Claims.FirstOrDefault(c => c.Type == "id")?.Value ?? "0");
         }
 
