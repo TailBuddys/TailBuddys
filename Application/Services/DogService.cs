@@ -86,16 +86,27 @@ namespace TailBuddys.Application.Services
                 return new List<Dog>();
             }
         }
-        public async Task<List<Dog>> GetAll(int userId)
+        public async Task<List<UserDogDTO>> GetAll(int userId)
         {
             try
             {
-                return await _dogRepository.GetAllUserDogsDb(userId);
+                List<Dog> dogs = await _dogRepository.GetAllUserDogsDb(userId);
+                List<UserDogDTO> ListToReturn = new List<UserDogDTO>();
+                foreach (Dog dog in dogs)
+                {
+                    ListToReturn.Add(new UserDogDTO
+                    {
+                        Id = dog.Id,
+                        Name = dog.Name,
+                        ImageUrl = dog.Images.FirstOrDefault(i => i.Order == 0)?.Url
+                    });
+                }
+                return ListToReturn;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return new List<Dog>();
+                return new List<UserDogDTO>();
             }
         }
 

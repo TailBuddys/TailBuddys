@@ -64,7 +64,7 @@ namespace TailBuddys.Presentation.Controllers
                 return Unauthorized();
             }
 
-            List<Dog> result = await _dogService.GetAll(userId);
+            List<UserDogDTO> result = await _dogService.GetAll(userId);
             if (result == null)
             {
                 return BadRequest();

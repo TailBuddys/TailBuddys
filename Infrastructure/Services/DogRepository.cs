@@ -46,7 +46,10 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                return await _context.Dogs.Include(d => d.FavParks).Where(d => d.UserId == userId).ToListAsync();
+                return await _context.Dogs
+                    .Include(d => d.Images)
+                    .Include(d => d.FavParks)
+                    .Where(d => d.UserId == userId).ToListAsync();
             }
             catch (Exception ex)
             {
