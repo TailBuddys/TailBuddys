@@ -24,6 +24,7 @@ namespace TailBuddys.Application.Services
 
         public async Task<string?> UploadImage(IFormFile file, int entityId, int? entityType)
         {
+
             if (file == null || file.Length == 0) return "file not good";
 
             List<Image> existingImages = await _imageRepository.GetAllEntityImagesDb(entityId, entityType);
@@ -44,7 +45,7 @@ namespace TailBuddys.Application.Services
             Image? newImage = new Image
             {
                 Url = fileUrl,
-                Order = existingImages.Count()
+                Order = _imageRepository.GetAllEntityImagesDb(entityId, entityType).Result.Count()
             };
 
             if (entityType == 0)
