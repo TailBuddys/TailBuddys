@@ -148,5 +148,19 @@ namespace TailBuddys.Presentation.Controllers
             }
             else return Unauthorized();
         }
+
+        [HttpGet("dogTypes")]
+        public ActionResult<IEnumerable<object>> GetDogTypes()
+        {
+            var dogTypes = Enum.GetValues(typeof(DogType))
+                .Cast<DogType>()
+                .Select(dt => new
+                {
+                    Value = (int)dt,
+                    DisplayName = dt.ToString().Replace("_", " ")
+                })
+                .ToList();
+            return Ok(dogTypes);
+        }
     }
 }
