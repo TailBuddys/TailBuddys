@@ -165,11 +165,30 @@ namespace TailBuddys.Application.Services
             }
         }
 
-        public async Task<Dog?> GetOne(int id)
+        public async Task<DogDTO?> GetOne(int id, bool isOwner)
         {
             try
             {
-                return await _dogRepository.GetDogByIdDb(id);
+                Dog? dog = await _dogRepository.GetDogByIdDb(id);
+                DogDTO dogToReturn = new DogDTO
+                {
+                    Id = dog.Id,
+                    Name = dog.Name,
+                    Description = dog.Description,
+                    Type = dog.Type,
+                    Size = dog.Size,
+                    Gender = dog.Gender,
+                    BirthDate = dog.BirthDate,
+                    Images = dog.Images.Select(image => image.Url).ToList(),
+                    Vaccinated = dog.Vaccinated,
+                };
+                if (isOwner)
+                {
+                    dogToReturn.Address = dog.Address;
+                    dogToReturn.Lon = dog.Lon;
+                    dogToReturn.Lat = dog.Lat;
+                }
+                return dogToReturn;
             }
             catch (Exception e)
             {

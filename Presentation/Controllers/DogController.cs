@@ -76,7 +76,9 @@ namespace TailBuddys.Presentation.Controllers
         [Authorize]
         public async Task<IActionResult> GetDogById(int id)
         {
-            Dog? result = await _dogService.GetOne(id);
+            int dogId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == id.ToString())?.Value, out dogId);
+            DogDTO? result = await _dogService.GetOne(id, dogId == id);
             if (result == null)
             {
                 return BadRequest();

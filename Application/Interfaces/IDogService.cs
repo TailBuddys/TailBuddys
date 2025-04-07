@@ -10,7 +10,7 @@ namespace TailBuddys.Application.Interfaces
         Task<List<Dog>> GetAll();
         Task<List<UserDogDTO>> GetAll(int userId);
         Task<List<DogDTO>> GetUnmatchedDogs(int dogId, DogsFilterDTO filters);
-        Task<Dog?> GetOne(int id);
+        Task<DogDTO?> GetOne(int id, bool isOwner);
         Task<Dog?> Update(int id, Dog dog);
         Task<DogDTO?> Delete(int id);
     }

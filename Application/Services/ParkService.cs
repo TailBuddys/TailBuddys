@@ -52,7 +52,7 @@ namespace TailBuddys.Application.Services
 
                 if (dogId != null)
                 {
-                    Dog? myDog = await _dogService.GetOne(dogId.Value);
+                    DogDTO? myDog = await _dogService.GetOne(dogId.Value, true);
                     EntityDistance myDogLocation = new EntityDistance
                     {
                         EntityId = myDog.Id,
