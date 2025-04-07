@@ -121,8 +121,8 @@ namespace TailBuddys.Infrastructure.Services
                 dogToUpdate.Description = dog.Description;
                 dogToUpdate.Type = dog.Type;
                 dogToUpdate.Size = dog.Size;
-                dogToUpdate.Geneder = dog.Geneder;
-                dogToUpdate.Birthdate = dog.Birthdate;
+                dogToUpdate.Gender = dog.Gender;
+                dogToUpdate.BirthDate = dog.BirthDate;
                 dogToUpdate.Address = dog.Address;
                 dogToUpdate.Lon = dog.Lon;
                 dogToUpdate.Lat = dog.Lat;

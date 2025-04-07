@@ -99,7 +99,7 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("Birthdate")
+                    b.Property<DateTime?>("BirthDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedAt")
@@ -109,7 +109,7 @@ namespace TailBuddys.InfraStructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<bool?>("Geneder")
+                    b.Property<bool?>("Gender")
                         .HasColumnType("bit");
 
                     b.Property<double>("Lat")

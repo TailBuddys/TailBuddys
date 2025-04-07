@@ -58,8 +58,8 @@ namespace TailBuddys.Application.Services
                     Description = dogToCreate.Description,
                     Type = dogToCreate.Type,
                     Size = dogToCreate.Size,
-                    Geneder = dogToCreate.Geneder,
-                    Birthdate = dogToCreate.Birthdate,
+                    Gender = dogToCreate.Gender,
+                    BirthDate = dogToCreate.BirthDate,
                     Images = dogToCreate.Images.Select(image => image.Url).ToList(),
                     Vaccinated = dogToCreate.Vaccinated,
                     RefreshToken = refreshToken
@@ -138,7 +138,7 @@ namespace TailBuddys.Application.Services
                         && (filters.distance == null || filters.distance >= dog.Distance)
                         && (filters.Type == null || filters.Type.Contains(currentDog.Type))
                         && (filters.Size == null || filters.Size.Contains(currentDog.Size))
-                        && (filters.Geneder == null || filters.Geneder == currentDog.Geneder)
+                        && (filters.Gender == null || filters.Gender == currentDog.Gender)
                         && (filters.Vaccinated == null || filters.Vaccinated == currentDog.Vaccinated))
                     {
                         finalDogsList.Add(new DogDTO
@@ -148,8 +148,8 @@ namespace TailBuddys.Application.Services
                             Description = currentDog.Description,
                             Type = currentDog.Type,
                             Size = currentDog.Size,
-                            Geneder = currentDog.Geneder,
-                            Birthdate = currentDog.Birthdate,
+                            Gender = currentDog.Gender,
+                            BirthDate = currentDog.BirthDate,
                             Distance = dog.Distance,
                             Vaccinated = currentDog.Vaccinated,
                             Images = currentDog.Images.Select(image => image.Url).ToList()

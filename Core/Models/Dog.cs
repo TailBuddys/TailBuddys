@@ -18,8 +18,8 @@ namespace TailBuddys.Core.Models
         public string? Description { get; set; }
         public DogType? Type { get; set; }
         public DogSize? Size { get; set; }
-        public bool? Geneder { get; set; }
-        public DateTime? Birthdate { get; set; }
+        public bool? Gender { get; set; }
+        public DateTime? BirthDate { get; set; }
         [JsonIgnore]
         public ICollection<Image> Images { get; set; } = new List<Image>();
         public string? Address { get; set; }

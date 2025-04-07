@@ -9,8 +9,8 @@ namespace TailBuddys.Core.DTO
         public string? Description { get; set; }
         public DogType? Type { get; set; }
         public DogSize? Size { get; set; }
-        public bool? Geneder { get; set; }
-        public DateTime? Birthdate { get; set; }
+        public bool? Gender { get; set; }
+        public DateTime? BirthDate { get; set; }
         public List<string> Images { get; set; } = new List<string>();
         public double? Distance { get; set; }
         public bool? Vaccinated { get; set; }
