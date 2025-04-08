@@ -68,7 +68,7 @@ namespace TailBuddys.Infrastructure.Services
                 if (myDog == null)
                     return new List<Dog>();
 
-                List<int> matchedDogIds = myDog.MatchesAsSender.Select(m => m.ReciverDogId).ToList();
+                List<int> matchedDogIds = myDog.MatchesAsSender.Select(m => m.ReceiverDogId).ToList();
 
                 List<Dog> list = await _context.Dogs
                     .Include(d => d.Images.OrderBy(i => i.Order))
@@ -90,9 +90,9 @@ namespace TailBuddys.Infrastructure.Services
                 Dog? d = await _context.Dogs
                     .Include(d => d.FavParks)
                     .Include(d => d.MatchesAsSender)
-                    .Include(d => d.MatchesAsReciver)
+                    .Include(d => d.MatchesAsReceiver)
                     .Include(d => d.ChatsAsSender)
-                    .Include(d => d.ChatsAsReciver)
+                    .Include(d => d.ChatsAsReceiver)
                     .Include(d => d.Images)
                     .FirstOrDefaultAsync(d => d.Id == dogId);
 

@@ -48,7 +48,7 @@ namespace TailBuddys.Presentation.Controllers
             List<Dog> result = await _dogService.GetAll();
             if (result == null)
             {
-                return BadRequest();
+                return NotFound();
             }
             return Ok(result);
         }
@@ -67,7 +67,7 @@ namespace TailBuddys.Presentation.Controllers
             List<UserDogDTO> result = await _dogService.GetAll(userId);
             if (result == null)
             {
-                return BadRequest();
+                return NotFound();
             }
             return Ok(result);
         }
@@ -81,7 +81,7 @@ namespace TailBuddys.Presentation.Controllers
             DogDTO? result = await _dogService.GetOne(id, dogId == id);
             if (result == null)
             {
-                return BadRequest();
+                return NotFound();
             }
             return Ok(result);
         }
@@ -98,7 +98,7 @@ namespace TailBuddys.Presentation.Controllers
                 List<DogDTO> result = await _dogService.GetUnmatchedDogs(id, filters);
                 if (result == null)
                 {
-                    return BadRequest();
+                    return NotFound();
                 }
                 return Ok(result);
             }

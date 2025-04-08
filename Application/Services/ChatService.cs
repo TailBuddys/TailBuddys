@@ -21,15 +21,15 @@ namespace TailBuddys.Application.Services
             try
             {
                 Match? myMatch = _matchRepository.GetAllMatchesAsSenderDogDb(chat.SenderDogId)
-                    .Result.FirstOrDefault(m => m.ReciverDogId == chat.ReciverDogId);
+                    .Result.FirstOrDefault(m => m.ReceiverDogId == chat.ReceiverDogId);
 
-                Match? foreignMatch = _matchRepository.GetAllMatchesAsReciverDogDb(chat.SenderDogId)
-                    .Result.FirstOrDefault(m => m.SenderDogId == chat.ReciverDogId);
+                Match? foreignMatch = _matchRepository.GetAllMatchesAsReceiverDogDb(chat.SenderDogId)
+                    .Result.FirstOrDefault(m => m.SenderDogId == chat.ReceiverDogId);
 
                 if (myMatch != null && foreignMatch != null && myMatch.IsMatch && foreignMatch.IsMatch)
                 {
                     Chat? foreignChat = _chatRepository.GetAllDogChatsDb(chat.SenderDogId)
-                    .Result.FirstOrDefault(c => c.SenderDogId == chat.ReciverDogId || c.ReciverDogId == chat.ReciverDogId);
+                    .Result.FirstOrDefault(c => c.SenderDogId == chat.ReceiverDogId || c.ReceiverDogId == chat.ReceiverDogId);
 
                     if (foreignChat == null)
                     {

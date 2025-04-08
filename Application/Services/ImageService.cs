@@ -117,5 +117,15 @@ namespace TailBuddys.Application.Services
             }
             return "Invallid action";
         }
+
+        public async Task<bool> IsFirstImage(int dogId)
+        {
+            List<Image> dogImages = await _imageRepository.GetAllEntityImagesDb(dogId, 0);
+            if (dogImages.Count == 1)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

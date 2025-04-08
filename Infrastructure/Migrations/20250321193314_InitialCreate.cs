@@ -111,14 +111,14 @@ namespace TailBuddys.InfraStructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SenderDogId = table.Column<int>(type: "int", nullable: false),
-                    ReciverDogId = table.Column<int>(type: "int", nullable: false)
+                    ReceiverDogId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Chats", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Chats_Dogs_ReciverDogId",
-                        column: x => x.ReciverDogId,
+                        name: "FK_Chats_Dogs_ReceiverDogId",
+                        column: x => x.ReceiverDogId,
                         principalTable: "Dogs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -189,7 +189,7 @@ namespace TailBuddys.InfraStructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SenderDogId = table.Column<int>(type: "int", nullable: false),
-                    ReciverDogId = table.Column<int>(type: "int", nullable: false),
+                    ReceiverDogId = table.Column<int>(type: "int", nullable: false),
                     IsLike = table.Column<bool>(type: "bit", nullable: false),
                     IsMatch = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -199,8 +199,8 @@ namespace TailBuddys.InfraStructure.Migrations
                 {
                     table.PrimaryKey("PK_Matches", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Matches_Dogs_ReciverDogId",
-                        column: x => x.ReciverDogId,
+                        name: "FK_Matches_Dogs_ReceiverDogId",
+                        column: x => x.ReceiverDogId,
                         principalTable: "Dogs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -213,7 +213,7 @@ namespace TailBuddys.InfraStructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Messeges",
+                name: "Messages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -226,9 +226,9 @@ namespace TailBuddys.InfraStructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Messeges", x => x.Id);
+                    table.PrimaryKey("PK_Messages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Messeges_Chats_ChatID",
+                        name: "FK_Messages_Chats_ChatID",
                         column: x => x.ChatID,
                         principalTable: "Chats",
                         principalColumn: "Id",
@@ -267,14 +267,14 @@ namespace TailBuddys.InfraStructure.Migrations
                 column: "DogId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_ReciverDogId",
+                name: "IX_Chats_ReceiverDogId",
                 table: "Chats",
-                column: "ReciverDogId");
+                column: "ReceiverDogId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_SenderDogId_ReciverDogId",
+                name: "IX_Chats_SenderDogId_ReceiverDogId",
                 table: "Chats",
-                columns: new[] { "SenderDogId", "ReciverDogId" },
+                columns: new[] { "SenderDogId", "ReceiverDogId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -298,9 +298,9 @@ namespace TailBuddys.InfraStructure.Migrations
                 column: "ParkId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_ReciverDogId",
+                name: "IX_Matches_ReceiverDogId",
                 table: "Matches",
-                column: "ReciverDogId");
+                column: "ReceiverDogId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Matches_SenderDogId",
@@ -318,8 +318,8 @@ namespace TailBuddys.InfraStructure.Migrations
                 column: "MatchId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messeges_ChatID",
-                table: "Messeges",
+                name: "IX_Messages_ChatID",
+                table: "Messages",
                 column: "ChatID");
         }
 
@@ -339,7 +339,7 @@ namespace TailBuddys.InfraStructure.Migrations
                 name: "MatchNotification");
 
             migrationBuilder.DropTable(
-                name: "Messeges");
+                name: "Messages");
 
             migrationBuilder.DropTable(
                 name: "Parks");

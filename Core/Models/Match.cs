@@ -11,10 +11,10 @@ namespace TailBuddys.Core.Models
         public int SenderDogId { get; set; }
         [JsonIgnore]
         public Dog? SenderDog { get; set; }
-        [ForeignKey(nameof(ReciverDog))]
-        public int ReciverDogId { get; set; }
+        [ForeignKey(nameof(ReceiverDog))]
+        public int ReceiverDogId { get; set; }
         [JsonIgnore]
-        public Dog? ReciverDog { get; set; }
+        public Dog? ReceiverDog { get; set; }
         [Required]
         public bool IsLike { get; set; }
         public bool IsMatch { get; set; } = false;

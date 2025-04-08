@@ -45,7 +45,7 @@ namespace TailBuddys.InfraStructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ReciverDogId")
+                    b.Property<int>("ReceiverDogId")
                         .HasColumnType("int");
 
                     b.Property<int>("SenderDogId")
@@ -53,9 +53,9 @@ namespace TailBuddys.InfraStructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ReciverDogId");
+                    b.HasIndex("ReceiverDogId");
 
-                    b.HasIndex("SenderDogId", "ReciverDogId")
+                    b.HasIndex("SenderDogId", "ReceiverDogId")
                         .IsUnique();
 
                     b.ToTable("Chats");
@@ -189,7 +189,7 @@ namespace TailBuddys.InfraStructure.Migrations
                     b.Property<bool>("IsMatch")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ReciverDogId")
+                    b.Property<int>("ReceiverDogId")
                         .HasColumnType("int");
 
                     b.Property<int>("SenderDogId")
@@ -200,7 +200,7 @@ namespace TailBuddys.InfraStructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ReciverDogId");
+                    b.HasIndex("ReceiverDogId");
 
                     b.HasIndex("SenderDogId");
 
@@ -259,7 +259,7 @@ namespace TailBuddys.InfraStructure.Migrations
 
                     b.HasIndex("ChatID");
 
-                    b.ToTable("Messeges");
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("TailBuddys.Core.Models.Park", b =>
@@ -368,9 +368,9 @@ namespace TailBuddys.InfraStructure.Migrations
 
             modelBuilder.Entity("TailBuddys.Core.Models.Chat", b =>
                 {
-                    b.HasOne("TailBuddys.Core.Models.Dog", "ReciverDog")
-                        .WithMany("ChatsAsReciver")
-                        .HasForeignKey("ReciverDogId")
+                    b.HasOne("TailBuddys.Core.Models.Dog", "ReceiverDog")
+                        .WithMany("ChatsAsReceiver")
+                        .HasForeignKey("ReceiverDogId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -380,7 +380,7 @@ namespace TailBuddys.InfraStructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("ReciverDog");
+                    b.Navigation("ReceiverDog");
 
                     b.Navigation("SenderDog");
                 });
@@ -426,9 +426,9 @@ namespace TailBuddys.InfraStructure.Migrations
 
             modelBuilder.Entity("TailBuddys.Core.Models.Match", b =>
                 {
-                    b.HasOne("TailBuddys.Core.Models.Dog", "ReciverDog")
-                        .WithMany("MatchesAsReciver")
-                        .HasForeignKey("ReciverDogId")
+                    b.HasOne("TailBuddys.Core.Models.Dog", "ReceiverDog")
+                        .WithMany("MatchesAsReceiver")
+                        .HasForeignKey("ReceiverDogId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -438,7 +438,7 @@ namespace TailBuddys.InfraStructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("ReciverDog");
+                    b.Navigation("ReceiverDog");
 
                     b.Navigation("SenderDog");
                 });
@@ -480,7 +480,7 @@ namespace TailBuddys.InfraStructure.Migrations
 
             modelBuilder.Entity("TailBuddys.Core.Models.Dog", b =>
                 {
-                    b.Navigation("ChatsAsReciver");
+                    b.Navigation("ChatsAsReceiver");
 
                     b.Navigation("ChatsAsSender");
 
@@ -488,7 +488,7 @@ namespace TailBuddys.InfraStructure.Migrations
 
                     b.Navigation("MatchNotification");
 
-                    b.Navigation("MatchesAsReciver");
+                    b.Navigation("MatchesAsReceiver");
 
                     b.Navigation("MatchesAsSender");
 

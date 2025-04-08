@@ -34,7 +34,7 @@ namespace TailBuddys.Infrastructure.Services
             {
                 List<Match> list = await _context.Matches
                     .Include(m => m.SenderDog)
-                    .Include(m => m.ReciverDog)
+                    .Include(m => m.ReceiverDog)
                     .Where(m => m.SenderDogId == dogId && m.IsMatch == true).ToListAsync();
                 return list;
             }
@@ -51,7 +51,7 @@ namespace TailBuddys.Infrastructure.Services
             {
                 List<Match> list = await _context.Matches
                     .Include(m => m.SenderDog)
-                    .Include(m => m.ReciverDog)
+                    .Include(m => m.ReceiverDog)
                     .Where(m => m.SenderDogId == dogId).ToListAsync();
                 return list;
             }
@@ -62,14 +62,14 @@ namespace TailBuddys.Infrastructure.Services
             }
         }
         // get all dog that like me
-        public async Task<List<Match>> GetAllMatchesAsReciverDogDb(int dogId)
+        public async Task<List<Match>> GetAllMatchesAsReceiverDogDb(int dogId)
         {
             try
             {
                 List<Match> list = await _context.Matches
                     .Include(m => m.SenderDog)
-                    .Include(m => m.ReciverDog)
-                    .Where(m => m.ReciverDogId == dogId).ToListAsync();
+                    .Include(m => m.ReceiverDog)
+                    .Where(m => m.ReceiverDogId == dogId).ToListAsync();
                 return list;
             }
             catch (Exception ex)
@@ -84,7 +84,7 @@ namespace TailBuddys.Infrastructure.Services
             {
                 Match? match = await _context.Matches
                     .Include(m => m.SenderDog)
-                    .Include(m => m.ReciverDog)
+                    .Include(m => m.ReceiverDog)
                     .FirstOrDefaultAsync(m => m.Id == matchId);
                 return match;
             }

@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TailBuddys.Application.Interfaces;
+using TailBuddys.Core.DTO;
+using TailBuddys.Core.Interfaces;
+using TailBuddys.Core.Models;
+using TailBuddys.Core.Models.SubModels;
 
 namespace TailBuddys.Presentation.Controllers
 {
@@ -9,9 +13,13 @@ namespace TailBuddys.Presentation.Controllers
     public class ImageController : Controller
     {
         private readonly IImageService _imageService;
-        public ImageController(IImageService imageService)
+        private readonly IDogRepository _dogRepository;
+        private readonly IOpenAiService _openAiService;
+        public ImageController(IImageService imageService, IDogRepository dogRepository, IOpenAiService openAiService)
         {
             _imageService = imageService;
+            _dogRepository = dogRepository;
+            _openAiService = openAiService;
         }
 
         [HttpPost]
@@ -46,6 +54,18 @@ namespace TailBuddys.Presentation.Controllers
             if (dogResult == null)
             {
                 return BadRequest("dog result bad");
+            }
+
+            if (await _imageService.IsFirstImage(entityId))
+            {
+                DogBreedSize AiResult = await _openAiService.GetDogBreedFromImageUrlAsync(dogResult);
+                if (AiResult.Size != -1 && AiResult.Breed != -1)
+                {
+                    Dog? dogToUpdate = await _dogRepository.GetDogByIdDb(dogId);
+                    dogToUpdate.Type = (DogType)AiResult.Breed;
+                    dogToUpdate.Size = (DogSize)AiResult.Size;
+                    await _dogRepository.UpdateDogDb(dogId, dogToUpdate);
+                }
             }
             return Ok(dogResult);
         }

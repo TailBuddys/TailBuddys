@@ -31,13 +31,13 @@ namespace TailBuddys.Core.Models
         [JsonIgnore]
         public ICollection<Match> MatchesAsSender { get; set; } = new List<Match>();
         [JsonIgnore]
-        public ICollection<Match> MatchesAsReciver { get; set; } = new List<Match>();
+        public ICollection<Match> MatchesAsReceiver { get; set; } = new List<Match>();
         [JsonIgnore]
         public ICollection<Park> FavParks { get; set; } = new List<Park>();
         [JsonIgnore]
         public ICollection<Chat> ChatsAsSender { get; set; } = new List<Chat>();
         [JsonIgnore]
-        public ICollection<Chat> ChatsAsReciver { get; set; } = new List<Chat>();
+        public ICollection<Chat> ChatsAsReceiver { get; set; } = new List<Chat>();
         [JsonIgnore]
         public ICollection<MatchNotification> MatchNotification { get; set; } = new List<MatchNotification>();
         [JsonIgnore]

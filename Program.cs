@@ -48,6 +48,7 @@ namespace TailBuddys
             builder.Services.AddScoped<IImageService, ImageService>();
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
             builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<IOpenAiService, OpenAiService>();
 
 
             builder.Services.AddSignalR();

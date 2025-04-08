@@ -32,7 +32,7 @@ namespace TailBuddys.Infrastructure.Services
             try
             {
                 List<Chat> list = await _context.Chats
-                    .Where(c => c.SenderDogId == dogId || c.ReciverDogId == dogId).ToListAsync();
+                    .Where(c => c.SenderDogId == dogId || c.ReceiverDogId == dogId).ToListAsync();
                 return list;
             }
             catch (Exception e)
@@ -107,7 +107,7 @@ namespace TailBuddys.Infrastructure.Services
             try
             {
                 message.CreatedAt = DateTime.Now;
-                _context.Messeges.Add(message);
+                _context.Messages.Add(message);
                 await _context.SaveChangesAsync();
                 return message;
             }
@@ -121,7 +121,7 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                List<Message> messages = await _context.Messeges.Where(m => m.ChatID == chatId).ToListAsync();
+                List<Message> messages = await _context.Messages.Where(m => m.ChatID == chatId).ToListAsync();
                 return messages;
             }
             catch (Exception ex)
@@ -134,7 +134,7 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                Message? messageToUpdate = await _context.Messeges.FirstOrDefaultAsync(m => m.Id == messageId);
+                Message? messageToUpdate = await _context.Messages.FirstOrDefaultAsync(m => m.Id == messageId);
                 if (messageToUpdate == null)
                 {
                     return null;
@@ -142,7 +142,7 @@ namespace TailBuddys.Infrastructure.Services
 
                 messageToUpdate.IsRead = true;
 
-                _context.Messeges.Update(messageToUpdate);
+                _context.Messages.Update(messageToUpdate);
                 await _context.SaveChangesAsync();
                 return messageToUpdate;
             }

@@ -215,8 +215,8 @@ namespace TailBuddys.Application.Services
                 Dog? dogToDelete = await _dogRepository.GetDogByIdDb(id);
                 if (dogToDelete == null) return null;
 
-                List<Match> allMatches = dogToDelete.MatchesAsSender.Concat(dogToDelete.MatchesAsReciver).ToList();
-                List<Chat> allChats = dogToDelete.ChatsAsSender.Concat(dogToDelete.ChatsAsReciver).ToList();
+                List<Match> allMatches = dogToDelete.MatchesAsSender.Concat(dogToDelete.MatchesAsReceiver).ToList();
+                List<Chat> allChats = dogToDelete.ChatsAsSender.Concat(dogToDelete.ChatsAsReceiver).ToList();
 
                 User? user = await _userService.GetOne(dogToDelete.UserId);
                 if (user == null) return null;

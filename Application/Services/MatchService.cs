@@ -34,20 +34,20 @@ namespace TailBuddys.Application.Services
             try
             {
 
-                if (match.ReciverDogId == 0 || match.SenderDogId == 0) return null;
+                if (match.ReceiverDogId == 0 || match.SenderDogId == 0) return null;
 
-                (Dog? reciverDog, Dog? senderDog) = (await _dogRepository.GetDogByIdDb(match.ReciverDogId),
+                (Dog? receiverDog, Dog? senderDog) = (await _dogRepository.GetDogByIdDb(match.ReceiverDogId),
                     await _dogRepository.GetDogByIdDb(match.SenderDogId));
 
-                if (senderDog?.UserId == reciverDog?.UserId ||
+                if (senderDog?.UserId == receiverDog?.UserId ||
                     (await _matchRepository.GetAllMatchesAsSenderDogDb(match.SenderDogId))
-                    .Any(m => m.ReciverDogId == match.ReciverDogId)) return null;
+                    .Any(m => m.ReceiverDogId == match.ReceiverDogId)) return null;
 
                 match.CreatedAt = DateTime.Now;
                 match.UpdatedAt = DateTime.Now;
 
-                Match? foreignMatch = _matchRepository.GetAllMatchesAsSenderDogDb(match.ReciverDogId)
-                    .Result.Where(m => m.ReciverDogId == match.SenderDogId).FirstOrDefault();
+                Match? foreignMatch = _matchRepository.GetAllMatchesAsSenderDogDb(match.ReceiverDogId)
+                    .Result.Where(m => m.ReceiverDogId == match.SenderDogId).FirstOrDefault();
 
                 if (foreignMatch == null)
                 {
@@ -66,12 +66,12 @@ namespace TailBuddys.Application.Services
                     {
                         await HandleNewMatch(
                             foreignMatch.SenderDogId,
-                            foreignMatch.ReciverDogId,
+                            foreignMatch.ReceiverDogId,
                             foreignMatch.Id
                             );
                         await HandleNewMatch(
                             newMatch.SenderDogId,
-                            newMatch.ReciverDogId,
+                            newMatch.ReceiverDogId,
                             newMatch.Id
                             );
                     }
@@ -131,11 +131,11 @@ namespace TailBuddys.Application.Services
                 return new List<Match>();
             }
         }
-        public async Task<List<Match>> GetAllMatchesAsReciverDog(int dogId)
+        public async Task<List<Match>> GetAllMatchesAsReceiverDog(int dogId)
         {
             try
             {
-                return await _matchRepository.GetAllMatchesAsReciverDogDb(dogId);
+                return await _matchRepository.GetAllMatchesAsReceiverDogDb(dogId);
             }
             catch (Exception e)
             {
@@ -165,8 +165,8 @@ namespace TailBuddys.Application.Services
 
                 if (newMatch.IsLike == false && matchToUpdate.IsMatch == true)
                 {
-                    Match? foreignMatch = _matchRepository.GetAllMatchesAsSenderDogDb(newMatch.ReciverDogId)
-                    .Result.Where(m => m.ReciverDogId == newMatch.SenderDogId).FirstOrDefault();
+                    Match? foreignMatch = _matchRepository.GetAllMatchesAsSenderDogDb(newMatch.ReceiverDogId)
+                    .Result.Where(m => m.ReceiverDogId == newMatch.SenderDogId).FirstOrDefault();
 
                     if (foreignMatch != null)
                     {

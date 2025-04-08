@@ -9,7 +9,7 @@ namespace TailBuddys.Infrastructure.Data
         public DbSet<Image> Images { get; set; }
         public DbSet<Match> Matches { get; set; }
         public DbSet<Chat> Chats { get; set; }
-        public DbSet<Message> Messeges { get; set; }
+        public DbSet<Message> Messages { get; set; }
         public DbSet<Park> Parks { get; set; }
         public DbSet<MatchNotification> MatchNotification { get; set; }
         public DbSet<ChatNotification> ChatNotifications { get; set; } // להגדיר אנטיטיז
@@ -50,14 +50,14 @@ namespace TailBuddys.Infrastructure.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Chat>()
-                .HasOne(c => c.ReciverDog)
-                .WithMany(d => d.ChatsAsReciver)  // ✅ Keep track of chats where Dog is the receiver
-                .HasForeignKey(c => c.ReciverDogId)
+                .HasOne(c => c.ReceiverDog)
+                .WithMany(d => d.ChatsAsReceiver)  // ✅ Keep track of chats where Dog is the receiver
+                .HasForeignKey(c => c.ReceiverDogId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // 🔹 Ensure only ONE chat exists between two dogs (avoid duplicate chat records)
             modelBuilder.Entity<Chat>()
-                .HasIndex(c => new { c.SenderDogId, c.ReciverDogId })
+                .HasIndex(c => new { c.SenderDogId, c.ReceiverDogId })
                 .IsUnique();
 
             // Message - Chat (One-to-Many)
@@ -75,9 +75,9 @@ namespace TailBuddys.Infrastructure.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Match>()
-                .HasOne(m => m.ReciverDog)
-                .WithMany(d => d.MatchesAsReciver) // ✅ ToDog will now have a list of matches
-                .HasForeignKey(m => m.ReciverDogId)
+                .HasOne(m => m.ReceiverDog)
+                .WithMany(d => d.MatchesAsReceiver) // ✅ ToDog will now have a list of matches
+                .HasForeignKey(m => m.ReceiverDogId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Park - Dog (Many-to-Many)
