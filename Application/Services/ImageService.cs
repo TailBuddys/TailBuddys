@@ -93,8 +93,7 @@ namespace TailBuddys.Application.Services
                 if (await _imageRepository.UpdateImageDb(entityImagesList[i].Id, entityImagesList[i]) == null)
                     return "Order update action has been failed";
             }
-
-            return "Image deleted successfully.";
+            return $"Image {imageId} deleted successfully.";
         }
 
         public async Task<string?> ReOrderImages(int imageId1, int imageId2)
@@ -113,7 +112,7 @@ namespace TailBuddys.Application.Services
                     await _imageRepository.UpdateImageDb(imageToReplace2.Id, imageToReplace2) == null)
                     return "ReOrder has been failed";
 
-                return "ReOrder has been changed successfully";
+                return $"ReOrder of {imageId1} and {imageId2} has been changed successfully";
             }
             return "Invallid action";
         }

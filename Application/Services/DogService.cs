@@ -50,7 +50,15 @@ namespace TailBuddys.Application.Services
 
                 string? refreshToken = _jwtService.GenerateToken(user);
                 if (refreshToken == null) return null;
-
+                List<ImageDTO> dogImages = new List<ImageDTO>();
+                foreach (Image image in dogToCreate.Images.OrderBy(d => d.Order))
+                {
+                    dogImages.Add(new ImageDTO
+                    {
+                        Id = image.Id,
+                        Url = image.Url
+                    });
+                }
                 DogDTO dogToReturn = new DogDTO
                 {
                     Id = dogToCreate.Id,
@@ -60,7 +68,7 @@ namespace TailBuddys.Application.Services
                     Size = dogToCreate.Size,
                     Gender = dogToCreate.Gender,
                     BirthDate = dogToCreate.BirthDate,
-                    Images = dogToCreate.Images.Select(image => image.Url).ToList(),
+                    Images = dogImages,
                     Vaccinated = dogToCreate.Vaccinated,
                     RefreshToken = refreshToken
                 };
@@ -141,6 +149,15 @@ namespace TailBuddys.Application.Services
                         && (filters.Gender == null || filters.Gender == currentDog.Gender)
                         && (filters.Vaccinated == null || filters.Vaccinated == currentDog.Vaccinated))
                     {
+                        List<ImageDTO> dogImages = new List<ImageDTO>();
+                        foreach (Image image in currentDog.Images.OrderBy(d => d.Order))
+                        {
+                            dogImages.Add(new ImageDTO
+                            {
+                                Id = image.Id,
+                                Url = image.Url
+                            });
+                        }
                         finalDogsList.Add(new DogDTO
                         {
                             Id = dog.EntityId,
@@ -152,7 +169,7 @@ namespace TailBuddys.Application.Services
                             BirthDate = currentDog.BirthDate,
                             Distance = dog.Distance,
                             Vaccinated = currentDog.Vaccinated,
-                            Images = currentDog.Images.Select(image => image.Url).ToList()
+                            Images = dogImages,
                         });
                     }
                 }
@@ -170,6 +187,15 @@ namespace TailBuddys.Application.Services
             try
             {
                 Dog? dog = await _dogRepository.GetDogByIdDb(id);
+                List<ImageDTO> dogImages = new List<ImageDTO>();
+                foreach (Image image in dog.Images.OrderBy(d => d.Order))
+                {
+                    dogImages.Add(new ImageDTO
+                    {
+                        Id = image.Id,
+                        Url = image.Url
+                    });
+                }
                 DogDTO dogToReturn = new DogDTO
                 {
                     Id = dog.Id,
@@ -179,7 +205,7 @@ namespace TailBuddys.Application.Services
                     Size = dog.Size,
                     Gender = dog.Gender,
                     BirthDate = dog.BirthDate,
-                    Images = dog.Images.Select(image => image.Url).ToList(),
+                    Images = dogImages,
                     Vaccinated = dog.Vaccinated,
                 };
                 if (isOwner)
@@ -234,11 +260,7 @@ namespace TailBuddys.Application.Services
                 {
                     await _chatRepository.DeleteChatDb(chat.Id);
                 }
-                foreach (Image image in dogToDelete.Images)
-                {
-                    await _imageService.RemoveImage(image.Id, dogToDelete.Id, 0);
-                }
-
+                
                 Dog? deletedDog = await _dogRepository.DeleteDogDb(id);
                 if (deletedDog == null) return null;
 

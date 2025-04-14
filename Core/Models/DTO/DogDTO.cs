@@ -1,4 +1,5 @@
 ﻿using TailBuddys.Core.Models;
+using TailBuddys.Core.Models.DTO;
 
 namespace TailBuddys.Core.DTO
 {
@@ -11,7 +12,7 @@ namespace TailBuddys.Core.DTO
         public DogSize? Size { get; set; }
         public bool? Gender { get; set; }
         public DateTime? BirthDate { get; set; }
-        public List<string> Images { get; set; } = new List<string>();
+        public List<ImageDTO> Images { get; set; } = new List<ImageDTO>();
         public string? Address { get; set; }
         public double Lon { get; set; }
         public double Lat { get; set; }
