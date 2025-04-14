@@ -67,6 +67,7 @@ namespace TailBuddys.Infrastructure.Services
                     return null;
                 }
                 parkToUpdate.Name = park.Name;
+                parkToUpdate.Description = park.Description;
                 parkToUpdate.Address = park.Address;
                 parkToUpdate.Lon = park.Lon;
                 parkToUpdate.Lat = park.Lat;

@@ -72,7 +72,6 @@ namespace TailBuddys.Application.Services
 
                     parks = parks.Where(park => updatedParksDistance.Any(ed => ed.EntityId == park.Id)).ToList();
                 }
-
                 List<ParkDTO> finalParksList = parks
                     .Select(park => new ParkDTO
                     {
@@ -81,7 +80,7 @@ namespace TailBuddys.Application.Services
                         Description = park.Description,
                         Address = park.Address,
                         DogLikes = park.DogLikes.Count(),
-                        Images = park.Images.Select(image => image.Url).ToList(),
+                        Images = park.Images.OrderBy(d => d.Order).Select(image => new ImageDTO { Id = image.Id, Url = image.Url }).ToList(),
                         Distance = updatedParksDistance.FirstOrDefault(ed => ed.EntityId == park.Id)?.Distance
                     }).ToList();
 
@@ -93,12 +92,39 @@ namespace TailBuddys.Application.Services
                 return new List<ParkDTO>();
             }
         }
-        public async Task<Park?> GetParkById(int parkId)
+        public async Task<ParkDTO?> GetParkById(int parkId)
         {
             try
             {
-                return await _parkRepository.GetParkByIdDb(parkId);
+                Park? park = await _parkRepository.GetParkByIdDb(parkId);
+                if (park == null)
+                {
+                    return null;
+                }
+                List<ImageDTO> ParkImages = new List<ImageDTO>();
+                foreach (Image image in park.Images.OrderBy(d => d.Order))
+                {
+                    ParkImages.Add(new ImageDTO
+                    {
+                        Id = image.Id,
+                        Url = image.Url
+                    });
+                }
+                ParkDTO parkToReturn = new ParkDTO
+                {
+                    Id = park.Id,
+                    Name = park.Name,
+                    Description = park.Description,
+                    Address = park.Address,
+                    Lon = park.Lon,
+                    Lat = park.Lat,
+                    DogLikes = park.DogLikes.Count,
+                    Images = ParkImages
+                };
+
+                return parkToReturn;
             }
+
             catch (Exception e)
             {
                 Console.WriteLine(e);

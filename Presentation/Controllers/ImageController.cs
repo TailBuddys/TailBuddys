@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TailBuddys.Application.Interfaces;
-using TailBuddys.Core.DTO;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
 using TailBuddys.Core.Models.SubModels;
@@ -62,6 +61,10 @@ namespace TailBuddys.Presentation.Controllers
                 if (AiResult.Size != -1 && AiResult.Breed != -1)
                 {
                     Dog? dogToUpdate = await _dogRepository.GetDogByIdDb(dogId);
+                    if (dogToUpdate == null)
+                    {
+                        return Ok(dogResult);
+                    }
                     dogToUpdate.Type = (DogType)AiResult.Breed;
                     dogToUpdate.Size = (DogSize)AiResult.Size;
                     await _dogRepository.UpdateDogDb(dogId, dogToUpdate);

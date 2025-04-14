@@ -124,6 +124,7 @@ namespace TailBuddys.Application.Services
             {
                 List<Dog> unmatchedDogs = await _dogRepository.GetUnMatchedDogsDb(dogId);
                 Dog? originDog = await _dogRepository.GetDogByIdDb(dogId);
+                if (originDog == null) { return new List<DogDTO>(); }
                 EntityDistance originDogLocation = new EntityDistance
                 {
                     EntityId = originDog.Id,
@@ -187,6 +188,10 @@ namespace TailBuddys.Application.Services
             try
             {
                 Dog? dog = await _dogRepository.GetDogByIdDb(id);
+                if (dog == null)
+                {
+                    return null;
+                }
                 List<ImageDTO> dogImages = new List<ImageDTO>();
                 foreach (Image image in dog.Images.OrderBy(d => d.Order))
                 {
@@ -260,7 +265,7 @@ namespace TailBuddys.Application.Services
                 {
                     await _chatRepository.DeleteChatDb(chat.Id);
                 }
-                
+
                 Dog? deletedDog = await _dogRepository.DeleteDogDb(id);
                 if (deletedDog == null) return null;
 

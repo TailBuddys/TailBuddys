@@ -67,7 +67,7 @@ namespace TailBuddys.Presentation.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetParkById(int id)
         {
-            Park? result = await _parkService.GetParkById(id);
+            ParkDTO? result = await _parkService.GetParkById(id);
             if (result == null)
             {
                 return BadRequest();
