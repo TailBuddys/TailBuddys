@@ -31,7 +31,7 @@ namespace TailBuddys.Application.Utils
                 double distance = EarthRadiusKm * c;
 
                 // Store distance in entity
-                entity.Distance = distance;
+                entity.Distance = Math.Round(distance) == 0 ? 1 : Math.Round(distance);
                 result.Add(entity);
             }
 

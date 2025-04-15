@@ -72,6 +72,7 @@ namespace TailBuddys.Application.Services
 
                     parks = parks.Where(park => updatedParksDistance.Any(ed => ed.EntityId == park.Id)).ToList();
                 }
+
                 List<ParkDTO> finalParksList = parks
                     .Select(park => new ParkDTO
                     {
@@ -79,7 +80,14 @@ namespace TailBuddys.Application.Services
                         Name = park.Name,
                         Description = park.Description,
                         Address = park.Address,
-                        DogLikes = park.DogLikes.Count(),
+                        Lat = park.Lat,
+                        Lon = park.Lon,
+                        DogLikes = park.DogLikes.Select(d => new UserDogDTO
+                        {
+                            Id = d.Id,
+                            Name = d.Name,
+                            ImageUrl = d.Images.FirstOrDefault(i => i.Order == 0)?.Url
+                        }).ToList(),
                         Images = park.Images.OrderBy(d => d.Order).Select(image => new ImageDTO { Id = image.Id, Url = image.Url }).ToList(),
                         Distance = updatedParksDistance.FirstOrDefault(ed => ed.EntityId == park.Id)?.Distance
                     }).ToList();
@@ -118,7 +126,12 @@ namespace TailBuddys.Application.Services
                     Address = park.Address,
                     Lon = park.Lon,
                     Lat = park.Lat,
-                    DogLikes = park.DogLikes.Count,
+                    DogLikes = park.DogLikes.Select(d => new UserDogDTO
+                    {
+                        Id = d.Id,
+                        Name = d.Name,
+                        ImageUrl = d.Images.FirstOrDefault(i => i.Order == 0)?.Url
+                    }).ToList(),
                     Images = ParkImages
                 };
 

@@ -10,8 +10,8 @@ namespace TailBuddys.Core.DTO
         public string? Address { get; set; }
         public double Lon { get; set; }
         public double Lat { get; set; }
-        public int DogLikes { get; set; }
         public double? Distance { get; set; }
+        public List<UserDogDTO> DogLikes { get; set; } = new List<UserDogDTO>();
         public List<ImageDTO> Images { get; set; } = new List<ImageDTO>();
     }
 }

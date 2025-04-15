@@ -34,7 +34,9 @@ namespace TailBuddys.Infrastructure.Services
             {
                 return await _context.Parks
                     .Include(p => p.Images.OrderBy(i => i.Order))
-                    .Include(p => p.DogLikes).ToListAsync();
+                    .Include(p => p.DogLikes)
+                    .ThenInclude(d => d.Images)
+                    .ToListAsync();
             }
             catch (Exception ex)
             {

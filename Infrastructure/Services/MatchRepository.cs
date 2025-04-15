@@ -31,11 +31,11 @@ namespace TailBuddys.Infrastructure.Services
         public async Task<List<Match>> GetAllMutualMatchesDb(int dogId)
         {
             try
-            {
+            {// מה קורה אם יוזר מחק מאץ' איתי אחרי שכבר נוצר אחד כזה
                 List<Match> list = await _context.Matches
                      .Include(m => m.SenderDog)
                      .Include(m => m.ReceiverDog!)
-                         .ThenInclude(d => d.Images)
+                     .ThenInclude(d => d.Images)
                      .Where(m => m.SenderDogId == dogId && m.IsMatch == true)
                      .ToListAsync();
                 return list;
