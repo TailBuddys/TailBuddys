@@ -33,9 +33,11 @@ namespace TailBuddys.Infrastructure.Services
             try
             {
                 List<Match> list = await _context.Matches
-                    .Include(m => m.SenderDog)
-                    .Include(m => m.ReceiverDog)
-                    .Where(m => m.SenderDogId == dogId && m.IsMatch == true).ToListAsync();
+                     .Include(m => m.SenderDog)
+                     .Include(m => m.ReceiverDog!)
+                         .ThenInclude(d => d.Images)
+                     .Where(m => m.SenderDogId == dogId && m.IsMatch == true)
+                     .ToListAsync();
                 return list;
             }
             catch (Exception ex)

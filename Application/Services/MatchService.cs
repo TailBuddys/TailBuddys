@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using TailBuddys.Application.Interfaces;
+using TailBuddys.Core.DTO;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
 using TailBuddys.Hubs;
@@ -105,18 +106,28 @@ namespace TailBuddys.Application.Services
             }
         }
 
-        public async Task<List<Match>> GetAllMutualMatches(int dogId)
+        public async Task<List<MatchDTO>> GetAllMutualMatches(int dogId)
         {
             // ליצור מודל של כלב עם תמונה ושם להחזרה לפרונט
             // לבנות מודל DTO
             try
             {
-                return await _matchRepository.GetAllMutualMatchesDb(dogId);
+                List<Match> matches = await _matchRepository.GetAllMutualMatchesDb(dogId);
+                List<MatchDTO> matchDTOs = matches.Select(m => new MatchDTO
+                {
+                    Id = m.Id,
+                    ReceiverDogId = m.ReceiverDog?.Id ?? 0,
+                    ReceiverDogName = m.ReceiverDog?.Name ?? string.Empty,
+                    ReceiverDogImage = m.ReceiverDog?.Images?
+                    .FirstOrDefault(i => i.Order == 0)?.Url ?? null,
+                    }).ToList();
+
+                return matchDTOs;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return new List<Match>();
+                return new List<MatchDTO>();
             }
         }
         public async Task<List<Match>> GetAllMatchesAsSenderDog(int dogId)

@@ -1,4 +1,5 @@
-﻿using TailBuddys.Core.Models;
+﻿using TailBuddys.Core.DTO;
+using TailBuddys.Core.Models;
 
 namespace TailBuddys.Application.Interfaces
 {
@@ -6,7 +7,7 @@ namespace TailBuddys.Application.Interfaces
     {
         Task<Match?> CreateMatch(Match match);
         Task HandleNewMatch(int senderDogId, int receiverDogId, int matchId);
-        Task<List<Match>> GetAllMutualMatches(int dogId); // לשימוש של הפרונט
+        Task<List<MatchDTO>> GetAllMutualMatches(int dogId); // לשימוש של הפרונט
         Task<List<Match>> GetAllMatchesAsSenderDog(int dogId); // לשימוש פנימי של הסרוויס ??????
         Task<List<Match>> GetAllMatchesAsReceiverDog(int dogId); // לשימוש פנימי של הסרוויס ?????
         Task<Match?> GetMatchById(int matchId);

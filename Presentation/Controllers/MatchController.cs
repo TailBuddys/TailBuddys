@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TailBuddys.Application.Interfaces;
+using TailBuddys.Core.DTO;
 using TailBuddys.Core.Models;
 
 namespace TailBuddys.Presentation.Controllers
@@ -51,7 +52,7 @@ namespace TailBuddys.Presentation.Controllers
 
             if (clientDogId != 0)
             {
-                List<Match> result = await _matchService.GetAllMutualMatches(dogId);
+                List<MatchDTO> result = await _matchService.GetAllMutualMatches(dogId);
                 if (result == null)
                 {
                     return BadRequest();
