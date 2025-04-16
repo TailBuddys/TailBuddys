@@ -112,7 +112,7 @@ namespace TailBuddys.Presentation.Controllers
 
             if (clientDogId == dogId && clientDogId != 0)
             {
-                Park? result = await _parkService.LikeUnlikePark(parkId, dogId);
+                ParkDTO? result = await _parkService.LikeUnlikePark(parkId, dogId);
                 if (result == null)
                 {
                     return BadRequest();

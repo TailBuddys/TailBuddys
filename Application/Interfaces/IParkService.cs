@@ -11,6 +11,6 @@ namespace TailBuddys.Application.Interfaces
         Task<ParkDTO?> GetParkById(int parkId);
         Task<Park?> UpdatePark(int parkId, Park park);
         Task<Park?> DeletePark(int parkId);
-        Task<Park?> LikeUnlikePark(int parkId, int dogId);
+        Task<ParkDTO?> LikeUnlikePark(int parkId, int dogId);
     }
 }

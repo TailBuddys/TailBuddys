@@ -144,11 +144,11 @@ namespace TailBuddys.Application.Services
                     Dog? currentDog = unmatchedDogs.FirstOrDefault(d => d.Id == dog.EntityId);
 
                     if (currentDog != null
-                        && (filters.distance == null || filters.distance >= dog.Distance)
+                        && (filters.Distance == null || filters.Distance >= dog.Distance)
                         && (filters.Type == null || filters.Type.Contains(currentDog.Type))
                         && (filters.Size == null || filters.Size.Contains(currentDog.Size))
-                        && (filters.Gender == null || filters.Gender == currentDog.Gender)
-                        && (filters.Vaccinated == null || filters.Vaccinated == currentDog.Vaccinated))
+                        && (filters.Gender == null || filters.Gender.Contains(currentDog.Gender))
+                        && (filters.Vaccinated == null || filters.Vaccinated.Contains(currentDog.Vaccinated)))
                     {
                         List<ImageDTO> dogImages = new List<ImageDTO>();
                         foreach (Image image in currentDog.Images.OrderBy(d => d.Order))

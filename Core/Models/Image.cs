@@ -20,6 +20,4 @@ namespace TailBuddys.Core.Models
         [JsonIgnore]
         public Park? Park { get; set; }
     }
-
-
 }

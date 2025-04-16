@@ -117,7 +117,7 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                Park? park = await _context.Parks.Include(p => p.DogLikes).FirstOrDefaultAsync(p => p.Id == parkId);
+                Park? park = await _context.Parks.Include(p => p.DogLikes).ThenInclude(d => d.Images).FirstOrDefaultAsync(p => p.Id == parkId);
                 Dog? dog = await _context.Dogs.Include(d => d.FavParks).FirstOrDefaultAsync(d => d.Id == dogId);
                 if (park == null || dog == null)
                     return null;
@@ -134,6 +134,7 @@ namespace TailBuddys.Infrastructure.Services
                 }
 
                 await _context.SaveChangesAsync();
+                park = await _context.Parks.Include(p => p.DogLikes).ThenInclude(d => d.Images).FirstOrDefaultAsync(p => p.Id == parkId);
                 return park;
             }
             catch (Exception ex)

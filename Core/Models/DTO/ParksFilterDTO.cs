@@ -4,6 +4,6 @@
     {
 
         public int? DogLikes { get; set; }
-        public double? Distance { get; set; }
+        public int? Distance { get; set; }
     }
 }

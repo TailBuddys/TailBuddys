@@ -178,11 +178,22 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        public async Task<Park?> LikeUnlikePark(int parkId, int dogId)
+        public async Task<ParkDTO?> LikeUnlikePark(int parkId, int dogId)
         {
             try
             {
-                return await _parkRepository.LikeUnlikeParkDb(parkId, dogId);
+                Park? park = await _parkRepository.LikeUnlikeParkDb(parkId, dogId);
+                if (park == null) return null;
+                return new ParkDTO
+                {
+                    Id = park.Id,
+                    DogLikes = park.DogLikes.Select(d => new UserDogDTO
+                    {
+                        Id = d.Id,
+                        Name = d.Name,
+                        ImageUrl = d.Images.FirstOrDefault(i => i.Order == 0)?.Url
+                    }).ToList(),
+                };
             }
             catch (Exception e)
             {
