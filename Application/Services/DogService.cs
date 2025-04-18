@@ -43,6 +43,7 @@ namespace TailBuddys.Application.Services
                 dog.UserId = userId;
                 User? user = await _userService.GetOne(userId);
                 if (user == null) return null;
+                dog.IsBot = false;
 
                 Dog? dogToCreate = await _dogRepository.CreateDogDb(dog);
                 if (dogToCreate == null) return null;

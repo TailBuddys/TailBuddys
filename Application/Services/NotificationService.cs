@@ -15,23 +15,37 @@ namespace TailBuddys.Application.Services
         }
 
         //CHAT//
+        //public async Task<ChatNotification?> CreateOrUpdateChatNotification(int chatId, int dogId)
+        //{
+        //    ChatNotification? chatNotify = await _notificationRepository.GetChatNotificationsByIdDB(chatId, dogId);
+
+
+        //    if (chatNotify == null)
+        //    {
+        //        chatNotify = new ChatNotification
+        //        {
+        //            DogId = dogId,
+        //            ChatId = chatId,
+        //            UnreadCount = 1
+        //        };
+        //        return await _notificationRepository.CreateChatNotificationDB(chatNotify.ChatId, chatNotify.DogId);
+        //    }
+
+        //    return await _notificationRepository.UpdateChatNotificationsByIdDB(chatId, dogId);
+        //}
+
         public async Task<ChatNotification?> CreateOrUpdateChatNotification(int chatId, int dogId)
         {
-            ChatNotification? chatNotify = await _notificationRepository.GetChatNotificationsByIdDB(chatId, dogId);
+            var existing = await _notificationRepository.GetChatNotificationsByIdDB(chatId, dogId);
 
-
-            if (chatNotify == null)
+            if (existing == null)
             {
-                chatNotify = new ChatNotification
-                {
-                    DogId = dogId,
-                    ChatId = chatId,
-                    UnreadCount = 1
-                };
-                return await _notificationRepository.CreateChatNotificationDB(chatNotify.ChatId, chatNotify.DogId);
+                return await _notificationRepository.CreateChatNotificationDB(chatId, dogId);
             }
-
-            return await _notificationRepository.UpdateChatNotificationsByIdDB(chatId, dogId);
+            else
+            {
+                return await _notificationRepository.UpdateChatNotificationsByIdDB(chatId, dogId);
+            }
         }
 
         public async Task<List<ChatNotification>> GetAllDogChatsNotifications(int dogId)

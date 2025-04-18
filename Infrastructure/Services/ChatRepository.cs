@@ -32,6 +32,9 @@ namespace TailBuddys.Infrastructure.Services
             try
             {
                 List<Chat> list = await _context.Chats
+                    .Include(c => c.SenderDog!).ThenInclude(d => d.Images)
+                    .Include(c => c.ReceiverDog!).ThenInclude(d => d.Images)
+                    .Include(c => c.Messages)
                     .Where(c => c.SenderDogId == dogId || c.ReceiverDogId == dogId).ToListAsync();
                 return list;
             }
@@ -45,7 +48,11 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                Chat? chat = await _context.Chats.FirstOrDefaultAsync(c => c.Id == chatId);
+                Chat? chat = await _context.Chats
+                    .Include(c => c.SenderDog!).ThenInclude(d => d.Images)
+                    .Include(c => c.ReceiverDog!).ThenInclude(d => d.Images)
+                    .Include(c => c.Messages)
+                    .FirstOrDefaultAsync(c => c.Id == chatId);
                 return chat;
             }
             catch (Exception ex)

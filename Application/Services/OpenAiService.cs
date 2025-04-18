@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using TailBuddys.Application.Interfaces;
+using TailBuddys.Core.Models;
 using TailBuddys.Core.Models.SubModels;
 
 public class OpenAiService : IOpenAiService
@@ -78,6 +79,68 @@ public class OpenAiService : IOpenAiService
                 Breed = -1,
                 Size = -1
             };
+        }
+    }
+
+    private string BuildConversationPrompt(User user, Dog userDog, User otherOwner, Dog otherDog, Chat chat)
+    {
+        string FormatUser(User u) =>
+            $"{u.FirstName} {u.LastName}, {(u.Gender?.ToString() ?? "Unknown Gender")}, born on {u.BirthDate?.ToString("yyyy-MM-dd") ?? "Unknown Birth Date"}";
+
+        string FormatDog(Dog d) =>
+            $"{d.Name}, a {d.Size?.ToString().ToLower() ?? "unknown size"} " +
+            $"{(d.Gender.HasValue ? (d.Gender.Value ? "male" : "female") : "gender unknown")} " +
+            $"{d.Type?.ToString().Replace("_", " ") ?? "dog"} " +
+            $"born on {d.BirthDate?.ToString("yyyy-MM-dd") ?? "Unknown Date"}, " +
+            $"{(d.Vaccinated == true ? "vaccinated" : "not vaccinated")} and lives at {d.Address ?? "unknown location"}";
+
+        return $@"
+        You are {FormatUser(user)}. You own a dog named {FormatDog(userDog)}.
+
+        You are currently chatting with {FormatUser(otherOwner)}, who owns a dog named {FormatDog(otherDog)}.
+
+        Here is your conversation so far:
+        {chat.Messages}
+
+        The other owner just sent a new message.
+
+        Based on the latest message, the prior chat history, and your dog's personality — write a short, friendly reply.
+
+        ✅ Only return your new reply as a plain string. No formatting, no explanation.
+        ";
+    }
+    public async Task<string> GetDogChatBotReplyAsync(User user, Dog userDog, User otherOwner, Dog otherDog, Chat chat)
+    {
+        try
+        {
+            string prompt = BuildConversationPrompt(user, userDog, otherOwner, otherDog, chat);
+
+            var requestBody = new
+            {
+                model = "gpt-4-turbo",
+                messages = new object[]
+                {
+            new { role = "user", content = prompt }
+                },
+                max_tokens = 100
+            };
+
+            string jsonContent = JsonConvert.SerializeObject(requestBody);
+            var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
+            response.EnsureSuccessStatusCode();
+
+            string responseBody = await response.Content.ReadAsStringAsync();
+            dynamic result = JsonConvert.DeserializeObject(responseBody);
+            string reply = result.choices[0].message.content;
+
+            return reply.Trim();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ChatBot error: {ex.Message}");
+            return string.Empty;
         }
     }
 }

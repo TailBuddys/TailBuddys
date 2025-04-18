@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TailBuddys.Application.Interfaces;
+using TailBuddys.Core.DTO;
 using TailBuddys.Core.Models;
+using TailBuddys.Core.Models.DTO;
 
 namespace TailBuddys.Presentation.Controllers
 {
@@ -43,7 +45,7 @@ namespace TailBuddys.Presentation.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllDogChates(int dogId)
+        public async Task<IActionResult> GetAllDogChats(int dogId)
         {
             int ClientDogId;
             int.TryParse(HttpContext.User.Claims
@@ -51,7 +53,7 @@ namespace TailBuddys.Presentation.Controllers
 
             if (dogId != 0)
             {
-                List<Chat> result = await _chatService.GetAllDogChats(dogId);
+                List<ChatDTO> result = await _chatService.GetAllDogChats(dogId);
                 if (result == null)
                 {
                     return NotFound();
@@ -66,7 +68,7 @@ namespace TailBuddys.Presentation.Controllers
         [Authorize]
         public async Task<IActionResult> GetChatById(int chatId)
         {
-            Chat? result = await _chatService.GetChatById(chatId);
+            FullChatDTO? result = await _chatService.GetChatById(chatId);
             if (result == null)
             {
                 return NotFound();
@@ -74,7 +76,7 @@ namespace TailBuddys.Presentation.Controllers
 
             int ClientDogId;
             int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId"
-            && (c.Value == result.SenderDogId.ToString() || c.Value == result.ReceiverDogId.ToString()))?.Value, out ClientDogId);
+            && (c.Value == result.SenderDog.Id.ToString() || c.Value == result.ReceiverDog.Id.ToString()))?.Value, out ClientDogId);
 
             if (ClientDogId != 0)
             {
@@ -106,7 +108,7 @@ namespace TailBuddys.Presentation.Controllers
         public async Task<IActionResult> Delete(int chatId)
         {
 
-            Chat? chatToDelete = await _chatService.GetChatById(chatId);
+            Chat? chatToDelete = await _chatService.GetChatDetailsById(chatId);
             if (chatToDelete == null)
             {
                 return NotFound();
@@ -136,7 +138,7 @@ namespace TailBuddys.Presentation.Controllers
             {
                 return BadRequest(ModelState);
             }
-            Chat? chatToUpdate = await _chatService.GetChatById(message.ChatID);
+            Chat? chatToUpdate = await _chatService.GetChatDetailsById(message.ChatID);
             if (chatToUpdate == null)
             {
                 return NotFound();
@@ -147,7 +149,7 @@ namespace TailBuddys.Presentation.Controllers
 
             if (ClientDogId == 0 || (ClientDogId != chatToUpdate.SenderDogId && ClientDogId != chatToUpdate.ReceiverDogId)) return Unauthorized();
 
-            Message? result = await _chatService.AddMessageToChat(message);
+            Message? result = await _chatService.AddMessageToChat(chatToUpdate, message);
             if (result == null)
             {
                 return BadRequest();

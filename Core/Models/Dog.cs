@@ -26,6 +26,7 @@ namespace TailBuddys.Core.Models
         public double Lon { get; set; }
         public double Lat { get; set; }
         public bool? Vaccinated { get; set; }
+        public bool? IsBot { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         [JsonIgnore]
