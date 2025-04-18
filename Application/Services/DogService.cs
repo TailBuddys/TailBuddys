@@ -124,7 +124,10 @@ namespace TailBuddys.Application.Services
             {
                 List<Dog> unmatchedDogs = await _dogRepository.GetUnMatchedDogsDb(dogId);
                 Dog? originDog = await _dogRepository.GetDogByIdDb(dogId);
-                if (originDog == null) { return new List<DogDTO>(); }
+                if (originDog == null)
+                {
+                    return new List<DogDTO>();
+                }
                 EntityDistance originDogLocation = new EntityDistance
                 {
                     EntityId = originDog.Id,
@@ -138,18 +141,19 @@ namespace TailBuddys.Application.Services
                 List<EntityDistance> updatedDogsDistance = MapDistanceHelper.CalculateDistance(originDogLocation, dogsDistance);
 
                 List<DogDTO> finalDogsList = new List<DogDTO>();
-
                 foreach (EntityDistance dog in updatedDogsDistance)
                 {
                     Dog? currentDog = unmatchedDogs.FirstOrDefault(d => d.Id == dog.EntityId);
 
                     if (currentDog != null
                         && (filters.Distance == null || filters.Distance >= dog.Distance)
-                        && (filters.Type == null || filters.Type.Contains(currentDog.Type))
+                        && (filters.Breeds == null || filters.Breeds.Contains(currentDog.Type))
                         && (filters.Size == null || filters.Size.Contains(currentDog.Size))
                         && (filters.Gender == null || filters.Gender.Contains(currentDog.Gender))
-                        && (filters.Vaccinated == null || filters.Vaccinated.Contains(currentDog.Vaccinated)))
+                        && (filters.Vaccinated == null || filters.Vaccinated.Contains(currentDog.Vaccinated))
+                        )
                     {
+
                         List<ImageDTO> dogImages = new List<ImageDTO>();
                         foreach (Image image in currentDog.Images.OrderBy(d => d.Order))
                         {

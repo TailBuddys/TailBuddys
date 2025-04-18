@@ -34,7 +34,6 @@ namespace TailBuddys.Application.Services
             // צריך להכליל בפונקציה הזו גם עדכון של נוטיפיקיישן סרוויס
             try
             {
-
                 if (match.ReceiverDogId == 0 || match.SenderDogId == 0) return null;
 
                 (Dog? receiverDog, Dog? senderDog) = (await _dogRepository.GetDogByIdDb(match.ReceiverDogId),
@@ -120,7 +119,7 @@ namespace TailBuddys.Application.Services
                     ReceiverDogName = m.ReceiverDog?.Name ?? string.Empty,
                     ReceiverDogImage = m.ReceiverDog?.Images?
                     .FirstOrDefault(i => i.Order == 0)?.Url ?? null,
-                    }).ToList();
+                }).ToList();
 
                 return matchDTOs;
             }

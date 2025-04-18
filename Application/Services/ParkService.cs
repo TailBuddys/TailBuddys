@@ -47,7 +47,8 @@ namespace TailBuddys.Application.Services
 
                 if (filters.DogLikes != null)
                 {
-                    parks = parks.Where(park => park.DogLikes.Count > filters.DogLikes).ToList();
+                    parks = parks.Where(park => park.DogLikes.Count >= filters.DogLikes).ToList();
+
                 }
 
                 if (dogId != null)

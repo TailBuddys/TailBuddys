@@ -28,8 +28,6 @@ namespace TailBuddys.Presentation.Controllers
             int.TryParse(HttpContext.User.Claims
                .FirstOrDefault(c => c.Type == "DogId" && c.Value == match.SenderDogId.ToString())?.Value, out dogId);
 
-
-
             if (dogId != 0)
             {
                 Match? result = await _matchService.CreateMatch(match);
