@@ -33,11 +33,19 @@ namespace TailBuddys.Application.Services
             // להגדיר שליחת הודעה ראשונה בעת פתיחת צ'אט חדש
             try
             {
-                Match? myMatch = _matchRepository.GetAllMatchesAsSenderDogDb(chat.SenderDogId)
-                    .Result.FirstOrDefault(m => m.ReceiverDogId == chat.ReceiverDogId);
+                //GPT review 
 
-                Match? foreignMatch = _matchRepository.GetAllMatchesAsReceiverDogDb(chat.SenderDogId)
-                    .Result.FirstOrDefault(m => m.SenderDogId == chat.ReceiverDogId);
+                var senderMatches = await _matchRepository.GetAllMatchesAsSenderDogDb(chat.SenderDogId);
+                Match? myMatch = senderMatches.FirstOrDefault(m => m.ReceiverDogId == chat.ReceiverDogId);
+
+                var receiverMatches = await _matchRepository.GetAllMatchesAsReceiverDogDb(chat.SenderDogId);
+                Match? foreignMatch = receiverMatches.FirstOrDefault(m => m.SenderDogId == chat.ReceiverDogId);
+
+                //Match? myMatch = _matchRepository.GetAllMatchesAsSenderDogDb(chat.SenderDogId)
+                //    .Result.FirstOrDefault(m => m.ReceiverDogId == chat.ReceiverDogId);
+
+                //Match? foreignMatch = _matchRepository.GetAllMatchesAsReceiverDogDb(chat.SenderDogId)
+                //    .Result.FirstOrDefault(m => m.SenderDogId == chat.ReceiverDogId);
 
                 if (myMatch != null && foreignMatch != null && myMatch.IsMatch && foreignMatch.IsMatch)
                 {
@@ -86,7 +94,7 @@ namespace TailBuddys.Application.Services
                                 Name = receiverDog.Name,
                                 ImageUrl = receiverDog.Images.FirstOrDefault(i => i.Order == 0)?.Url
                             },
-                            LastMessage = chat.Messages.Last()
+                            LastMessage = chat.Messages.LastOrDefault()
                         });
                     }
                 }
@@ -106,7 +114,7 @@ namespace TailBuddys.Application.Services
             {
                 Chat? chat = await _chatRepository.GetChatByIdDb(chatId);
                 if (chat == null) return null;
-                FullChatDTO chatToReturn = new FullChatDTO
+                return new FullChatDTO
                 {
                     Id = chat.Id,
                     SenderDog = new UserDogDTO
@@ -123,7 +131,6 @@ namespace TailBuddys.Application.Services
                     },
                     Messages = chat.Messages.ToList()
                 };
-                return chatToReturn;
             }
 
             catch (Exception e)
@@ -176,7 +183,7 @@ namespace TailBuddys.Application.Services
                     if (user != null && otherUser != null)
                     {
                         string aiResponse = await _openAiService.GetDogChatBotReplyAsync(user, receiverDog, otherUser, senderDog, chatToUpdate);
-                        if (aiResponse != null)
+                        if (!string.IsNullOrWhiteSpace(aiResponse))
                         {
                             await _chatRepository.AddMessageToChatDb(new Message
                             {

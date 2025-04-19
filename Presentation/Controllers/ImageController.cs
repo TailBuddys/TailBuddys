@@ -31,7 +31,7 @@ namespace TailBuddys.Presentation.Controllers
 
                 if (ParkResult == null)
                 {
-                    return BadRequest("park bad");
+                    return BadRequest("Failed to upload park image.");
                 }
                 return Ok(ParkResult);
             }
@@ -49,10 +49,9 @@ namespace TailBuddys.Presentation.Controllers
             }
 
             string? dogResult = await _imageService.UploadImage(file, entityId, entityType);
-            Console.WriteLine(entityId + " " + entityType.ToString());
             if (dogResult == null)
             {
-                return BadRequest("dog result bad");
+                return BadRequest("Failed to upload dog image.");
             }
 
             if (await _imageService.IsFirstImage(entityId))
@@ -61,13 +60,12 @@ namespace TailBuddys.Presentation.Controllers
                 if (AiResult.Size != -1 && AiResult.Breed != -1)
                 {
                     Dog? dogToUpdate = await _dogRepository.GetDogByIdDb(dogId);
-                    if (dogToUpdate == null)
+                    if (dogToUpdate != null)
                     {
-                        return Ok(dogResult);
+                        dogToUpdate.Type = (DogType)AiResult.Breed;
+                        dogToUpdate.Size = (DogSize)AiResult.Size;
+                        await _dogRepository.UpdateDogDb(dogId, dogToUpdate);
                     }
-                    dogToUpdate.Type = (DogType)AiResult.Breed;
-                    dogToUpdate.Size = (DogSize)AiResult.Size;
-                    await _dogRepository.UpdateDogDb(dogId, dogToUpdate);
                 }
             }
             return Ok(dogResult);

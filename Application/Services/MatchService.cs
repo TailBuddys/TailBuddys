@@ -65,29 +65,28 @@ namespace TailBuddys.Application.Services
                 }
                 if (match.IsLike && foreignMatch != null && foreignMatch.IsLike)
 
-                    if (match.IsLike && foreignMatch.IsLike)
-                    {
-                        match.IsMatch = true;
-                        foreignMatch.IsMatch = true;
-                        foreignMatch.UpdatedAt = DateTime.Now;
-                        await _matchRepository.UpdateMatchDb(foreignMatch.Id, foreignMatch);
-                        Match? newMatch = await _matchRepository.CreateMatchDb(match);
+                {
+                    match.IsMatch = true;
+                    foreignMatch.IsMatch = true;
+                    foreignMatch.UpdatedAt = DateTime.Now;
+                    await _matchRepository.UpdateMatchDb(foreignMatch.Id, foreignMatch);
+                    Match? newMatch = await _matchRepository.CreateMatchDb(match);
 
-                        if (newMatch != null)
-                        {
-                            await HandleNewMatch(
-                                foreignMatch.SenderDogId,
-                                foreignMatch.ReceiverDogId,
-                                foreignMatch.Id
-                                );
-                            await HandleNewMatch(
-                                newMatch.SenderDogId,
-                                newMatch.ReceiverDogId,
-                                newMatch.Id
-                                );
-                        }
-                        return newMatch;
+                    if (newMatch != null)
+                    {
+                        await HandleNewMatch(
+                            foreignMatch.SenderDogId,
+                            foreignMatch.ReceiverDogId,
+                            foreignMatch.Id
+                            );
+                        await HandleNewMatch(
+                            newMatch.SenderDogId,
+                            newMatch.ReceiverDogId,
+                            newMatch.Id
+                            );
                     }
+                    return newMatch;
+                }
                 return await _matchRepository.CreateMatchDb(match);
             }
             catch (Exception e)

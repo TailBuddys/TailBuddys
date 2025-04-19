@@ -52,7 +52,7 @@ namespace TailBuddys.Presentation.Controllers
             int.TryParse(HttpContext.User.Claims
                .FirstOrDefault(c => c.Type == "DogId" && c.Value == dogId.ToString())?.Value, out clientDogId);
 
-            if (dogId != 0)
+            if (clientDogId != 0)
             {
                 List<ParkDTO> result = await _parkService.GetAllParks(dogId, filters);
                 if (result == null)

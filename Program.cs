@@ -75,12 +75,27 @@ namespace TailBuddys
                         ValidIssuer = "TailBuddysServer",
                         ValidAudience = "TailBuddysApp",
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                            "31cb3b1a-f4f3-466e-9099-d4f49a0dd4b8"))
+                            "31cb3b1a-f4f3-466e-9099-d4f49a0dd4b8"))// Consider securing this via secret storage
                     };
 
-                    // שורת דיבאג - להסיר בסוף השימוש
+                    // Allow SignalR access token from query string
                     options.Events = new JwtBearerEvents
                     {
+                        // GPT review 
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/NotificationHub") || path.StartsWithSegments("/ChatHub")))
+                            {
+                                context.Token = accessToken.ToString().Replace("Bearer ", "");
+                            }
+
+                            return Task.CompletedTask;
+                        },
+                        //
                         OnAuthenticationFailed = context =>
                         {
                             Console.WriteLine("Authentication failed: " + context.Exception.Message);
@@ -129,9 +144,9 @@ namespace TailBuddys
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<NotificationHub>("/NotificationHub");
-                // Other endpoint mappings...
+                endpoints.MapHub<ChatHub>("/ChatHub");
+                endpoints.MapControllers(); // Web API controllers
             });
-
             app.MapControllers();
 
             app.Run();

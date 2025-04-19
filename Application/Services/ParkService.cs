@@ -54,24 +54,27 @@ namespace TailBuddys.Application.Services
                 if (dogId != null)
                 {
                     DogDTO? myDog = await _dogService.GetOne(dogId.Value, true);
-                    EntityDistance myDogLocation = new EntityDistance
+                    if (myDog != null)
                     {
-                        EntityId = myDog.Id,
-                        Lat = myDog.Lat,
-                        Lon = myDog.Lon,
-                    };
+                        EntityDistance myDogLocation = new EntityDistance
+                        {
+                            EntityId = myDog.Id,
+                            Lat = myDog.Lat,
+                            Lon = myDog.Lon,
+                        };
 
-                    List<EntityDistance> parksDistance = parks
-                    .Select(park => new EntityDistance { EntityId = park.Id, Lat = park.Lat, Lon = park.Lon }).ToList();
+                        List<EntityDistance> parksDistance = parks
+                        .Select(park => new EntityDistance { EntityId = park.Id, Lat = park.Lat, Lon = park.Lon }).ToList();
 
-                    updatedParksDistance = MapDistanceHelper.CalculateDistance(myDogLocation, parksDistance);
+                        updatedParksDistance = MapDistanceHelper.CalculateDistance(myDogLocation, parksDistance);
 
-                    if (filters.Distance != null)
-                    {
-                        updatedParksDistance = updatedParksDistance.Where(park => park.Distance < filters.Distance).ToList();
+                        if (filters.Distance != null)
+                        {
+                            updatedParksDistance = updatedParksDistance.Where(park => park.Distance < filters.Distance).ToList();
+                        }
+
+                        parks = parks.Where(park => updatedParksDistance.Any(ed => ed.EntityId == park.Id)).ToList();
                     }
-
-                    parks = parks.Where(park => updatedParksDistance.Any(ed => ed.EntityId == park.Id)).ToList();
                 }
 
                 List<ParkDTO> finalParksList = parks

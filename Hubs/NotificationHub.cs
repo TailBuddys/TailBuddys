@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using System.IdentityModel.Tokens.Jwt;
 using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.Interfaces;
 
 namespace TailBuddys.Hubs
 {
+    [Authorize]
     public class NotificationHub : Hub
     {
         private readonly HashSet<int> _activeDogs; // Injected singleton
@@ -26,8 +28,13 @@ namespace TailBuddys.Hubs
 
         public async Task<bool> JoinDogGroup(int dogId)
         {
-            int userId = GetUserIdFromToken();
-            if (userId == 0) return false;
+            //int userId = GetUserIdFromToken();
+            //if (userId == 0) return false;
+
+            // GPT review
+            int userId = int.Parse(Context.User?.FindFirst("id")?.Value ?? "0"); // ✅ Prevents exception on null
+            if (userId == 0)
+                return false;
 
             var dogs = await _dogRepository.GetAllUserDogsDb(userId);
             if (!dogs.Any(d => d.Id == dogId))
@@ -55,8 +62,11 @@ namespace TailBuddys.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            Console.WriteLine("conection disconected");
-            int userId = GetUserIdFromToken();
+            // GPT review
+            int userId = int.Parse(Context.User?.FindFirst("id")?.Value ?? "0");
+
+            //Console.WriteLine("conection disconected");
+            //int userId = GetUserIdFromToken();
             var dogs = await _dogRepository.GetAllUserDogsDb(userId);
             foreach (var dog in dogs)
             {
@@ -76,16 +86,18 @@ namespace TailBuddys.Hubs
             }
         }
 
-        public int GetUserIdFromToken()
-        {
-            var httpContext = Context.GetHttpContext();
-            var usertoken = httpContext?.Request.Query["access_token"].ToString();
-            if (string.IsNullOrEmpty(usertoken) || !usertoken.StartsWith("Bearer ")) return 0;
-            var token = usertoken.Substring(7);
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
-            return int.Parse(jwtToken?.Claims.FirstOrDefault(c => c.Type == "id")?.Value ?? "0");
-        }
+        // GPT review 
+
+        //public int GetUserIdFromToken()
+        //{
+        //    var httpContext = Context.GetHttpContext();
+        //    var usertoken = httpContext?.Request.Query["access_token"].ToString();
+        //    if (string.IsNullOrEmpty(usertoken) || !usertoken.StartsWith("Bearer ")) return 0;
+        //    var token = usertoken.Substring(7);
+        //    var handler = new JwtSecurityTokenHandler();
+        //    var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
+        //    return int.Parse(jwtToken?.Claims.FirstOrDefault(c => c.Type == "id")?.Value ?? "0");
+        //}
 
 
         //--------------------------------------------------------------------------//

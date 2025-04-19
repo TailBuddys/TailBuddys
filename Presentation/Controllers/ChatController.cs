@@ -172,15 +172,41 @@ namespace TailBuddys.Presentation.Controllers
         //}
 
 
+        //[HttpPatch("message/{messageId}")]
+        //[Authorize]
+        //// לשנות את הפונקציה לעבוד כפאטץ' מכיוון ועובד מהר יותר
+        //public async Task<IActionResult> MarkMessageAsRead(int messageId)
+        //{
+        //    Message? result = await _chatService.MarkMessageAsRead(messageId);
+        //    if (result == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return Ok(result);
+        //}
+
+        // GPT review
+
         [HttpPatch("message/{messageId}")]
         [Authorize]
-        // לשנות את הפונקציה לעבוד כפאטץ' מכיוון ועובד מהר יותר
         public async Task<IActionResult> MarkMessageAsRead(int messageId)
         {
             Message? result = await _chatService.MarkMessageAsRead(messageId);
             if (result == null)
             {
                 return NotFound();
+            }
+            FullChatDTO? chat = await _chatService.GetChatById(result.ChatID);
+            if (chat == null)
+            {
+                return NotFound();
+            }
+            int clientDogId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId"
+                && (c.Value == chat.SenderDog.Id.ToString() || c.Value == chat.ReceiverDog.Id.ToString()))?.Value, out clientDogId);
+            if (clientDogId == 0)
+            {
+                return Unauthorized();
             }
             return Ok(result);
         }

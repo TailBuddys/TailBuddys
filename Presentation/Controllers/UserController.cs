@@ -60,14 +60,13 @@ namespace TailBuddys.Presentation.Controllers
         }
 
         [HttpGet("{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetUserById(int id)
         {
             int userId;
             int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value, out userId);
             string? isUserAdmin = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value;
 
-            Console.WriteLine(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
             if (isUserAdmin == "True" || (userId == id && userId != 0))
             {
                 User? result = await _userService.GetOne(id);
@@ -77,7 +76,7 @@ namespace TailBuddys.Presentation.Controllers
                 }
                 return Ok(result);
             }
-            else return Unauthorized();
+            return Unauthorized();
         }
 
         [HttpPut("{id}")]
@@ -101,7 +100,7 @@ namespace TailBuddys.Presentation.Controllers
                 }
                 return Ok(result);
             }
-            else return Unauthorized();
+            return Unauthorized();
         }
 
         [HttpDelete("{id}")]
@@ -121,7 +120,7 @@ namespace TailBuddys.Presentation.Controllers
                 }
                 return Ok(result);
             }
-            else return Unauthorized();
+            return Unauthorized();
         }
     }
 }

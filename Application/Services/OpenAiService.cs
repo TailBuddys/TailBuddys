@@ -1,9 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Data;
 using System.Net.Http.Headers;
+using System.Numerics;
 using System.Text;
 using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.Models;
 using TailBuddys.Core.Models.SubModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public class OpenAiService : IOpenAiService
 {
@@ -91,23 +98,32 @@ public class OpenAiService : IOpenAiService
             $"{d.Name}, a {d.Size?.ToString().ToLower() ?? "unknown size"} " +
             $"{(d.Gender.HasValue ? (d.Gender.Value ? "male" : "female") : "gender unknown")} " +
             $"{d.Type?.ToString().Replace("_", " ") ?? "dog"} " +
-            $"born on {d.BirthDate?.ToString("yyyy-MM-dd") ?? "Unknown Date"}, " +
-            $"{(d.Vaccinated == true ? "vaccinated" : "not vaccinated")} and lives at {d.Address ?? "unknown location"}";
+            $"born on {d.BirthDate?.ToString("yyyy-MM-dd") ?? "unknown date"}, " +
+            $"{(d.Vaccinated == true ? "vaccinated" : "not vaccinated")}, lives at {d.Address ?? "unknown location"}";
+
+        string lastMessage = chat?.Messages?.LastOrDefault()?.Content ?? "No recent message.";
+
 
         return $@"
-        You are {FormatUser(user)}. You own a dog named {FormatDog(userDog)}.
+            You are {FormatUser(user)}, the owner of a dog named {FormatDog(userDog)}.
+            You are currently chatting with {FormatUser(otherOwner)}, who owns {FormatDog(otherDog)}.
 
-        You are currently chatting with {FormatUser(otherOwner)}, who owns a dog named {FormatDog(otherDog)}.
+            Here's a summary of your conversation so far:
+            {chat.Messages}
 
-        Here is your conversation so far:
-        {chat.Messages}
+            The other owner just sent a new message:
+            ""{lastMessage}""
 
-        The other owner just sent a new message.
+            Please reply with a friendly and natural message that sounds like a real dog owner responding to that last message.
 
-        Based on the latest message, the prior chat history, and your dog's personality — write a short, friendly reply.
+            ✳️ Keep your reply:
+            - Focused on the most recent message
+            - Friendly and short (1–2 sentences)
+            - Personalized, casual, and fun
+            - Related to your dog when relevant
 
-        ✅ Only return your new reply as a plain string. No formatting, no explanation.
-        ";
+            ✅ Only return your new reply as a plain string. Do not add any formatting, explanation, or roles.";
+
     }
     public async Task<string> GetDogChatBotReplyAsync(User user, Dog userDog, User otherOwner, Dog otherDog, Chat chat)
     {
@@ -132,10 +148,10 @@ public class OpenAiService : IOpenAiService
             response.EnsureSuccessStatusCode();
 
             string responseBody = await response.Content.ReadAsStringAsync();
-            dynamic result = JsonConvert.DeserializeObject(responseBody);
-            string reply = result.choices[0].message.content;
+            var json = JObject.Parse(responseBody);
+            string? reply = json["choices"]?[0]?["message"]?["content"]?.ToString();
 
-            return reply.Trim();
+            return reply?.Trim() ?? string.Empty;
         }
         catch (Exception ex)
         {
