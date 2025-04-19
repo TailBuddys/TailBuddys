@@ -232,6 +232,7 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
+
         public async Task<Dog?> Update(int id, Dog dog)
         {
             try

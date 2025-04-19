@@ -122,7 +122,16 @@ namespace TailBuddys.Application.Services
             try
             {
                 List<Match> matches = await _matchRepository.GetAllMutualMatchesDb(dogId);
-                List<MatchDTO> matchDTOs = matches.Select(m => new MatchDTO
+                Dog? senderDog = await _dogRepository.GetDogByIdDb(dogId);
+                if (senderDog == null) return new List<MatchDTO>();
+
+                List<Match> matchesWithoutChats = matches
+                    .Where(m => m.ReceiverDogId != senderDog.ChatsAsReceiver
+                    .FirstOrDefault(c => c.SenderDogId == m.ReceiverDogId)?.SenderDogId &&
+                     m.ReceiverDogId != senderDog.ChatsAsSender
+                     .FirstOrDefault(c => c.ReceiverDogId == m.ReceiverDogId)?.ReceiverDogId).ToList();
+
+                List<MatchDTO> matchDTOs = matchesWithoutChats.Select(m => new MatchDTO
                 {
                     Id = m.Id,
                     ReceiverDogId = m.ReceiverDog?.Id ?? 0,

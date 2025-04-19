@@ -130,6 +130,7 @@ namespace TailBuddys.Presentation.Controllers
             return Unauthorized();
         }
 
+        // האם נקרא = כן במידה והכלב מחובר להאב
         [HttpPost("message")]
         [Authorize]
         public async Task<IActionResult> AddMessageToChat([FromBody] Message message)
@@ -187,6 +188,7 @@ namespace TailBuddys.Presentation.Controllers
 
         // GPT review
 
+        // לסנן את כל ההודעות שנקראו בצ'אט ולא אחת
         [HttpPatch("message/{messageId}")]
         [Authorize]
         public async Task<IActionResult> MarkMessageAsRead(int messageId)
