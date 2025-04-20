@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using System.IdentityModel.Tokens.Jwt;
 using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.Interfaces;
 
@@ -56,6 +55,8 @@ namespace TailBuddys.Hubs
             {
                 await Clients.Caller.SendAsync("ReceiveNewMatch", matchNotification.MatchId);
             }
+
+            await _notificationService.DeleteMatchesNotifications(dogId);
 
             return true;
         }

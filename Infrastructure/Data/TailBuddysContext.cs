@@ -84,7 +84,15 @@ namespace TailBuddys.Infrastructure.Data
             modelBuilder.Entity<Park>()
                 .HasMany(p => p.DogLikes)
                 .WithMany(d => d.FavParks)
-                .UsingEntity(j => j.ToTable("DogParks"));
+                .UsingEntity<Dictionary<string, object>>(
+                    "DogParks",
+                    j => j.HasOne<Dog>().WithMany().HasForeignKey("DogLikesId"),
+                    j => j.HasOne<Park>().WithMany().HasForeignKey("FavParksId"),
+                    j =>
+                    {
+                        j.HasKey("DogLikesId", "FavParksId");
+                        j.ToTable("DogParks");
+                    });
 
             // Notification - Dog (One-to-Many)
             //modelBuilder.Entity<MatchNotification>()

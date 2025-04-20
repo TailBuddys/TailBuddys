@@ -33,28 +33,37 @@ namespace TailBuddys.Application.Services
             // להגדיר שליחת הודעה ראשונה בעת פתיחת צ'אט חדש
             try
             {
-                //GPT review 
-
                 var senderMatches = await _matchRepository.GetAllMatchesAsSenderDogDb(chat.SenderDogId);
                 Match? myMatch = senderMatches.FirstOrDefault(m => m.ReceiverDogId == chat.ReceiverDogId);
 
                 var receiverMatches = await _matchRepository.GetAllMatchesAsReceiverDogDb(chat.SenderDogId);
                 Match? foreignMatch = receiverMatches.FirstOrDefault(m => m.SenderDogId == chat.ReceiverDogId);
 
-                //Match? myMatch = _matchRepository.GetAllMatchesAsSenderDogDb(chat.SenderDogId)
-                //    .Result.FirstOrDefault(m => m.ReceiverDogId == chat.ReceiverDogId);
-
-                //Match? foreignMatch = _matchRepository.GetAllMatchesAsReceiverDogDb(chat.SenderDogId)
-                //    .Result.FirstOrDefault(m => m.SenderDogId == chat.ReceiverDogId);
-
                 if (myMatch != null && foreignMatch != null && myMatch.IsMatch && foreignMatch.IsMatch)
                 {
                     Chat? foreignChat = _chatRepository.GetAllDogChatsDb(chat.SenderDogId)
                     .Result.FirstOrDefault(c => c.SenderDogId == chat.ReceiverDogId || c.ReceiverDogId == chat.ReceiverDogId);
-
                     if (foreignChat == null)
                     {
-                        return await _chatRepository.CreateChatDb(chat);
+                        Chat? newChat = await _chatRepository.CreateChatDb(chat);
+                        if (newChat != null)
+                        {
+                            bool isReceiverInChatList = ChatHubTracker.IsDogInChat(chat.ReceiverDogId, newChat.Id);
+                            if (isReceiverInChatList)
+                            {
+                                await _chatHubContext.Clients.Group($"DogChats_{chat.ReceiverDogId}")
+                                    .SendAsync("ReceiveNewChat", newChat.Id);
+                            }
+                            else
+                            {
+                                await _notificationService.CreateOrUpdateChatNotification(newChat.Id, chat.ReceiverDogId);
+                            }
+                            return newChat;
+                        }
+                        else
+                        {
+                            return null;
+                        }
                     }
 
                     if (chat.Messages.Count > 0)
@@ -62,10 +71,8 @@ namespace TailBuddys.Application.Services
                         chat.Messages.First().ChatID = foreignChat.Id;
                         await _chatRepository.AddMessageToChatDb(chat.Messages.First());
                     }
-
                     return foreignChat;
                 }
-
                 return null;
             }
             catch (Exception e)
@@ -74,17 +81,23 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
+
         public async Task<List<ChatDTO>> GetAllDogChats(int dogId)
         {
             try
             {
                 List<Chat> chats = await _chatRepository.GetAllDogChatsDb(dogId);
                 List<ChatDTO> ChatsToReturn = new List<ChatDTO>();
+
                 foreach (Chat chat in chats)
                 {
                     Dog? receiverDog = (dogId == chat.SenderDogId) ? chat.ReceiverDog : chat.SenderDog;
                     if (receiverDog != null)
                     {
+                        Message? lastMessage = chat.Messages
+                            .OrderByDescending(m => m.CreatedAt)
+                            .FirstOrDefault();
+
                         ChatsToReturn.Add(new ChatDTO
                         {
                             Id = chat.Id,
@@ -94,20 +107,22 @@ namespace TailBuddys.Application.Services
                                 Name = receiverDog.Name,
                                 ImageUrl = receiverDog.Images.FirstOrDefault(i => i.Order == 0)?.Url
                             },
-                            LastMessage = chat.Messages.LastOrDefault()
+                            LastMessage = lastMessage
                         });
                     }
                 }
-                return ChatsToReturn;
 
+                return ChatsToReturn
+                    .OrderByDescending(c => c.LastMessage?.CreatedAt)
+                    .ToList();
             }
-
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 return new List<ChatDTO>();
             }
         }
+
         public async Task<FullChatDTO?> GetChatById(int chatId)
         {
             try
@@ -195,6 +210,19 @@ namespace TailBuddys.Application.Services
                     }
 
                 }
+                bool isReceiverInChat = ChatHubTracker.IsDogInChat(receiverDog.Id, chatToUpdate.Id);
+                if (isReceiverInChat)
+                {
+                    await _chatHubContext.Clients.Group($"Chat_{chatToUpdate.Id}")
+                        .SendAsync("ReceiveMessage", new { chatId = chatToUpdate.Id, senderDogId = message.SenderDogId, message = message.Content });
+                }
+                else
+                {
+                    await _notificationService.CreateOrUpdateChatNotification(chatToUpdate.Id, receiverDog.Id);
+
+                    await _chatHubContext.Clients.Group($"DogChats_{receiverDog.Id}")
+                        .SendAsync("ReceiveChatNotification", new { chatId = chatToUpdate.Id });
+                }
                 return message;
             }
 
@@ -204,6 +232,7 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
+
         public async Task<List<Message>> GetMessagesByChatId(int chatId)
         {
             try

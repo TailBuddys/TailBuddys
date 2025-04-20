@@ -95,6 +95,10 @@ namespace TailBuddys.Application.Services
                         Images = park.Images.OrderBy(d => d.Order).Select(image => new ImageDTO { Id = image.Id, Url = image.Url }).ToList(),
                         Distance = updatedParksDistance.FirstOrDefault(ed => ed.EntityId == park.Id)?.Distance
                     }).ToList();
+                if (dogId != null)
+                {
+                    return finalParksList.OrderBy(p => p.Distance).ToList();
+                }
 
                 return finalParksList;
             }

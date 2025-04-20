@@ -46,6 +46,11 @@ namespace TailBuddys.Hubs
             }
 
             await Groups.AddToGroupAsync(Context.ConnectionId, $"DogChats_{dogId}");
+            var notifications = await _notificationService.GetAllDogChatsNotifications(dogId);
+            foreach (var notification in notifications)
+            {
+                await Clients.Caller.SendAsync("ReceiveChatNotification", new { chatId = notification });
+            }
         }
 
         public async Task LeaveDogChatsGroup(int dogId)
@@ -72,6 +77,12 @@ namespace TailBuddys.Hubs
             }
 
             await Groups.AddToGroupAsync(Context.ConnectionId, $"Chat_{chatId}");
+            var chatNotification = await _notificationService.GetChatNotificationsById(chatId, dogId);
+            if (chatNotification != null)
+            {
+                await Clients.Caller.SendAsync("ReceiveChatNotification", new { chatId });
+                await _notificationService.DeleteChatNotifications(chatId, dogId);
+            }
         }
 
         public async Task LeaveSpecificChatGroup(int chatId, int dogId)

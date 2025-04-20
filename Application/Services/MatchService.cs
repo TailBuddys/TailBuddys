@@ -74,11 +74,14 @@ namespace TailBuddys.Application.Services
 
                     if (newMatch != null)
                     {
-                        await HandleNewMatch(
-                            foreignMatch.SenderDogId,
-                            foreignMatch.ReceiverDogId,
-                            foreignMatch.Id
-                            );
+                        if (receiverDog?.IsBot != true)
+                        {
+                            await HandleNewMatch(
+                                foreignMatch.SenderDogId,
+                                foreignMatch.ReceiverDogId,
+                                foreignMatch.Id
+                                );
+                        }
                         await HandleNewMatch(
                             newMatch.SenderDogId,
                             newMatch.ReceiverDogId,
@@ -201,9 +204,21 @@ namespace TailBuddys.Application.Services
                     {
                         foreignMatch.IsMatch = false;
                         await _matchRepository.UpdateMatchDb(foreignMatch.Id, foreignMatch);
+
+                        await HandleNewMatch(
+                                foreignMatch.SenderDogId,
+                                foreignMatch.ReceiverDogId,
+                                foreignMatch.Id
+                                );
+                        await HandleNewMatch(
+                                matchToUpdate.SenderDogId,
+                                matchToUpdate.ReceiverDogId,
+                                matchToUpdate.Id
+                                );
                     }
                     newMatch.IsMatch = false;
                 }
+
                 return await _matchRepository.UpdateMatchDb(matchId, newMatch);
             }
             catch (Exception e)
@@ -212,11 +227,25 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        public async Task<Match?> DeleteMatch(int matchId)
+        public async Task<Match?> DeleteMatch(int matchId) // לא באמת משתמשים בכלל
         {
             try
             {
-                return await _matchRepository.DeleteMatchDb(matchId);
+                Match? match = await _matchRepository.DeleteMatchDb(matchId);
+                if (match == null) return null;
+                bool isActive;
+                lock (_activeDogs)
+                {
+                    isActive = _activeDogs.Contains(match.ReceiverDogId);
+                }
+
+                if (isActive)
+
+                {
+                    await _hubContext.Clients.Group(match.ReceiverDogId.ToString()).SendAsync("ReceiveNewMatch", matchId);
+                }
+                return match;
+
             }
             catch (Exception e)
             {

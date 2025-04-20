@@ -1,130 +1,79 @@
-﻿//using Microsoft.EntityFrameworkCore;
-//using TailBuddys.Core.Models;
-
-//namespace TailBuddys.Infrastructure.Data
-//{
-//    public static class ModelBuilderExtensions
-//    {
-//        public static void Seed(this ModelBuilder modelBuilder)
-//        {
-//            var random = new Random();
-
-//            // ====== USERS ======
-//            var users = Enumerable.Range(1, 200).Select(i => new User
-//            {
-//                Id = i,
-//                FirstName = $"User{i}",
-//                LastName = $"Last{i}",
-//                Email = $"user{i}@mail.com",
-//                CreatedAt = DateTime.UtcNow,
-//                UpdatedAt = DateTime.UtcNow
-//            }).ToList();
-//            modelBuilder.Entity<User>().HasData(users);
-
-//            // ====== DOGS ======
-//            int dogId = 1;
-//            var dogs = new List<Dog>();
-//            foreach (var user in users)
-//            {
-//                int numDogs = random.Next(1, 3);
-//                for (int i = 0; i < numDogs; i++)
-//                {
-//                    dogs.Add(new Dog
-//                    {
-//                        Id = dogId,
-//                        UserId = user.Id,
-//                        Name = $"Dog{dogId}",
-//                        Type = (DogType)random.Next(0, 10),
-//                        Size = (DogSize)random.Next(0, 3),
-//                        Gender = random.Next(0, 2) == 0,
-//                        Vaccinated = true,
-//                        Lat = 32.0 + random.NextDouble(),
-//                        Lon = 34.0 + random.NextDouble(),
-//                        CreatedAt = DateTime.UtcNow,
-//                        UpdatedAt = DateTime.UtcNow
-//                    });
-//                    dogId++;
-//                }
-//            }
-//            modelBuilder.Entity<Dog>().HasData(dogs);
-
-//            // ====== PARKS ======
-//            var parks = Enumerable.Range(1, 500).Select(i => new Park
-//            {
-//                Id = i,
-//                Name = $"Park {i}",
-//                Description = "Great park!",
-//                Address = $"Address {i}",
-//                Lat = 32.0 + random.NextDouble(),
-//                Lon = 34.0 + random.NextDouble(),
-//                CreatedAt = DateTime.UtcNow,
-//                UpdatedAt = DateTime.UtcNow
-//            }).ToList();
-//            modelBuilder.Entity<Park>().HasData(parks);
-
-//            // ====== DEMO MATCHES/CHATS/MESSAGES FOR 10 DOGS ======
-//            var demoDogs = dogs.OrderBy(_ => random.Next()).Take(10).ToList();
-//            int matchId = 1, chatId = 1, messageId = 1;
-//            var matches = new List<Match>();
-//            var chats = new List<Chat>();
-//            var messages = new List<Message>();
-
-//            foreach (var sender in demoDogs)
-//            {
-//                var receivers = dogs.Where(d => d.Id != sender.Id).OrderBy(_ => random.Next()).Take(random.Next(2, 11)).ToList();
-//                foreach (var receiver in receivers)
-//                {
-//                    matches.Add(new Match
-//                    {
-//                        Id = matchId++,
-//                        SenderDogId = sender.Id,
-//                        ReceiverDogId = receiver.Id,
-//                        IsLike = true,
-//                        IsMatch = true,
-//                        CreatedAt = DateTime.UtcNow,
-//                        UpdatedAt = DateTime.UtcNow
-//                    });
-
-//                    var chat = new Chat
-//                    {
-//                        Id = chatId++,
-//                        SenderDogId = sender.Id,
-//                        ReceiverDogId = receiver.Id
-//                    };
-//                    chats.Add(chat);
-
-//                    for (int m = 0; m < random.Next(2, 11); m++)
-//                    {
-//                        messages.Add(new Message
-//                        {
-//                            Id = messageId++,
-//                            ChatID = chat.Id,
-//                            SenderDogId = m % 2 == 0 ? sender.Id : receiver.Id,
-//                            Content = $"Message {messageId} from {(m % 2 == 0 ? "Sender" : "Receiver")}",
-//                            CreatedAt = DateTime.UtcNow,
-//                            IsRead = random.Next(0, 2) == 1
-//                        });
-//                    }
-//                }
-//            }
-
-//            modelBuilder.Entity<Match>().HasData(matches);
-//            modelBuilder.Entity<Chat>().HasData(chats);
-//            modelBuilder.Entity<Message>().HasData(messages);
-//        }
-//    }
-//}
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TailBuddys.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 public static class ModelBuilderExtensions
 {
+    private static (double lat, double lon) GetRandomCoordinateInPolygon(List<(double lat, double lon)> polygon)
+    {
+        var rand = new Random();
+        double minLat = polygon.Min(p => p.lat);
+        double maxLat = polygon.Max(p => p.lat);
+        double minLon = polygon.Min(p => p.lon);
+        double maxLon = polygon.Max(p => p.lon);
+
+        while (true)
+        {
+            double lat = rand.NextDouble() * (maxLat - minLat) + minLat;
+            double lon = rand.NextDouble() * (maxLon - minLon) + minLon;
+            var point = (lat, lon);
+            if (IsPointInPolygon(point, polygon))
+                return point;
+        }
+    }
+
+    private static bool IsPointInPolygon((double lat, double lon) point, List<(double lat, double lon)> polygon)
+    {
+        int n = polygon.Count;
+        bool inside = false;
+        for (int i = 0, j = n - 1; i < n; j = i++)
+        {
+            double xi = polygon[i].lon, yi = polygon[i].lat;
+            double xj = polygon[j].lon, yj = polygon[j].lat;
+            double px = point.lon, py = point.lat;
+
+            bool intersect = ((yi > py) != (yj > py)) &&
+                             (px < (xj - xi) * (py - yi) / ((yj - yi) + double.Epsilon) + xi);
+            if (intersect)
+                inside = !inside;
+        }
+        return inside;
+    }
+
+    private static readonly string[] streets = {
+        "Herzl", "Ben Gurion", "Rothschild", "King David", "Menachem Begin", "Yitzhak Rabin", "Dizengoff",
+        "Jabotinsky", "HaPalmach", "HaShalom", "Hagana", "Allenby", "Weizmann", "Aharonovitch", "Arlozorov"
+    };
+
+    private static readonly string[] cities = {
+        "Tel Aviv", "Jerusalem", "Haifa", "Beer Sheva", "Netanya", "Ashdod", "Eilat", "Ramat Gan", "Holon", "Nazareth",
+        "Herzliya", "Bat Yam", "Petah Tikva", "Rehovot", "Hadera", "Tiberias", "Modiin", "Ashkelon", "Kiryat Gat", "Beit Shemesh"
+    };
+    private static readonly List<(double lat, double lon)> IsraelPolygon = new()
+        {
+            (33.1074, 35.5139),  // North-East (Metula)
+            (33.1000, 35.2500),
+            (32.8000, 35.1000),
+            (32.5000, 35.2000),
+            (31.8000, 35.4000),
+            (31.0000, 35.5000),
+            (30.6000, 35.4000),
+            (30.3000, 35.2500),
+            (29.9000, 35.1000),
+            (29.5500, 34.9500),  // South-East edge
+            (29.5500, 34.9300),  // Southern tip near Eilat
+            (29.6000, 34.8000),
+            (30.3000, 34.7000),
+            (30.8000, 34.7000),
+            (31.1000, 34.8000),
+            (32.3000, 34.9000),
+            (32.8000, 34.9000),
+            (33.0500, 34.9500),
+            (33.1000, 35.0500),
+            (33.1074, 35.1000)   // North-West back to top
+        };
     public static void Seed(this ModelBuilder modelBuilder)
     {
+
         var random = new Random();
         var now = DateTime.UtcNow;
 
@@ -195,25 +144,45 @@ public static class ModelBuilderExtensions
             "Daily dog walkers make this their go-to, citing trust, community, and happy tail wags everywhere."
         };
 
-        string[] dogNames = { "Buddy", "Bella", "Charlie", "Lucy", "Max", "Daisy", "Rocky", "Lola", "Toby", "Molly" };
-        string[] dogAddresses = Enumerable.Range(10, 100).Select(i => $"{i} Bark Street").ToArray();
-        string[] parkNames = Enumerable.Range(1, 500).Select(i => $"Park #{i}").ToArray();
 
-        // === USERS ===
-        var users = Enumerable.Range(1, 30).Select(i => new User
+        string[] dogNames = { "Bella", "Luna", "Max", "Charlie", "Lucy", "Rocky", "Daisy", "Toby", "Milo", "Sadie",
+            "Buddy", "Coco", "Bailey", "Zoe", "Bear", "Stella", "Jack", "Penny", "Duke", "Lola",
+            "Finn", "Chloe", "Leo", "Ellie", "Riley", "Ruby", "Oscar", "Maggie", "Sam", "Nala",
+            "Zeus", "Gracie", "Harley", "Rosie", "Marley", "Jasper", "Sasha", "Winnie", "Ginger", "Scout",
+            "Boomer", "Abby", "Olive", "Simba", "Moose", "Hazel", "Benji", "Remy", "Pepper", "Rex",
+            "Bruno", "Shadow", "Honey", "Nova", "Ace", "Lucky", "Sky", "Ziggy", "Otis", "Maple" };
+
+        string[] parkNames = { "Gan Meir", "Independence Park", "Yarkon Park", "Sacher Park", "Ramat Gan National Park", "HaPisga Garden",
+            "Canada Park", "Ashdod Yam Park", "Gan Ha'ir", "Armon Hanatziv Promenade", "Liberty Bell Park", "Lachish Park",
+            "Ariel Sharon Park", "Park Giv'atayim", "Herzliya Park", "Park Ashkelon", "Beit She'an Park", "Ein Gedi Reserve",
+            "Neot Kedumim", "Ma'ayan Harod", "Timna Park", "Alona Park", "Park Kiryat Motzkin", "Bat Galim Promenade", };
+        //"Park Carmiel", "Gan Binyamin", "Park Rehovot", "Raanana Park", "Ramat Hasharon Grove", "Hadera Forest",
+        //"Gan Hapsalim", "Park Modi'in", "Nahal Alexander", "Yavne Park", "Holon Eco Park", "Ashkelon National Park",
+        //"Tel Afek", "Palmachim Beach Park", "Ein Hemed", "Park Eshkol", "Mount Carmel Park", "Jaffa Park",
+        //"Netanya Iris Reserve", "Ga'ash Cliff Trail", "Ashdod Dunes", "Hula Valley Park", "Zikhron Ya'akov Promenade",
+        //"Kiryat Ata Park", "Sderot Forest", "Jerusalem Gazelle Valley" };
+
+        string[] dogAddresses = Enumerable.Range(0, 100)
+             .Select(_ => $"{random.Next(1, 200)} {streets[random.Next(streets.Length)]} St, {cities[random.Next(cities.Length)]}")
+             .ToArray();
+
+        string[] parkAddresses = Enumerable.Range(0, 100)
+            .Select(_ => $"{random.Next(1, 200)} {streets[random.Next(streets.Length)]} St, {cities[random.Next(cities.Length)]}")
+            .ToArray();
+
+        var users = Enumerable.Range(1, 20).Select(i => new User
         {
             Id = i,
             FirstName = $"User{i}",
             LastName = $"Last{i}",
-            Email = $"user{i}@mail.com",
+            Email = $"user{i}@tail.com",
             Gender = (Gender)random.Next(0, 3),
-            BirthDate = DateTime.UtcNow.AddYears(-random.Next(18, 70)).AddDays(random.Next(365)),
+            BirthDate = DateTime.UtcNow.AddYears(-random.Next(18, 50)).AddDays(random.Next(365)),
             CreatedAt = now,
             UpdatedAt = now
         }).ToList();
         modelBuilder.Entity<User>().HasData(users);
 
-        // === DOGS ===
         var dogs = new List<Dog>();
         int dogId = 1;
         foreach (var user in users)
@@ -221,40 +190,70 @@ public static class ModelBuilderExtensions
             int count = random.Next(1, 2);
             for (int i = 0; i < count; i++)
             {
+                var (lat, lon) = GetRandomCoordinateInPolygon(IsraelPolygon);
+
                 dogs.Add(new Dog
                 {
                     Id = dogId,
                     UserId = user.Id,
-                    Name = dogNames[random.Next(dogNames.Length)] + dogId,
-                    Description = dogDescriptions[random.Next(dogDescriptions.Length)],
+                    Name = dogNames[random.Next(dogNames.Length)],
+                    Description = $"Friendly dog that loves {dogNames[random.Next(dogNames.Length)]}.",
                     Address = dogAddresses[random.Next(dogAddresses.Length)],
                     Type = (DogType)random.Next(0, 10),
                     Size = (DogSize)random.Next(0, 3),
                     Gender = random.Next(0, 2) == 0,
-                    Vaccinated = random.NextDouble() < 0.8,
-                    Lat = 32.0 + random.NextDouble(),
-                    Lon = 34.7 + random.NextDouble(),
+                    Vaccinated = random.NextDouble() < 0.85,
+                    Lat = lat,
+                    Lon = lon,
+                    BirthDate = now.AddYears(-random.Next(0, 10)).AddMonths(-random.Next(2, 12)).AddDays(-random.Next(0, 30)),
+                    IsBot = random.NextDouble() < 0.15,
                     CreatedAt = now,
                     UpdatedAt = now
                 });
+
                 dogId++;
             }
         }
         modelBuilder.Entity<Dog>().HasData(dogs);
 
-        // === PARKS ===
-        var parks = Enumerable.Range(1, 50).Select(i => new Park
+        var parks = Enumerable.Range(1, parkNames.Length).Select(i =>
         {
-            Id = i,
-            Name = parkNames[i - 1],
-            Description = parkDescriptions[random.Next(parkDescriptions.Length)],
-            Address = $"Address {i}",
-            Lat = 32.0 + random.NextDouble(),
-            Lon = 34.7 + random.NextDouble(),
-            CreatedAt = now,
-            UpdatedAt = now
+            var (lat, lon) = GetRandomCoordinateInPolygon(IsraelPolygon);
+            return new Park
+            {
+                Id = i,
+                Name = parkNames[i - 1],
+                Description = $"Beautiful park for dogs. Great for playing and resting.",
+                Address = parkAddresses[random.Next(parkAddresses.Length)],
+                Lat = lat,
+                Lon = lon,
+                CreatedAt = now,
+                UpdatedAt = now
+            };
         }).ToList();
         modelBuilder.Entity<Park>().HasData(parks);
+
+        // In your Seed() method, after seeding Dogs and Parks:
+
+        int dogCount = dogs.Count;
+        int parkCount = parks.Count;
+        var dogParkLikes = new List<Dictionary<string, object>>();
+        foreach (var dog in dogs)
+        {
+            var likedParks = Enumerable.Range(0, random.Next(2, 6))
+                .Select(_ => parks[random.Next(parkCount)].Id)
+                .Distinct();
+
+            foreach (var parkId in likedParks)
+            {
+                dogParkLikes.Add(new Dictionary<string, object>
+                {
+                    ["FavParksId"] = parkId,
+                    ["DogLikesId"] = dog.Id
+                });
+            }
+        }
+
+        modelBuilder.Entity("DogParks").HasData(dogParkLikes.ToArray());
     }
 }
-
