@@ -52,7 +52,7 @@ namespace TailBuddys.Hubs
 
         public async Task JoinSpecificChatGroup(int chatId, int dogId)
         {
-            ChatHubTracker.JoinChat(dogId, chatId);
+            _tracker.JoinChat(dogId, chatId);
 
             // ✅ Security: validate dog ownership before joining chat group
             if (!Context.User.Claims.Any(c => c.Type == "DogId" && c.Value == dogId.ToString()))
@@ -72,7 +72,7 @@ namespace TailBuddys.Hubs
 
         public async Task LeaveSpecificChatGroup(int chatId, int dogId)
         {
-            ChatHubTracker.LeaveChat(dogId, chatId);
+            _tracker.LeaveChat(dogId, chatId);
 
             // ✅ Same security enforcement as join
             if (!Context.User.Claims.Any(c => c.Type == "DogId" && c.Value == dogId.ToString()))
@@ -82,6 +82,24 @@ namespace TailBuddys.Hubs
             }
 
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"Chat_{chatId}");
+        }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            var dogIdClaim = Context.User.Claims.FirstOrDefault(c => c.Type == "DogId");
+            if (dogIdClaim != null && int.TryParse(dogIdClaim.Value, out int dogId))
+            {
+                _tracker.LeaveDogChatsGroup(dogId);
+
+                var chats = _tracker.GetAllChatsForDog(dogId);
+                foreach (var chatId in chats)
+                {
+                    _tracker.LeaveChat(dogId, chatId);
+                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"Chat_{chatId}");
+                }
+            }
+
+            await base.OnDisconnectedAsync(exception);
         }
 
     }

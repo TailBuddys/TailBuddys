@@ -70,4 +70,14 @@ public class DogConnectionTracker : IDogConnectionTracker
                    _chatParticipants[chatId].Contains(dogId);
         }
     }
+    public IEnumerable<int> GetAllChatsForDog(int dogId)
+    {
+        lock (_lock)
+        {
+            return _chatParticipants
+                .Where(kvp => kvp.Value.Contains(dogId))
+                .Select(kvp => kvp.Key)
+                .ToList(); // copy to avoid collection modification issues
+        }
+    }
 }

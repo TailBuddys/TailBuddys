@@ -13,5 +13,6 @@
         public void JoinChat(int dogId, int chatId);
         public void LeaveChat(int dogId, int chatId);
         public bool IsDogInSpecificChat(int dogId, int chatId);
+        public IEnumerable<int> GetAllChatsForDog(int dogId);
     }
 }
