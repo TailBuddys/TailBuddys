@@ -5,6 +5,7 @@ using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
 using TailBuddys.Core.Models.DTO;
 using TailBuddys.Hubs;
+using TailBuddys.Hubs.HubInterfaces;
 
 namespace TailBuddys.Application.Services
 {
@@ -14,17 +15,30 @@ namespace TailBuddys.Application.Services
         private readonly IMatchRepository _matchRepository;
         private readonly IUserRepository _userRepository;
         private readonly IHubContext<ChatHub> _chatHubContext;
+        private readonly IHubContext<NotificationHub> _matchHubContext;
         private readonly INotificationService _notificationService;
         private readonly IOpenAiService _openAiService;
+        private readonly IDogConnectionTracker _tracker;
 
-        public ChatService(IChatRepository chatRepository, IMatchRepository matchRepository, IUserRepository userRepository, IHubContext<ChatHub> chatHubContext, INotificationService notificationService, IOpenAiService openAiService)
+
+        public ChatService(
+            IChatRepository chatRepository,
+            IMatchRepository matchRepository,
+            IUserRepository userRepository,
+            IHubContext<ChatHub> chatHubContext,
+            IHubContext<NotificationHub> matchHubContext,
+            INotificationService notificationService,
+            IOpenAiService openAiService,
+            IDogConnectionTracker tracker)
         {
             _chatRepository = chatRepository;
             _matchRepository = matchRepository;
             _chatHubContext = chatHubContext;
+            _matchHubContext = matchHubContext;
             _notificationService = notificationService;
             _openAiService = openAiService;
             _userRepository = userRepository;
+            _tracker = tracker;
         }
 
         public async Task<Chat?> CreateChat(Chat chat)
@@ -48,15 +62,32 @@ namespace TailBuddys.Application.Services
                         Chat? newChat = await _chatRepository.CreateChatDb(chat);
                         if (newChat != null)
                         {
-                            bool isReceiverInChatList = ChatHubTracker.IsDogInChat(chat.ReceiverDogId, newChat.Id);
-                            if (isReceiverInChatList)
+                            if (_tracker.IsDogInChatsGroup(chat.ReceiverDogId))
                             {
                                 await _chatHubContext.Clients.Group($"DogChats_{chat.ReceiverDogId}")
-                                    .SendAsync("ReceiveNewChat", newChat.Id);
+                                    .SendAsync("ReceiveChatNotification", newChat.Id);
                             }
                             else
                             {
                                 await _notificationService.CreateOrUpdateChatNotification(newChat.Id, chat.ReceiverDogId);
+                            }
+                            if (_tracker.IsDogInChatsGroup(chat.SenderDogId))
+                            {
+                                await _chatHubContext.Clients.Group($"DogChats_{chat.SenderDogId}")
+                                    .SendAsync("ReceiveChatNotification", newChat.Id);
+                            }
+                            else
+                            {
+                                await _notificationService.CreateOrUpdateChatNotification(newChat.Id, chat.SenderDogId);
+                            }
+                            // for matches
+                            if (_tracker.IsDogInMatchGroup(chat.ReceiverDogId))
+                            {
+                                await _matchHubContext.Clients.Group(chat.ReceiverDogId.ToString()).SendAsync("ReceiveNewMatch", 0);
+                            }
+                            if (_tracker.IsDogInMatchGroup(chat.SenderDogId))
+                            {
+                                await _matchHubContext.Clients.Group(chat.SenderDogId.ToString()).SendAsync("ReceiveNewMatch", 0);
                             }
                             return newChat;
                         }
@@ -171,7 +202,38 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-                return await _chatRepository.DeleteChatDb(chatId);
+                Chat? deletedChat = await _chatRepository.DeleteChatDb(chatId);
+                if (deletedChat != null)
+                {
+                    if (_tracker.IsDogInChatsGroup(deletedChat.ReceiverDogId))
+                    {
+                        await _chatHubContext.Clients.Group($"DogChats_{deletedChat.ReceiverDogId}")
+                            .SendAsync("ReceiveChatNotification", chatId);
+                    }
+                    else
+                    {
+                        await _notificationService.CreateOrUpdateChatNotification(chatId, deletedChat.ReceiverDogId);
+                    }
+                    if (_tracker.IsDogInChatsGroup(deletedChat.SenderDogId))
+                    {
+                        await _chatHubContext.Clients.Group($"DogChats_{deletedChat.SenderDogId}")
+                            .SendAsync("ReceiveChatNotification", chatId);
+                    }
+                    else
+                    {
+                        await _notificationService.CreateOrUpdateChatNotification(chatId, deletedChat.SenderDogId);
+                    }
+                    // for matches
+                    if (_tracker.IsDogInMatchGroup(deletedChat.ReceiverDogId))
+                    {
+                        await _matchHubContext.Clients.Group(deletedChat.ReceiverDogId.ToString()).SendAsync("ReceiveNewMatch", 0);
+                    }
+                    if (_tracker.IsDogInMatchGroup(deletedChat.SenderDogId))
+                    {
+                        await _matchHubContext.Clients.Group(deletedChat.SenderDogId.ToString()).SendAsync("ReceiveNewMatch", 0);
+                    }
+                }
+                return deletedChat;
             }
             catch (Exception e)
             {
@@ -210,8 +272,7 @@ namespace TailBuddys.Application.Services
                     }
 
                 }
-                bool isReceiverInChat = ChatHubTracker.IsDogInChat(receiverDog.Id, chatToUpdate.Id);
-                if (isReceiverInChat)
+                if (_tracker.IsDogInSpecificChat(receiverDog.Id, chatToUpdate.Id))
                 {
                     await _chatHubContext.Clients.Group($"Chat_{chatToUpdate.Id}")
                         .SendAsync("ReceiveMessage", new { chatId = chatToUpdate.Id, senderDogId = message.SenderDogId, message = message.Content });
@@ -286,9 +347,8 @@ namespace TailBuddys.Application.Services
             await _chatHubContext.Clients.Group($"Chat_{chatId}").SendAsync("ReceiveMessage", new { chatId, senderDogId, message });
 
             // Check if receiver is in active chat
-            bool isReceiverInChat = ChatHubTracker.IsDogInChat(receiverDogId, chatId);
 
-            if (!isReceiverInChat)
+            if (_tracker.IsDogInSpecificChat(receiverDogId, chatId))
             {
                 // Update notification count in DB
                 await _notificationService.CreateOrUpdateChatNotification(chatId, receiverDogId);

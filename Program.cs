@@ -7,6 +7,7 @@ using TailBuddys.Application.Interfaces;
 using TailBuddys.Application.Services;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Hubs;
+using TailBuddys.Hubs.HubInterfaces;
 using TailBuddys.Infrastructure.Data;
 using TailBuddys.Infrastructure.Services;
 
@@ -30,7 +31,8 @@ namespace TailBuddys
             builder.Services.AddDbContext<TailBuddysContext>(options => options.UseSqlServer(ConnectionString));
 
             // Register ActiveDogs as a singleton
-            builder.Services.AddSingleton<HashSet<int>>();
+            builder.Services.AddSingleton<IDogConnectionTracker, DogConnectionTracker>();
+            //builder.Services.AddSingleton<HashSet<int>>();
 
             builder.Services.AddScoped<IAuth, JwtAuthService>();
             builder.Services.AddHttpClient<IGoogleAuthService, GoogleAuthService>();

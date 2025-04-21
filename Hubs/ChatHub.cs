@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using TailBuddys.Application.Interfaces;
+using TailBuddys.Hubs.HubInterfaces;
 
 namespace TailBuddys.Hubs
 {
@@ -8,33 +9,14 @@ namespace TailBuddys.Hubs
     public class ChatHub : Hub
     {
         private readonly INotificationService _notificationService;
+        private readonly IDogConnectionTracker _tracker;
 
-        public ChatHub(INotificationService notificationService)
+
+        public ChatHub(INotificationService notificationService, IDogConnectionTracker tracker)
         {
             _notificationService = notificationService;
+            _tracker = tracker;
         }
-
-        //public async Task JoinDogChatsGroup(int dogId)
-        //{
-        //    await Groups.AddToGroupAsync(Context.ConnectionId, $"DogChats_{dogId}");
-        //}
-
-        //public async Task LeaveDogChatsGroup(int dogId)
-        //{
-        //    await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"DogChats_{dogId}");
-        //}
-
-        //public async Task JoinSpecificChatGroup(int chatId, int dogId)
-        //{
-        //    ChatHubTracker.JoinChat(dogId, chatId);
-        //    await Groups.AddToGroupAsync(Context.ConnectionId, $"Chat_{chatId}");
-        //}
-
-        //public async Task LeaveSpecificChatGroup(int chatId, int dogId)
-        //{
-        //    ChatHubTracker.LeaveChat(dogId, chatId);
-        //    await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"Chat_{chatId}");
-        //}
 
         public async Task JoinDogChatsGroup(int dogId)
         {
@@ -46,6 +28,8 @@ namespace TailBuddys.Hubs
             }
 
             await Groups.AddToGroupAsync(Context.ConnectionId, $"DogChats_{dogId}");
+            _tracker.JoinDogChatsGroup(dogId);
+
             var notifications = await _notificationService.GetAllDogChatsNotifications(dogId);
             foreach (var notification in notifications)
             {
@@ -63,6 +47,7 @@ namespace TailBuddys.Hubs
             }
 
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"DogChats_{dogId}");
+            _tracker.LeaveDogChatsGroup(dogId);
         }
 
         public async Task JoinSpecificChatGroup(int chatId, int dogId)

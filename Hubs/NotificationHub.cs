@@ -2,13 +2,14 @@
 using Microsoft.AspNetCore.SignalR;
 using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.Interfaces;
+using TailBuddys.Hubs.HubInterfaces;
 
 namespace TailBuddys.Hubs
 {
     [Authorize]
     public class NotificationHub : Hub
     {
-        private readonly HashSet<int> _activeDogs; // Injected singleton
+        private readonly IDogConnectionTracker _tracker;
         private readonly IDogRepository _dogRepository;
         private readonly INotificationService _notificationService;
         private readonly IAuth _jwtAuthService;
@@ -16,12 +17,12 @@ namespace TailBuddys.Hubs
         public NotificationHub(
             IDogRepository dogRepository,
             INotificationService notificationService,
-            HashSet<int> activeDogs,
+            IDogConnectionTracker tracker,
             IAuth jwtAuthService)
         {
             _dogRepository = dogRepository;
             _notificationService = notificationService;
-            _activeDogs = activeDogs;
+            _tracker = tracker;
             _jwtAuthService = jwtAuthService;
         }
 
@@ -43,10 +44,7 @@ namespace TailBuddys.Hubs
             }
 
             await Groups.AddToGroupAsync(Context.ConnectionId, dogId.ToString());
-            lock (_activeDogs)
-            {
-                _activeDogs.Add(dogId);
-            }
+            _tracker.JoinDogMatchGroup(dogId);
 
             // Fetch all match notifications for the dog
             var matchNotifications = await _notificationService.GetDogAllMatchesNotifications(dogId);
@@ -71,21 +69,18 @@ namespace TailBuddys.Hubs
             var dogs = await _dogRepository.GetAllUserDogsDb(userId);
             foreach (var dog in dogs)
             {
-                lock (_activeDogs)
-                {
-                    _activeDogs.Remove(dog.Id);
-                }
+                _tracker.LeaveDogMatchGroup(dog.Id);
             }
             await base.OnDisconnectedAsync(exception);
         }
 
-        public bool IsDogActive(int dogId)
-        {
-            lock (_activeDogs)
-            {
-                return _activeDogs.Contains(dogId);
-            }
-        }
+        //public bool IsDogActive(int dogId) /// הGPT העיף
+        //{
+        //    lock (_activeDogs)
+        //    {
+        //        return _activeDogs.Contains(dogId);
+        //    }
+        //}
 
         // GPT review 
 

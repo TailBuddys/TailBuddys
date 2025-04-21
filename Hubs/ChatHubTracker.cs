@@ -3,6 +3,7 @@
     public class ChatHubTracker
     {
         private static readonly Dictionary<int, HashSet<int>> ActiveChats = new();
+        private static readonly HashSet<int> ConnectedDogChatGroups = new();
 
         public static void JoinChat(int dogId, int chatId)
         {
@@ -33,6 +34,30 @@
             lock (ActiveChats)
             {
                 return ActiveChats.ContainsKey(chatId) && ActiveChats[chatId].Contains(dogId);
+            }
+        }
+
+        public static void JoinDogChatGroup(int dogId)
+        {
+            lock (ConnectedDogChatGroups)
+            {
+                ConnectedDogChatGroups.Add(dogId);
+            }
+        }
+
+        public static void LeaveDogChatGroup(int dogId)
+        {
+            lock (ConnectedDogChatGroups)
+            {
+                ConnectedDogChatGroups.Remove(dogId);
+            }
+        }
+
+        public static bool IsDogInDogChatsGroup(int dogId)
+        {
+            lock (ConnectedDogChatGroups)
+            {
+                return ConnectedDogChatGroups.Contains(dogId);
             }
         }
     }

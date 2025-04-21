@@ -4,6 +4,7 @@ using TailBuddys.Core.DTO;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
 using TailBuddys.Hubs;
+using TailBuddys.Hubs.HubInterfaces;
 
 namespace TailBuddys.Application.Services
 {
@@ -13,21 +14,21 @@ namespace TailBuddys.Application.Services
         private readonly IDogRepository _dogRepository;
         private readonly IHubContext<NotificationHub> _hubContext;
         private readonly INotificationService _notificationService;
-        private readonly HashSet<int> _activeDogs;
+        private readonly IDogConnectionTracker _connectionTracker;
 
         public MatchService(
             IMatchRepository matchRepository,
             IDogRepository dogRepository,
             IHubContext<NotificationHub> hubContext,
             INotificationService notificationService,
-            HashSet<int> activeDogs
+            IDogConnectionTracker connectionTracker
             )
         {
             _matchRepository = matchRepository;
             _dogRepository = dogRepository;
             _hubContext = hubContext;
             _notificationService = notificationService;
-            _activeDogs = activeDogs;
+            _connectionTracker = connectionTracker;
         }
         public async Task<Match?> CreateMatch(Match match)
         {
@@ -101,14 +102,8 @@ namespace TailBuddys.Application.Services
 
         public async Task HandleNewMatch(int senderDogId, int receiverDogId, int matchId)
         {
-            bool isActive;
-            lock (_activeDogs)
-            {
-                isActive = _activeDogs.Contains(senderDogId);
-            }
 
-            if (isActive)
-
+            if (_connectionTracker.IsDogInMatchGroup(senderDogId))
             {
                 await _hubContext.Clients.Group(senderDogId.ToString()).SendAsync("ReceiveNewMatch", matchId);
             }
@@ -233,13 +228,8 @@ namespace TailBuddys.Application.Services
             {
                 Match? match = await _matchRepository.DeleteMatchDb(matchId);
                 if (match == null) return null;
-                bool isActive;
-                lock (_activeDogs)
-                {
-                    isActive = _activeDogs.Contains(match.ReceiverDogId);
-                }
 
-                if (isActive)
+                if (_connectionTracker.IsDogInMatchGroup(match.ReceiverDogId))
 
                 {
                     await _hubContext.Clients.Group(match.ReceiverDogId.ToString()).SendAsync("ReceiveNewMatch", matchId);
