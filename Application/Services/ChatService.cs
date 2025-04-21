@@ -69,6 +69,7 @@ namespace TailBuddys.Application.Services
                             }
                             else
                             {
+                                Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
                                 await _notificationService.CreateOrUpdateChatNotification(newChat.Id, chat.ReceiverDogId);
                             }
                             if (_tracker.IsDogInChatsGroup(chat.SenderDogId))

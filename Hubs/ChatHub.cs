@@ -86,16 +86,19 @@ namespace TailBuddys.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            var dogIdClaim = Context.User.Claims.FirstOrDefault(c => c.Type == "DogId");
-            if (dogIdClaim != null && int.TryParse(dogIdClaim.Value, out int dogId))
+            var dogIdClaim = Context.User.Claims.Where(c => c.Type == "DogId");
+            foreach (var dog in dogIdClaim)
             {
-                _tracker.LeaveDogChatsGroup(dogId);
-
-                var chats = _tracker.GetAllChatsForDog(dogId);
-                foreach (var chatId in chats)
+                if (dogIdClaim != null && int.TryParse(dog.Value, out int dogId))
                 {
-                    _tracker.LeaveChat(dogId, chatId);
-                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"Chat_{chatId}");
+                    _tracker.LeaveDogChatsGroup(dogId);
+
+                    var chats = _tracker.GetAllChatsForDog(dogId);
+                    foreach (var chatId in chats)
+                    {
+                        _tracker.LeaveChat(dogId, chatId);
+                        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"Chat_{chatId}");
+                    }
                 }
             }
 
