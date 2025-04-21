@@ -343,18 +343,24 @@ namespace TailBuddys.Application.Services
 
         public async Task SendMessage(int chatId, int senderDogId, int receiverDogId, string message)
         {
-            // Send message to specific chat group
-            await _chatHubContext.Clients.Group($"Chat_{chatId}").SendAsync("ReceiveMessage", new { chatId, senderDogId, message });
-
-            // Check if receiver is in active chat
+            await _chatHubContext.Clients.Group($"Chat_{chatId}")
+                .SendAsync("ReceiveMessage", new
+                {
+                    chatId,
+                    senderDogId,
+                    message
+                });
 
             if (_tracker.IsDogInSpecificChat(receiverDogId, chatId))
             {
-                // Update notification count in DB
-                await _notificationService.CreateOrUpdateChatNotification(chatId, receiverDogId);
+                return;
+            }
 
-                // Notify receiver's chat list UI
-                await _chatHubContext.Clients.Group($"DogChats_{receiverDogId}").SendAsync("ReceiveChatNotification", new { chatId });
+            await _notificationService.CreateOrUpdateChatNotification(chatId, receiverDogId);
+            if (_tracker.IsDogInChatsGroup(receiverDogId))
+            {
+                await _chatHubContext.Clients.Group($"DogChats_{receiverDogId}")
+                    .SendAsync("ReceiveChatNotification", new { chatId });
             }
         }
     }
