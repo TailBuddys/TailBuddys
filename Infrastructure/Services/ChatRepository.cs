@@ -137,28 +137,37 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<Message>();
             }
         }
-        public async Task<Message?> MarkMessageAsReadDb(int messageId)
+        public async Task<int> MarkAllMessagesAsReadDb(int chatId, int currentDogId)
         {
             try
             {
-                Message? messageToUpdate = await _context.Messages.FirstOrDefaultAsync(m => m.Id == messageId);
-                if (messageToUpdate == null)
+                // Get all unread messages in this chat that were sent by the other dog
+                var messagesToUpdate = await _context.Messages
+                    .Where(m => m.ChatID == chatId &&
+                                m.SenderDogId != currentDogId &&
+                                !m.IsRead)
+                    .ToListAsync();
+
+                if (!messagesToUpdate.Any())
                 {
-                    return null;
+                    return 0; // No messages were updated
                 }
 
-                messageToUpdate.IsRead = true;
+                // Mark all messages as read
+                foreach (var message in messagesToUpdate)
+                {
+                    message.IsRead = true;
+                }
 
-                _context.Messages.Update(messageToUpdate);
-                await _context.SaveChangesAsync();
-                return messageToUpdate;
+                // Save changes
+                var updatedCount = await _context.SaveChangesAsync();
+                return updatedCount;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return null;
+                return -1; // Error indicator
             }
-
         }
     }
 }

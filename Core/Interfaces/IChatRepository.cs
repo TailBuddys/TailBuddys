@@ -11,6 +11,6 @@ namespace TailBuddys.Core.Interfaces
         public Task<Chat?> DeleteChatDb(int chatId);
         public Task<Message?> AddMessageToChatDb(Message message);
         public Task<List<Message>> GetMessagesByChatIdDb(int chatId);
-        public Task<Message?> MarkMessageAsReadDb(int messageId);
+        public Task<int> MarkAllMessagesAsReadDb(int chatId, int currentDogId);
     }
 }

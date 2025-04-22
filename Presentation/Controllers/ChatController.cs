@@ -189,28 +189,28 @@ namespace TailBuddys.Presentation.Controllers
         // GPT review
 
         // לסנן את כל ההודעות שנקראו בצ'אט ולא אחת
-        [HttpPatch("message/{messageId}")]
-        [Authorize]
-        public async Task<IActionResult> MarkMessageAsRead(int messageId)
-        {
-            Message? result = await _chatService.MarkMessageAsRead(messageId);
-            if (result == null)
-            {
-                return NotFound();
-            }
-            FullChatDTO? chat = await _chatService.GetChatById(result.ChatID);
-            if (chat == null)
-            {
-                return NotFound();
-            }
-            int clientDogId;
-            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId"
-                && (c.Value == chat.SenderDog.Id.ToString() || c.Value == chat.ReceiverDog.Id.ToString()))?.Value, out clientDogId);
-            if (clientDogId == 0)
-            {
-                return Unauthorized();
-            }
-            return Ok(result);
-        }
+        //[HttpPatch("message/{messageId}")]
+        //[Authorize]
+        //public async Task<IActionResult> MarkMessageAsRead(int messageId)
+        //{
+        //    Message? result = await _chatService.MarkMessageAsRead(messageId);
+        //    if (result == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    FullChatDTO? chat = await _chatService.GetChatById(result.ChatID);
+        //    if (chat == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    int clientDogId;
+        //    int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId"
+        //        && (c.Value == chat.SenderDog.Id.ToString() || c.Value == chat.ReceiverDog.Id.ToString()))?.Value, out clientDogId);
+        //    if (clientDogId == 0)
+        //    {
+        //        return Unauthorized();
+        //    }
+        //    return Ok(result);
+        //}
     }
 }

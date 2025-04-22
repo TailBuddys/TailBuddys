@@ -8,10 +8,12 @@ namespace TailBuddys.Application.Services
     {
 
         private readonly INotificationRepository _notificationRepository;
+        private readonly IChatRepository _chatRepository;
 
-        public NotificationService(INotificationRepository notificationRepository)
+        public NotificationService(INotificationRepository notificationRepository, IChatRepository chatRepository)
         {
             _notificationRepository = notificationRepository;
+            _chatRepository = chatRepository;
         }
 
         //CHAT//
@@ -66,7 +68,12 @@ namespace TailBuddys.Application.Services
 
         public async Task<ChatNotification?> DeleteChatNotifications(int chatId, int dogId)
         {
-            return await _notificationRepository.DeleteChatNotificationsDB(chatId, dogId);
+            var chatNotification = await _notificationRepository.DeleteChatNotificationsDB(chatId, dogId);
+            if (chatNotification != null)
+            {
+                await _chatRepository.MarkAllMessagesAsReadDb(chatId,dogId);
+            }
+            return chatNotification;
         }
 
         //MATCH//

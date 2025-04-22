@@ -252,6 +252,10 @@ namespace TailBuddys.Application.Services
                 if (receiverDog == null) return null;
                 Dog? senderDog = chatToUpdate.SenderDogId == receiverDog.Id ? chatToUpdate.ReceiverDog : chatToUpdate.SenderDog;
                 if (senderDog == null) return null;
+                bool isReceiverInChat = _tracker.IsDogInSpecificChat(receiverDog.Id, chatToUpdate.Id);
+
+                message.IsRead = isReceiverInChat;
+
                 await _chatRepository.AddMessageToChatDb(message);
 
                 if (receiverDog.IsBot == true && senderDog.IsBot == false)
@@ -263,22 +267,44 @@ namespace TailBuddys.Application.Services
                         string aiResponse = await _openAiService.GetDogChatBotReplyAsync(user, receiverDog, otherUser, senderDog, chatToUpdate);
                         if (!string.IsNullOrWhiteSpace(aiResponse))
                         {
-                            await _chatRepository.AddMessageToChatDb(new Message
+                            Message botMessage = new Message
                             {
                                 SenderDogId = receiverDog.Id,
                                 ChatID = chatToUpdate.Id,
                                 Content = aiResponse,
-                            });
+                                IsRead = _tracker.IsDogInSpecificChat(senderDog.Id, chatToUpdate.Id) 
+                            };
+                            await _chatRepository.AddMessageToChatDb(botMessage);
+                            bool isSenderInChat = _tracker.IsDogInSpecificChat(senderDog.Id, chatToUpdate.Id);
+                            if (isSenderInChat)
+                            {
+                                // Send message directly if sender is in chat
+                                await _chatHubContext.Clients.Group($"Chat_{chatToUpdate.Id}")
+                                    .SendAsync("ReceiveChatNotification", new
+                                    {
+                                        chatId = chatToUpdate.Id,
+                                        senderDogId = botMessage.SenderDogId,
+                                        message = botMessage.Content
+                                    });
+                            }
+                            else
+                            {
+                                // Send notification if sender is not in chat
+                                await _notificationService.CreateOrUpdateChatNotification(chatToUpdate.Id, senderDog.Id);
+                                await _chatHubContext.Clients.Group($"DogChats_{senderDog.Id}")
+                                    .SendAsync("ReceiveChatNotification", new { chatId = chatToUpdate.Id });
+                            }
                         }
                     }
 
                 }
-                if (_tracker.IsDogInSpecificChat(receiverDog.Id, chatToUpdate.Id))
+                if (isReceiverInChat)
                 {
                     await _chatHubContext.Clients.Group($"Chat_{chatToUpdate.Id}")
-                        .SendAsync("ReceiveMessage", new { chatId = chatToUpdate.Id, senderDogId = message.SenderDogId, message = message.Content });
+                        .SendAsync("ReceiveChatNotification", new { chatId = chatToUpdate.Id, senderDogId = message.SenderDogId, message = message.Content });
+                    
                 }
-                else
+                else if (!receiverDog.IsBot == true)
                 {
                     await _notificationService.CreateOrUpdateChatNotification(chatToUpdate.Id, receiverDog.Id);
 
@@ -310,17 +336,18 @@ namespace TailBuddys.Application.Services
 
         }
         // ליישם את הפונקציה
-        public async Task<Message?> MarkMessageAsRead(int messageId)
+
+        public async Task<int> MarkAllMessagesAsRead(int chatId, int currentDogId)
         {
             try
             {
-                return await _chatRepository.MarkMessageAsReadDb(messageId);
+                return await _chatRepository.MarkAllMessagesAsReadDb(chatId, currentDogId);
             }
 
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return null;
+                return -1;
             }
 
         }
