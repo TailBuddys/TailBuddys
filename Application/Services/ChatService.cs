@@ -65,17 +65,16 @@ namespace TailBuddys.Application.Services
                             if (_tracker.IsDogInChatsGroup(chat.ReceiverDogId))
                             {
                                 await _chatHubContext.Clients.Group($"DogChats_{chat.ReceiverDogId}")
-                                    .SendAsync("ReceiveChatNotification", newChat.Id);
+                                    .SendAsync("ReceiveChatNotification", newChat);
                             }
                             else
                             {
-                                Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
                                 await _notificationService.CreateOrUpdateChatNotification(newChat.Id, chat.ReceiverDogId);
                             }
                             if (_tracker.IsDogInChatsGroup(chat.SenderDogId))
                             {
                                 await _chatHubContext.Clients.Group($"DogChats_{chat.SenderDogId}")
-                                    .SendAsync("ReceiveChatNotification", newChat.Id);
+                                    .SendAsync("ReceiveChatNotification", newChat);
                             }
                             else
                             {
@@ -209,7 +208,7 @@ namespace TailBuddys.Application.Services
                     if (_tracker.IsDogInChatsGroup(deletedChat.ReceiverDogId))
                     {
                         await _chatHubContext.Clients.Group($"DogChats_{deletedChat.ReceiverDogId}")
-                            .SendAsync("ReceiveChatNotification", chatId);
+                            .SendAsync("ReceiveChatNotification", deletedChat);
                     }
                     else
                     {
@@ -218,7 +217,7 @@ namespace TailBuddys.Application.Services
                     if (_tracker.IsDogInChatsGroup(deletedChat.SenderDogId))
                     {
                         await _chatHubContext.Clients.Group($"DogChats_{deletedChat.SenderDogId}")
-                            .SendAsync("ReceiveChatNotification", chatId);
+                            .SendAsync("ReceiveChatNotification", deletedChat);
                     }
                     else
                     {
@@ -272,7 +271,7 @@ namespace TailBuddys.Application.Services
                                 SenderDogId = receiverDog.Id,
                                 ChatID = chatToUpdate.Id,
                                 Content = aiResponse,
-                                IsRead = _tracker.IsDogInSpecificChat(senderDog.Id, chatToUpdate.Id) 
+                                IsRead = _tracker.IsDogInSpecificChat(senderDog.Id, chatToUpdate.Id)
                             };
                             await _chatRepository.AddMessageToChatDb(botMessage);
                             bool isSenderInChat = _tracker.IsDogInSpecificChat(senderDog.Id, chatToUpdate.Id);
@@ -290,9 +289,9 @@ namespace TailBuddys.Application.Services
                             else
                             {
                                 // Send notification if sender is not in chat
-                                await _notificationService.CreateOrUpdateChatNotification(chatToUpdate.Id, senderDog.Id);
+                                var chatNotify = await _notificationService.CreateOrUpdateChatNotification(chatToUpdate.Id, senderDog.Id);
                                 await _chatHubContext.Clients.Group($"DogChats_{senderDog.Id}")
-                                    .SendAsync("ReceiveChatNotification", new { chatId = chatToUpdate.Id });
+                                    .SendAsync("ReceiveChatNotification", chatNotify);
                             }
                         }
                     }
@@ -302,14 +301,14 @@ namespace TailBuddys.Application.Services
                 {
                     await _chatHubContext.Clients.Group($"Chat_{chatToUpdate.Id}")
                         .SendAsync("ReceiveChatNotification", new { chatId = chatToUpdate.Id, senderDogId = message.SenderDogId, message = message.Content });
-                    
+
                 }
                 else if (!receiverDog.IsBot == true)
                 {
-                    await _notificationService.CreateOrUpdateChatNotification(chatToUpdate.Id, receiverDog.Id);
+                    var chatNotify = await _notificationService.CreateOrUpdateChatNotification(chatToUpdate.Id, receiverDog.Id);
 
                     await _chatHubContext.Clients.Group($"DogChats_{receiverDog.Id}")
-                        .SendAsync("ReceiveChatNotification", new { chatId = chatToUpdate.Id });
+                        .SendAsync("ReceiveChatNotification", chatNotify);
                 }
                 return message;
             }
@@ -369,27 +368,27 @@ namespace TailBuddys.Application.Services
             }
         }
 
-        public async Task SendMessage(int chatId, int senderDogId, int receiverDogId, string message)
-        {
-            await _chatHubContext.Clients.Group($"Chat_{chatId}")
-                .SendAsync("ReceiveMessage", new
-                {
-                    chatId,
-                    senderDogId,
-                    message
-                });
+        //public async Task SendMessage(int chatId, int senderDogId, int receiverDogId, string message)
+        //{
+        //    await _chatHubContext.Clients.Group($"Chat_{chatId}")
+        //        .SendAsync("ReceiveChatNotification", new
+        //        {
+        //            chatId,
+        //            senderDogId,
+        //            message
+        //        });
 
-            if (_tracker.IsDogInSpecificChat(receiverDogId, chatId))
-            {
-                return;
-            }
+        //    if (_tracker.IsDogInSpecificChat(receiverDogId, chatId))
+        //    {
+        //        return;
+        //    }
 
-            await _notificationService.CreateOrUpdateChatNotification(chatId, receiverDogId);
-            if (_tracker.IsDogInChatsGroup(receiverDogId))
-            {
-                await _chatHubContext.Clients.Group($"DogChats_{receiverDogId}")
-                    .SendAsync("ReceiveChatNotification", new { chatId });
-            }
-        }
+        //    var chatNotify = await _notificationService.CreateOrUpdateChatNotification(chatId, receiverDogId);
+        //    if (_tracker.IsDogInChatsGroup(receiverDogId))
+        //    {
+        //        await _chatHubContext.Clients.Group($"DogChats_{receiverDogId}")
+        //            .SendAsync("ReceiveChatNotification", chatNotify);
+        //    }
+        //}
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using TailBuddys.Application.Interfaces;
+using TailBuddys.Core.Models;
 using TailBuddys.Hubs.HubInterfaces;
 
 namespace TailBuddys.Hubs
@@ -30,10 +31,24 @@ namespace TailBuddys.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, $"DogChats_{dogId}");
             _tracker.JoinDogChatsGroup(dogId);
 
-            var notifications = await _notificationService.GetAllDogChatsNotifications(dogId);
-            foreach (var notification in notifications)
+            await SendInitialNotifications(dogId);
+
+            //List<ChatNotification> notifications = await _notificationService.GetAllDogChatsNotifications(dogId);
+            //foreach (ChatNotification notification in notifications)
+            //{
+            //    Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + notification.ChatId);
+            //    await Clients.Caller.SendAsync("ReceiveChatNotification", notification);
+            //}
+        }
+
+        public async Task SendInitialNotifications(int dogId)
+        {
+            List<ChatNotification> notifications = await _notificationService.GetAllDogChatsNotifications(dogId);
+
+            foreach (ChatNotification notification in notifications)
             {
-                await Clients.Caller.SendAsync("ReceiveChatNotification", new { chatId = notification });
+                Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + notification.ChatId);
+                await Clients.Caller.SendAsync("ReceiveChatNotification", notification);
             }
         }
 
@@ -65,7 +80,8 @@ namespace TailBuddys.Hubs
             var chatNotification = await _notificationService.GetChatNotificationsById(chatId, dogId);
             if (chatNotification != null)
             {
-                await Clients.Caller.SendAsync("ReceiveChatNotification", new { chatId });
+                //await Clients.Caller.SendAsync("ReceiveChatNotification", new { chatId });
+                await Clients.Caller.SendAsync("ReceiveChatNotification", chatNotification);
                 await _notificationService.DeleteChatNotifications(chatId, dogId);
             }
         }

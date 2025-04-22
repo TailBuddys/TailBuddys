@@ -15,6 +15,6 @@ namespace TailBuddys.Application.Interfaces
         public Task<Message?> AddMessageToChat(Chat chat, Message message);
         public Task<List<Message>> GetMessagesByChatId(int chatId);
         public Task<int> MarkAllMessagesAsRead(int chatId, int currentDogId);
-        public Task SendMessage(int chatId, int senderDogId, int receiverDogId, string message);
+        //public Task SendMessage(int chatId, int senderDogId, int receiverDogId, string message);
     }
 }
