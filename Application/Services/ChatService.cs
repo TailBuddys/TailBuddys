@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System;
 using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.DTO;
 using TailBuddys.Core.Interfaces;
@@ -138,8 +139,10 @@ namespace TailBuddys.Application.Services
                                 Name = receiverDog.Name,
                                 ImageUrl = receiverDog.Images.FirstOrDefault(i => i.Order == 0)?.Url
                             },
-                            LastMessage = lastMessage
+                            LastMessage = lastMessage,
+                            IsArchive = chat.SenderDogId == dogId? chat.SenderDogArchive : chat.ReceiverDogArchive
                         });
+
                     }
                 }
 
@@ -186,12 +189,32 @@ namespace TailBuddys.Application.Services
             }
         }
         //צריך לבדוק מה לעשות אם יוזר מוחק את הצאט 
-        public async Task<Chat?> UpdateChat(int chatId, Chat chat)
+        public async Task<ChatDTO?> UpdateChat(int chatId, bool isArchive, int clientDogId)
         {
             try
             {
-                return await _chatRepository.UpdateChatDb(chatId, chat);
+                Chat? updatedChat = await _chatRepository.UpdateChatDb(chatId, isArchive, clientDogId);
+                
+                if (updatedChat == null) return null;
+                Dog? receiverDog = updatedChat.SenderDogId == clientDogId ? updatedChat.ReceiverDog : updatedChat.SenderDog;
+                if (receiverDog == null) return null;
+                ChatDTO chatToReturn = new ChatDTO
+                {
+                    Id = chatId,
+                    Dog = new UserDogDTO
+                    {
+                        Id = receiverDog.Id,
+                        Name = receiverDog.Name,
+                        ImageUrl = receiverDog.Images.FirstOrDefault(i => i.Order == 0)?.Url
+                    },
+                    LastMessage = updatedChat.Messages.FirstOrDefault(),
+                    IsArchive = updatedChat.SenderDogId == clientDogId ? updatedChat.SenderDogArchive : updatedChat.ReceiverDogArchive
+
+                };
+
+                return chatToReturn;
             }
+
             catch (Exception e)
             {
                 Console.WriteLine(e);

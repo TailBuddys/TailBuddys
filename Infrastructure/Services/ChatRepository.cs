@@ -16,6 +16,8 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
+                chat.SenderDogArchive = false;
+                chat.ReceiverDogArchive = false;
                 _context.Chats.Add(chat);
                 //_context.Messeges.Add(chat.Messages.FirstOrDefault());  ????
                 await _context.SaveChangesAsync();
@@ -61,11 +63,14 @@ namespace TailBuddys.Infrastructure.Services
                 return null;
             }
         }
-        public async Task<Chat?> UpdateChatDb(int chatId, Chat chat)
+        public async Task<Chat?> UpdateChatDb(int chatId, bool isArchive, int clientDogId)
         {
             try
             {
-                Chat? chatToUpdate = await _context.Chats.FirstOrDefaultAsync(c => c.Id == chatId);
+                Chat? chatToUpdate = await _context.Chats
+                    .Include(c => c.SenderDog!).ThenInclude(d => d.Images)
+                    .Include(c => c.ReceiverDog!).ThenInclude(d => d.Images)
+                    .Include(c => c.Messages).FirstOrDefaultAsync(c => c.Id == chatId);
                 if (chatToUpdate == null)
                 {
                     return null;
@@ -73,6 +78,14 @@ namespace TailBuddys.Infrastructure.Services
 
                 // ככל הנראה יבוטל
                 //chatToUpdate.IsActive = chat.IsActive;
+                if (chatToUpdate.SenderDogId == clientDogId) 
+                {
+                    chatToUpdate.SenderDogArchive = isArchive;
+                }
+                else 
+                {
+                    chatToUpdate.ReceiverDogArchive = isArchive; 
+                }
 
                 _context.Chats.Update(chatToUpdate);
                 await _context.SaveChangesAsync();

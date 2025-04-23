@@ -14,6 +14,9 @@ namespace TailBuddys.Core.Models
         public int ReceiverDogId { get; set; }
         [JsonIgnore]
         public Dog? ReceiverDog { get; set; }
+        public bool SenderDogArchive { get; set; }
+        public bool ReceiverDogArchive { get; set; } 
+
         //public string LastMessegeId { get; set; }
         //public Messege LastMessege { get; set; }
         //public bool IsActive { get; set; }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TailBuddys.Application.Interfaces;
 using TailBuddys.Core.DTO;
 using TailBuddys.Core.Models;
@@ -85,22 +86,29 @@ namespace TailBuddys.Presentation.Controllers
             return Unauthorized();
         }
 
-        // ??? LAMA ???
-        //[HttpPut("{chatId}")]
-        //[Authorize]
-        //public async Task<IActionResult> Put(int chatId, [FromBody] Chat newChat)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    Chat? result = await _chatService.UpdateChat(chatId, newChat);
-        //    if (result == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(result);
-        //}
+        [HttpPut("{chatId}")]
+        [Authorize]
+        public async Task<IActionResult> Put(int chatId, bool isArchive)
+        {
+            FullChatDTO? result = await _chatService.GetChatById(chatId);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            int ClientDogId;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId"
+            && (c.Value == result.SenderDog.Id.ToString() || c.Value == result.ReceiverDog.Id.ToString()))?.Value, out ClientDogId);
+
+            if (!ModelState.IsValid || ClientDogId == 0)
+                return Unauthorized();
+
+            ChatDTO? updatedChat = await _chatService.UpdateChat(chatId, isArchive, ClientDogId);
+            if (updatedChat == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedChat);
+        }
 
         // ??? LAMA ???
         [HttpDelete("{chatId}")]

@@ -8,5 +8,6 @@ namespace TailBuddys.Core.DTO
         public int Id { get; set; }
         public UserDogDTO Dog { get; set; } = new UserDogDTO();
         public Message? LastMessage { get; set; }
+        public bool IsArchive { get; set; }
     }
 }
