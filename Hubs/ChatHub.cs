@@ -84,6 +84,22 @@ namespace TailBuddys.Hubs
                 await Clients.Caller.SendAsync("ReceiveChatNotification", chatNotification);
                 await _notificationService.DeleteChatNotifications(chatId, dogId);
             }
+            var allDogsInChat = _tracker.GetAllDogsInChat(chatId);
+            foreach (var otherDogId in allDogsInChat)
+            {
+                if (otherDogId == dogId) continue; // Skip the current joining dog
+
+                if (_tracker.IsDogInSpecificChat(otherDogId, chatId))
+                {
+                    // Send real-time update to Dog2
+                    await Clients.Group($"Chat_{chatId}").SendAsync("ReceiveChatNotification", new
+                    {
+                        chatId,
+                        joinedDogId = dogId,
+                        message = $"Dog {dogId} joined the chat"
+                    });
+                }
+            }
         }
 
         public async Task LeaveSpecificChatGroup(int chatId, int dogId)
@@ -109,7 +125,7 @@ namespace TailBuddys.Hubs
                 {
                     _tracker.LeaveDogChatsGroup(dogId);
 
-                    var chats = _tracker.GetAllChatsForDog(dogId);
+                    var chats = _tracker.GetAllDogsInChat(dogId);
                     foreach (var chatId in chats)
                     {
                         _tracker.LeaveChat(dogId, chatId);

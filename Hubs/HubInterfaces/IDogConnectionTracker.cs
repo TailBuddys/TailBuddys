@@ -2,6 +2,7 @@
 {
     public interface IDogConnectionTracker
     {
+        public IEnumerable<string> GetConnectionsForDog(int dogId);
         public void JoinDogMatchGroup(int dogId);
         public void LeaveDogMatchGroup(int dogId);
         public bool IsDogInMatchGroup(int dogId);
@@ -13,6 +14,6 @@
         public void JoinChat(int dogId, int chatId);
         public void LeaveChat(int dogId, int chatId);
         public bool IsDogInSpecificChat(int dogId, int chatId);
-        public IEnumerable<int> GetAllChatsForDog(int dogId);
+        public IEnumerable<int> GetAllDogsInChat(int chatId);
     }
 }

@@ -1,13 +1,22 @@
-﻿using TailBuddys.Hubs.HubInterfaces;
+﻿using System.Collections.Concurrent;
+using TailBuddys.Hubs.HubInterfaces;
 
 public class DogConnectionTracker : IDogConnectionTracker
 {
     private readonly HashSet<int> _activeDogs = new();
     private readonly HashSet<int> _dogChatsGroup = new();
     private readonly Dictionary<int, HashSet<int>> _chatParticipants = new();
+    private readonly ConcurrentDictionary<int, HashSet<string>> _dogConnections = new();
+
 
     private readonly object _lock = new();
 
+    public IEnumerable<string> GetConnectionsForDog(int dogId)
+    {
+        return _dogConnections.TryGetValue(dogId, out var connections)
+            ? connections
+            : Enumerable.Empty<string>();
+    }
     public void JoinDogMatchGroup(int dogId)
     {
         lock (_lock) { _activeDogs.Add(dogId); }
@@ -70,14 +79,14 @@ public class DogConnectionTracker : IDogConnectionTracker
                    _chatParticipants[chatId].Contains(dogId);
         }
     }
-    public IEnumerable<int> GetAllChatsForDog(int dogId)
+    public IEnumerable<int> GetAllDogsInChat(int chatId)
     {
         lock (_lock)
         {
-            return _chatParticipants
-                .Where(kvp => kvp.Value.Contains(dogId))
-                .Select(kvp => kvp.Key)
-                .ToList(); // copy to avoid collection modification issues
+            if (_chatParticipants.ContainsKey(chatId))
+                return _chatParticipants[chatId].ToList(); // return a copy
+            return new List<int>();
         }
     }
+
 }
