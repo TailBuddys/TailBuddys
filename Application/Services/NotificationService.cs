@@ -10,6 +10,7 @@ namespace TailBuddys.Application.Services
         private readonly INotificationRepository _notificationRepository;
         private readonly IChatRepository _chatRepository;
 
+
         public NotificationService(INotificationRepository notificationRepository, IChatRepository chatRepository)
         {
             _notificationRepository = notificationRepository;

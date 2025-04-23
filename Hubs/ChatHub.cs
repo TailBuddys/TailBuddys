@@ -32,13 +32,6 @@ namespace TailBuddys.Hubs
             _tracker.JoinDogChatsGroup(dogId);
 
             await SendInitialNotifications(dogId);
-
-            //List<ChatNotification> notifications = await _notificationService.GetAllDogChatsNotifications(dogId);
-            //foreach (ChatNotification notification in notifications)
-            //{
-            //    Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + notification.ChatId);
-            //    await Clients.Caller.SendAsync("ReceiveChatNotification", notification);
-            //}
         }
 
         public async Task SendInitialNotifications(int dogId)
@@ -47,7 +40,6 @@ namespace TailBuddys.Hubs
 
             foreach (ChatNotification notification in notifications)
             {
-                Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + notification.ChatId);
                 await Clients.Caller.SendAsync("ReceiveChatNotification", notification);
             }
         }

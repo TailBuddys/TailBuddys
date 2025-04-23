@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TailBuddys.Application.Services;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
 using TailBuddys.Infrastructure.Data;
@@ -8,9 +9,12 @@ namespace TailBuddys.Infrastructure.Services
     public class ChatRepository : IChatRepository
     {
         private readonly TailBuddysContext _context;
-        public ChatRepository(TailBuddysContext context)
+        private readonly ILogger<ChatRepository> _logger;
+
+        public ChatRepository(TailBuddysContext context, ILogger<ChatRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
         public async Task<Chat?> CreateChatDb(Chat chat)
         {
@@ -25,7 +29,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred creating new chat.");
                 return null;
             }
         }
@@ -42,7 +46,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred get all dog new chat.");
                 return new List<Chat>();
             }
         }
@@ -59,7 +63,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred getting chat by id.");
                 return null;
             }
         }
@@ -93,7 +97,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred updating chat.");
                 return null;
             }
 
@@ -117,7 +121,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred deleting chat.");
                 return null;
             }
 
@@ -133,7 +137,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred adding message to chat.");
                 return null;
             }
         }
@@ -146,7 +150,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting messages by chat id.");
                 return new List<Message>();
             }
         }
@@ -178,7 +182,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while marking messages as read.");
                 return -1; // Error indicator
             }
         }

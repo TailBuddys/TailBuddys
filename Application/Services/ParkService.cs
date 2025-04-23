@@ -14,12 +14,15 @@ namespace TailBuddys.Application.Services
         private readonly IParkRepository _parkRepository;
         private readonly IImageService _imageService;
         private readonly IDogService _dogService;
+        private readonly ILogger<ParkService> _logger;
 
-        public ParkService(IParkRepository parkRepository, IImageService imageService, IDogService dogService)
+
+        public ParkService(IParkRepository parkRepository, IImageService imageService, IDogService dogService, ILogger<ParkService> logger)
         {
             _parkRepository = parkRepository;
             _imageService = imageService;
             _dogService = dogService;
+            _logger = logger;
         }
         public async Task<Park?> CreatePark(Park park)
         {
@@ -30,7 +33,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while creating park."); 
                 return null;
             }
         }
@@ -104,7 +107,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while receiving all parks park."); 
                 return new List<ParkDTO>();
             }
         }
@@ -148,7 +151,7 @@ namespace TailBuddys.Application.Services
 
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while getting park by Id"); 
                 return null;
             }
         }
@@ -160,7 +163,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while updating park."); 
                 return null;
             }
         }
@@ -182,7 +185,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while deleting park."); 
                 return null;
             }
         }
@@ -205,7 +208,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while like/unlike park."); 
                 return null;
             }
         }

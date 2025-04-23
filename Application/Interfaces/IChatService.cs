@@ -13,8 +13,9 @@ namespace TailBuddys.Application.Interfaces
         public Task<ChatDTO?> UpdateChat(int chatId, bool isArchive, int clientDogId);
         public Task<Chat?> DeleteChat(int chatId);
         public Task<Message?> AddMessageToChat(Chat chat, Message message);
-        public Task<List<Message>> GetMessagesByChatId(int chatId);
+        //public Task<List<Message>> GetMessagesByChatId(int chatId);
         public Task<int> MarkAllMessagesAsRead(int chatId, int currentDogId);
         //public Task SendMessage(int chatId, int senderDogId, int receiverDogId, string message);
+
     }
 }

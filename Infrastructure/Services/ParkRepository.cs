@@ -8,9 +8,11 @@ namespace TailBuddys.Infrastructure.Services
     public class ParkRepository : IParkRepository
     {
         private readonly TailBuddysContext _context;
-        public ParkRepository(TailBuddysContext context)
+        private readonly ILogger<ParkRepository> _logger;
+        public ParkRepository(TailBuddysContext context, ILogger<ParkRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
         public async Task<Park?> CreateParkDb(Park park)
         {
@@ -24,7 +26,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while creating new Park.");
                 return null;
             }
         }
@@ -40,7 +42,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting all Parks.");
                 return new List<Park>();
             }
         }
@@ -55,7 +57,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting Park by id.");
                 return null;
             }
         }
@@ -81,7 +83,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while updating Park.");
                 return null;
             }
         }
@@ -109,7 +111,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while deleting Park.");
                 return null;
             }
         }
@@ -139,7 +141,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while deleting Park.");
                 return null;
             }
         }

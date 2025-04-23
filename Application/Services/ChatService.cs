@@ -20,6 +20,7 @@ namespace TailBuddys.Application.Services
         private readonly INotificationService _notificationService;
         private readonly IOpenAiService _openAiService;
         private readonly IDogConnectionTracker _tracker;
+        private readonly ILogger<ChatService> _logger;
 
 
         public ChatService(
@@ -30,7 +31,8 @@ namespace TailBuddys.Application.Services
             IHubContext<NotificationHub> matchHubContext,
             INotificationService notificationService,
             IOpenAiService openAiService,
-            IDogConnectionTracker tracker)
+            IDogConnectionTracker tracker,
+            ILogger<ChatService> logger)
         {
             _chatRepository = chatRepository;
             _matchRepository = matchRepository;
@@ -40,6 +42,7 @@ namespace TailBuddys.Application.Services
             _openAiService = openAiService;
             _userRepository = userRepository;
             _tracker = tracker;
+            _logger = logger;
         }
 
         public async Task<Chat?> CreateChat(Chat chat)
@@ -63,6 +66,8 @@ namespace TailBuddys.Application.Services
                         Chat? newChat = await _chatRepository.CreateChatDb(chat);
                         if (newChat != null)
                         {
+                                            _logger.LogInformation("Successfully created chat {newChat.Id}.", newChat.Id);
+
                             if (_tracker.IsDogInChatsGroup(chat.ReceiverDogId))
                             {
                                 await _chatHubContext.Clients.Group($"DogChats_{chat.ReceiverDogId}")
@@ -109,7 +114,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred creating new chat.");
                 return null;
             }
         }
@@ -145,6 +150,7 @@ namespace TailBuddys.Application.Services
 
                     }
                 }
+                _logger.LogInformation("Successfully retrieved {chats.Count} chats.", chats.Count);
 
                 return ChatsToReturn
                     .OrderByDescending(c => c.LastMessage?.CreatedAt)
@@ -152,7 +158,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error getting all dogs chats.");
                 return new List<ChatDTO>();
             }
         }
@@ -163,6 +169,8 @@ namespace TailBuddys.Application.Services
             {
                 Chat? chat = await _chatRepository.GetChatByIdDb(chatId);
                 if (chat == null) return null;
+                _logger.LogInformation("Successfully retrieved chat - {chat.Id} .", chat.Id);
+
                 return new FullChatDTO
                 {
                     Id = chat.Id,
@@ -184,7 +192,7 @@ namespace TailBuddys.Application.Services
 
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while retrieving chat.");
                 return null;
             }
         }
@@ -211,13 +219,14 @@ namespace TailBuddys.Application.Services
                     IsArchive = updatedChat.SenderDogId == clientDogId ? updatedChat.SenderDogArchive : updatedChat.ReceiverDogArchive
 
                 };
+                _logger.LogInformation("Successfully updated chat -{chatToReturn.Id} .", chatToReturn.Id);
 
                 return chatToReturn;
             }
 
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while updating chat.");
                 return null;
             }
         }
@@ -256,11 +265,13 @@ namespace TailBuddys.Application.Services
                         await _matchHubContext.Clients.Group(deletedChat.SenderDogId.ToString()).SendAsync("ReceiveNewMatch", 0);
                     }
                 }
+                _logger.LogInformation("Successfully deleted {deletedChat.Id} ", deletedChat?.Id);
+
                 return deletedChat;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while deleting chat");
                 return null;
             }
         }
@@ -279,6 +290,9 @@ namespace TailBuddys.Application.Services
                 message.IsRead = isReceiverInChat;
 
                 await _chatRepository.AddMessageToChatDb(message);
+
+                await _chatHubContext.Clients.Group($"Chat_{chatToUpdate.Id}")
+                        .SendAsync("ReceiveChatNotification", new { chatId = chatToUpdate.Id, senderDogId = message.SenderDogId, message = message.Content });
 
                 if (receiverDog.IsBot == true && senderDog.IsBot == false)
                 {
@@ -333,30 +347,33 @@ namespace TailBuddys.Application.Services
                     await _chatHubContext.Clients.Group($"DogChats_{receiverDog.Id}")
                         .SendAsync("ReceiveChatNotification", chatNotify);
                 }
+                _logger.LogInformation("Successfully added message {message.Id} ", message.Id);
+
                 return message;
             }
 
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while sending message.");
                 return null;
             }
         }
 
-        public async Task<List<Message>> GetMessagesByChatId(int chatId)
-        {
-            try
-            {
-                return await _chatRepository.GetMessagesByChatIdDb(chatId);
-            }
 
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return new List<Message>();
-            }
 
-        }
+        //public async Task<List<Message>> GetMessagesByChatId(int chatId)
+        //{
+        //    try
+        //    {
+        //        return await _chatRepository.GetMessagesByChatIdDb(chatId);
+        //    }
+
+        //    catch (Exception e)
+        //    {
+        //        return new List<Message>();
+        //    }
+
+        //}
         // ליישם את הפונקציה
 
         public async Task<int> MarkAllMessagesAsRead(int chatId, int currentDogId)
@@ -368,7 +385,7 @@ namespace TailBuddys.Application.Services
 
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while marking messages as read.");
                 return -1;
             }
 
@@ -386,7 +403,7 @@ namespace TailBuddys.Application.Services
 
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while getting chat details by id.");
                 return null;
             }
         }

@@ -14,12 +14,15 @@ namespace TailBuddys.Application.Services
         private readonly StorageClient _storageClient;
         private readonly IImageRepository _imageRepository;
         private readonly string _bucketName = "tail_buddys_bucket1"; // להסתיר במשתנה סביבה
+        private readonly ILogger<ImageService> _logger;
 
-        public ImageService(IImageRepository imageRepository)
+
+        public ImageService(IImageRepository imageRepository, ILogger<ImageService> logger)
         {
             Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "C:\\tailbuddys-570e8d8b9cdd.json");
             _storageClient = StorageClient.Create();
             _imageRepository = imageRepository;
+            _logger = logger;
         }
 
         public async Task<string?> UploadImage(IFormFile file, int entityId, int? entityType)
@@ -80,7 +83,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "GoogleCloud image deleting has been failed");
                 return "GoogleCloud image deleting has been failed";
             }
 

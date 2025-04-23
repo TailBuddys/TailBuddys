@@ -8,9 +8,12 @@ namespace TailBuddys.Infrastructure.Services
     public class MatchRepository : IMatchRepository
     {
         private readonly TailBuddysContext _context;
-        public MatchRepository(TailBuddysContext context)
+        private readonly ILogger<MatchRepository> _logger;
+
+        public MatchRepository(TailBuddysContext context, ILogger<MatchRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
         public async Task<Match?> CreateMatchDb(Match match)
         {
@@ -24,7 +27,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while creating new match.");
                 return null;
             }
         }
@@ -42,7 +45,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting all mutual matchs.");
                 return new List<Match>();
             }
         }
@@ -59,7 +62,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting all mutual matches as sender.");
                 return new List<Match>();
             }
         }
@@ -76,7 +79,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting all mutual matches as receiver.");
                 return new List<Match>();
             }
         }
@@ -92,7 +95,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting match by id.");
                 return null;
             }
         }
@@ -116,7 +119,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while updating match.");
                 return null;
             }
         }
@@ -135,7 +138,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while deleting match.");
                 return null;
             }
         }

@@ -11,7 +11,7 @@ namespace TailBuddys.Core.Models
         [Required, StringLength(20, MinimumLength = 2)]
         public string? LastName { get; set; }
         [Required, EmailAddress]
-        public string Email { get; set; } // לטפל
+        public string Email { get; set; } = "";
         [Phone]
         public string? Phone { get; set; }
         public string? PasswordHash { get; set; }

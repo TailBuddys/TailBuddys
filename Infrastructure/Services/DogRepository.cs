@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TailBuddys.Application.Services;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
 using TailBuddys.Infrastructure.Data;
@@ -8,9 +9,12 @@ namespace TailBuddys.Infrastructure.Services
     public class DogRepository : IDogRepository
     {
         private readonly TailBuddysContext _context;
-        public DogRepository(TailBuddysContext context)
+        private readonly ILogger<DogRepository> _logger;
+
+        public DogRepository(TailBuddysContext context, ILogger<DogRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
         // החלפה של כלבים
         //public async Task<Dog?> SwitchDog(int currentDogId, int switchDogId)
@@ -26,7 +30,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while creating new dog.");
                 return null;
             }
         }
@@ -38,7 +42,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting all dog.");
                 return new List<Dog>();
             }
         }
@@ -53,7 +57,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting all user dogs.");
                 return new List<Dog>();
             }
         }
@@ -79,7 +83,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting unmatched dogs.");
                 return new List<Dog>();
             }
         }
@@ -104,7 +108,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting dog by id.");
                 return null;
             }
         }
@@ -136,7 +140,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while updating dog.");
                 return null;
             }
         }
@@ -168,7 +172,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while deleting dog.");
                 return null;
             }
         }

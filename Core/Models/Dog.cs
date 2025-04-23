@@ -22,7 +22,7 @@ namespace TailBuddys.Core.Models
         public DateTime? BirthDate { get; set; }
         [JsonIgnore]
         public ICollection<Image> Images { get; set; } = new List<Image>();
-        public string? Address { get; set; }
+        public string Address { get; set; } = "";
         public double Lon { get; set; }
         public double Lat { get; set; }
         public bool? Vaccinated { get; set; }

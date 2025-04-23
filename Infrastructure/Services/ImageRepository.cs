@@ -8,9 +8,12 @@ namespace TailBuddys.Infrastructure.Services
     public class ImageRepository : IImageRepository
     {
         private readonly TailBuddysContext _context;
-        public ImageRepository(TailBuddysContext context)
+        private readonly ILogger<ImageRepository> _logger;
+
+        public ImageRepository(TailBuddysContext context, ILogger<ImageRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
         public async Task<Image?> CreateImageDb(Image image)
         {
@@ -22,7 +25,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while creating new image.");
                 return null;
             }
         }
@@ -39,7 +42,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting all images.");
                 return new List<Image>();
             }
         }
@@ -51,7 +54,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting image by id.");
                 return null;
             }
         }
@@ -73,7 +76,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while updating image.");
                 return null;
             }
         }
@@ -94,7 +97,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while deleting image.");
                 return null;
             }
         }

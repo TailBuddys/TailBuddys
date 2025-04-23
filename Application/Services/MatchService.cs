@@ -15,13 +15,16 @@ namespace TailBuddys.Application.Services
         private readonly IHubContext<NotificationHub> _hubContext;
         private readonly INotificationService _notificationService;
         private readonly IDogConnectionTracker _connectionTracker;
+        private readonly ILogger<MatchService> _logger;
+
 
         public MatchService(
             IMatchRepository matchRepository,
             IDogRepository dogRepository,
             IHubContext<NotificationHub> hubContext,
             INotificationService notificationService,
-            IDogConnectionTracker connectionTracker
+            IDogConnectionTracker connectionTracker,
+            ILogger<MatchService> logger
             )
         {
             _matchRepository = matchRepository;
@@ -29,6 +32,7 @@ namespace TailBuddys.Application.Services
             _hubContext = hubContext;
             _notificationService = notificationService;
             _connectionTracker = connectionTracker;
+            _logger = logger;
         }
         public async Task<Match?> CreateMatch(Match match)
         {
@@ -95,7 +99,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while creating match."); 
                 return null;
             }
         }
@@ -142,7 +146,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while getting all mutual matches."); 
                 return new List<MatchDTO>();
             }
         }
@@ -154,7 +158,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while getting all mutual matches as sender."); 
                 return new List<Match>();
             }
         }
@@ -166,7 +170,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while getting all mutual matches as receiver.");
                 return new List<Match>();
             }
         }
@@ -178,7 +182,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while getting match by id");
                 return null;
             }
         }
@@ -218,7 +222,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while updating match");
                 return null;
             }
         }
@@ -239,7 +243,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while deleting match");
                 return null;
             }
         }

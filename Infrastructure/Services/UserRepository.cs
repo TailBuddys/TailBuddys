@@ -8,9 +8,12 @@ namespace TailBuddys.Infrastructure.Services
     public class UserRepository : IUserRepository
     {
         private readonly TailBuddysContext _context;
-        public UserRepository(TailBuddysContext context)
+        private readonly ILogger<UserRepository> _logger;
+
+        public UserRepository(TailBuddysContext context, ILogger<UserRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
         public async Task<User?> CreateUserDb(User user)
         {
@@ -24,7 +27,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while creating new user.");
                 return null;
             }
         }
@@ -38,7 +41,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting user by id.");
                 return null;
             }
         }
@@ -53,7 +56,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting user by Email.");
                 return null;
             }
         }
@@ -66,7 +69,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting all users.");
                 return new List<User>();
             }
         }
@@ -93,7 +96,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while updating user.");
                 return null;
             }
         }
@@ -113,7 +116,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while delete user.");
                 return null;
             }
         }

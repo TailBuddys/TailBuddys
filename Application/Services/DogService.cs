@@ -1,4 +1,5 @@
-﻿using TailBuddys.Application.Interfaces;
+﻿using System;
+using TailBuddys.Application.Interfaces;
 using TailBuddys.Application.Utils;
 using TailBuddys.Core.DTO;
 using TailBuddys.Core.Interfaces;
@@ -17,6 +18,8 @@ namespace TailBuddys.Application.Services
         private readonly IImageService _imageService;
         private readonly IUserService _userService;
         private readonly IAuth _jwtService;
+        private readonly ILogger<DogService> _logger;
+
 
         public DogService(
             IDogRepository dogRepository,
@@ -24,7 +27,7 @@ namespace TailBuddys.Application.Services
             IChatRepository chatRepository,
             IImageService imageService,
             IUserService userService,
-            IAuth jwtService)
+            IAuth jwtService, ILogger<DogService> logger)
         {
             _dogRepository = dogRepository;
             _matchRepository = matchRepository;
@@ -32,6 +35,7 @@ namespace TailBuddys.Application.Services
             _imageService = imageService;
             _userService = userService;
             _jwtService = jwtService;
+            _logger = logger;
         }
 
         public async Task<DogDTO?> Create(Dog dog, int userId)
@@ -74,12 +78,13 @@ namespace TailBuddys.Application.Services
                     RefreshToken = refreshToken
                 };
                 if (dogToReturn == null) return null;
+                _logger.LogInformation("Successfully create dog {dogToReturn.Id}", dogToReturn.Id);
 
                 return dogToReturn;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred creating new dog.");
                 return null;
             }
         }
@@ -91,7 +96,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred receiving all dogs.");
                 return new List<Dog>();
             }
         }
@@ -110,11 +115,13 @@ namespace TailBuddys.Application.Services
                         ImageUrl = dog.Images.FirstOrDefault(i => i.Order == 0)?.Url
                     });
                 }
+                _logger.LogInformation("Successfully retrieved {ListToReturn.Count} dogs.", ListToReturn.Count);
+
                 return ListToReturn;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred gettin all user dogs.");
                 return new List<UserDogDTO>();
             }
         }
@@ -179,12 +186,15 @@ namespace TailBuddys.Application.Services
                         });
                     }
                 }
+                _logger.LogInformation("Successfully retrieved {finalDogsList.Count} dogs.", finalDogsList.Count);
+
                 return finalDogsList;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred receiving unmatched dogs."); 
                 return new List<DogDTO>();
+
             }
         }
 
@@ -224,11 +234,13 @@ namespace TailBuddys.Application.Services
                     dogToReturn.Lon = dog.Lon;
                     dogToReturn.Lat = dog.Lat;
                 }
+                _logger.LogInformation("Successfully retrieved dog {dog.Id} .", dog.Id);
+
                 return dogToReturn;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred receiving one dog.");
                 return null;
             }
         }
@@ -241,7 +253,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while updating dog."); 
                 return null;
             }
         }
@@ -283,11 +295,13 @@ namespace TailBuddys.Application.Services
                 };
                 if (dogToReturn == null) return null;
 
+                _logger.LogInformation("Successfully deleted dog {deletedDog.Id} .", deletedDog.Id);
+
                 return dogToReturn;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error occurred while deleting dog."); 
                 return null;
             }
         }

@@ -12,6 +12,7 @@ namespace TailBuddys.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _config;
 
+
         public GoogleAuthService(HttpClient httpClient, IUserRepository userRepository, IConfiguration config)
         {
             _httpClient = httpClient;
@@ -34,7 +35,6 @@ namespace TailBuddys.Application.Services
                 return null;
 
             User? user = await _userRepository.GetUserByEmailDb(googleUser.Email);
-            Console.WriteLine(googleUser.Email);
             if (user == null)
             {
                 user = new User
@@ -46,6 +46,7 @@ namespace TailBuddys.Application.Services
                 };
                 return await _userRepository.CreateUserDb(user);
             }
+
             return user;
         }
     }

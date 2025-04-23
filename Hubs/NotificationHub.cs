@@ -64,8 +64,6 @@ namespace TailBuddys.Hubs
             // GPT review
             int userId = int.Parse(Context.User?.FindFirst("id")?.Value ?? "0");
 
-            //Console.WriteLine("conection disconected");
-            //int userId = GetUserIdFromToken();
             var dogs = await _dogRepository.GetAllUserDogsDb(userId);
             foreach (var dog in dogs)
             {

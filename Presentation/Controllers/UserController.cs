@@ -38,7 +38,6 @@ namespace TailBuddys.Presentation.Controllers
             {
                 return BadRequest(ModelState);
             }
-            Console.WriteLine("googleId:-----" + loginModel.GoogleId);
             string? result = await _userService.Login(loginModel);
             if (result == null)
             {

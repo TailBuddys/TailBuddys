@@ -11,10 +11,12 @@ namespace TailBuddys.Infrastructure.Services
     {
 
         private readonly TailBuddysContext _context;
+        private readonly ILogger<NotificationRepository> _logger;
 
-        public NotificationRepository(TailBuddysContext context)
+        public NotificationRepository(TailBuddysContext context, ILogger<NotificationRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         //CHAT//
@@ -35,7 +37,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while creating new chat notification.");
                 return null;
             }
         }
@@ -54,7 +56,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting all chat notifications.");
                 return new List<ChatNotification>();
             }
         }
@@ -68,7 +70,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting chat notifications by id.");
                 return null;
             }
         }
@@ -86,7 +88,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while updating chat notification.");
                 return null;
             }
         }
@@ -104,7 +106,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while deleting chat notification.");
                 return null;
             }
         }
@@ -118,14 +120,13 @@ namespace TailBuddys.Infrastructure.Services
                     DogId = dogId,
                     MatchId = matchId
                 };
-                Console.WriteLine(dogId + "------------------------------------------ " + matchId);
                 _context.MatchNotification.Add(newMatch);
                 await _context.SaveChangesAsync();
                 return newMatch;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while creating new match notification.");
                 return null;
             }
         }
@@ -144,7 +145,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while getting all matches notifications.");
                 return new List<MatchNotification>();
             }
         }
@@ -166,7 +167,7 @@ namespace TailBuddys.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred while deleting match notifications.");
                 return new List<MatchNotification>();
             }
         }

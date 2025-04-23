@@ -1,4 +1,5 @@
-﻿using TailBuddys.Application.Interfaces;
+﻿using System;
+using TailBuddys.Application.Interfaces;
 using TailBuddys.Application.Utils;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
@@ -11,13 +12,15 @@ namespace TailBuddys.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IAuth _jwtAuthService;
         private readonly IGoogleAuthService _googleAuthService;
+        private readonly ILogger<UserService> _logger;
 
 
-        public UserService(IUserRepository userRepository, IAuth jwtAuthService, IGoogleAuthService googleAuthService)
+        public UserService(IUserRepository userRepository, IAuth jwtAuthService, IGoogleAuthService googleAuthService, ILogger<UserService> logger)
         {
             _userRepository = userRepository;
             _jwtAuthService = jwtAuthService;
             _googleAuthService = googleAuthService;
+            _logger = logger;
         }
 
         // להתייחס לאדמין גם פה וגם בסרוויסים אחרים כמו פארק וכו
@@ -32,12 +35,13 @@ namespace TailBuddys.Application.Services
                 if (user.PasswordHash == null) return null;
                 user.PasswordHash = PasswordHelper.GenerateHashPassword(user.PasswordHash, user);
 
+                _logger.LogInformation("Start regeistering user - {user.Email} .", user.Email);
 
                 return await _userRepository.CreateUserDb(user);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Error while regeinstring new user."); 
                 return null;
             }
         }
@@ -53,7 +57,6 @@ namespace TailBuddys.Application.Services
 
                 if (!string.IsNullOrEmpty(loginModel.GoogleId))
                 {
-                    Console.WriteLine("google id is not null here!!!"); //-----
                     user = await _googleAuthService.AuthGoogleUser(loginModel.GoogleId);
                 }
                 else if (!string.IsNullOrEmpty(loginModel.Email) && !string.IsNullOrEmpty(loginModel.Password))
@@ -62,7 +65,7 @@ namespace TailBuddys.Application.Services
                     if (user == null || string.IsNullOrEmpty(user.PasswordHash) ||
                         !PasswordHelper.VerifyPassword(loginModel.Password, user.PasswordHash, user))
                     {
-                        return null; // Invalid credentials
+                        return null;
                     }
                 }
 
@@ -70,26 +73,58 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to login {ex.Message}");
+                _logger.LogError(ex, "Error occurred while login a user.");
                 return null;
             }
         }
 
         public async Task<List<User>> GetAll()
         {
-            return await _userRepository.GetAllUsersDb();
+            try
+            {
+                _logger.LogInformation("Getting all users from the database...");
+
+                var users = await _userRepository.GetAllUsersDb();
+
+                _logger.LogInformation("Successfully retrieved {Count} users.", users.Count);
+
+                return users;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while retrieving all users.");
+                return new List<User>(); // or rethrow, depending on your handling policy
+            }
         }
         public async Task<User?> GetOne(int id)
         {
-            return await _userRepository.GetUserByIdDb(id);
+            try
+            {
+                return await _userRepository.GetUserByIdDb(id);
+            }
+            catch(Exception ex) 
+            {
+                _logger.LogError(ex, "Error occurred getting the user");
+                return null;
+            }
         }
         public async Task<User?> Update(int id, User user)
         {
-            if (user == null)
+            try
             {
+                if (user == null)
+                {
+                    return null;
+                }
+                _logger.LogInformation("Start updating user {id} .", id);
+
+                return await _userRepository.UpdateUserDb(id, user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred updating the user.");
                 return null;
             }
-            return await _userRepository.UpdateUserDb(id, user);
         }
         public async Task<User?> Delete(int id)
         {
@@ -99,7 +134,7 @@ namespace TailBuddys.Application.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError(ex, "Error occurred hile deleting user."); 
                 return null;
             }
         }
