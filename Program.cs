@@ -144,7 +144,6 @@ namespace TailBuddys
                         => context.User.Claims.Any(c => c.Type == "DogId")));
                 });
 
-                // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
                 builder.Services.AddEndpointsApiExplorer();
                 builder.Services.AddSwaggerGen();
 
@@ -164,12 +163,11 @@ namespace TailBuddys
                 app.UseAuthentication();
                 app.UseAuthorization();
 
-                //app.MapHub<NotificationHub>("/notificationHub");
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapHub<NotificationHub>("/NotificationHub");
-                    endpoints.MapHub<ChatHub>("/ChatHub");
-                    endpoints.MapControllers(); // Web API controllers
+                    endpoints?.MapHub<NotificationHub>("/NotificationHub");
+                    endpoints?.MapHub<ChatHub>("/ChatHub");
+                    endpoints?.MapControllers(); 
                 });
 
                 app.Run();
