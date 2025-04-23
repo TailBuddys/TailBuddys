@@ -1,8 +1,10 @@
 ﻿using System;
 using TailBuddys.Application.Interfaces;
 using TailBuddys.Application.Utils;
+using TailBuddys.Core.DTO;
 using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
+using TailBuddys.Core.Models.DTO;
 using TailBuddys.Core.Models.SubModels;
 
 namespace TailBuddys.Application.Services
@@ -13,13 +15,15 @@ namespace TailBuddys.Application.Services
         private readonly IAuth _jwtAuthService;
         private readonly IGoogleAuthService _googleAuthService;
         private readonly ILogger<UserService> _logger;
+        private readonly IDogService _dogService;
 
 
-        public UserService(IUserRepository userRepository, IAuth jwtAuthService, IGoogleAuthService googleAuthService, ILogger<UserService> logger)
+        public UserService(IUserRepository userRepository, IAuth jwtAuthService, IGoogleAuthService googleAuthService, ILogger<UserService> logger, IDogService dogService)
         {
             _userRepository = userRepository;
             _jwtAuthService = jwtAuthService;
             _googleAuthService = googleAuthService;
+            _dogService = dogService;
             _logger = logger;
         }
 
@@ -130,11 +134,19 @@ namespace TailBuddys.Application.Services
         {
             try
             {
+                List<UserDogDTO> dogsToDelete = (await _dogService.GetAll(id)).ToList();
+                if (dogsToDelete.Count > 0)
+                {
+                    foreach (UserDogDTO dog in dogsToDelete)
+                    {
+                        await _dogService.Delete(dog.Id);
+                    }
+                }
                 return await _userRepository.DeleteUserDb(id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred hile deleting user."); 
+                _logger.LogError(ex, "Error occurred while deleting user."); 
                 return null;
             }
         }
