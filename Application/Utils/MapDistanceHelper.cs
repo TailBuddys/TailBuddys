@@ -20,17 +20,14 @@ namespace TailBuddys.Application.Utils
                 double dLat = lat2 - lat1;
                 double dLon = lon2 - lon1;
 
-                // Haversine formula
                 double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
                            Math.Cos(lat1) * Math.Cos(lat2) *
                            Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
 
                 double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
 
-                // Distance in kilometers
                 double distance = EarthRadiusKm * c;
 
-                // Store distance in entity
                 entity.Distance = Math.Round(distance) == 0 ? 1 : Math.Round(distance);
                 result.Add(entity);
             }

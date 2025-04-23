@@ -36,7 +36,6 @@ namespace TailBuddys.Application.Services
         }
         public async Task<Match?> CreateMatch(Match match)
         {
-            // צריך להכליל בפונקציה הזו גם עדכון של נוטיפיקיישן סרוויס
             try
             {
                 if (match.ReceiverDogId == 0 || match.SenderDogId == 0) return null;
@@ -119,8 +118,6 @@ namespace TailBuddys.Application.Services
 
         public async Task<List<MatchDTO>> GetAllMutualMatches(int dogId)
         {
-            // ליצור מודל של כלב עם תמונה ושם להחזרה לפרונט
-            // לבנות מודל DTO
             try
             {
                 List<Match> matches = await _matchRepository.GetAllMutualMatchesDb(dogId);

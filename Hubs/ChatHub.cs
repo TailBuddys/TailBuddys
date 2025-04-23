@@ -21,10 +21,9 @@ namespace TailBuddys.Hubs
 
         public async Task JoinDogChatsGroup(int dogId)
         {
-            // ✅ Check if connected user owns the dog they're trying to subscribe to
             if (!Context.User.Claims.Any(c => c.Type == "DogId" && c.Value == dogId.ToString()))
             {
-                await Clients.Caller.SendAsync("Error", "Unauthorized dog access."); // ✅ Prevent unauthorized group access
+                await Clients.Caller.SendAsync("Error", "Unauthorized dog access."); 
                 return;
             }
 
@@ -46,7 +45,6 @@ namespace TailBuddys.Hubs
 
         public async Task LeaveDogChatsGroup(int dogId)
         {
-            // ✅ Still check ownership for completeness
             if (!Context.User.Claims.Any(c => c.Type == "DogId" && c.Value == dogId.ToString()))
             {
                 await Clients.Caller.SendAsync("Error", "Unauthorized dog access.");
@@ -61,7 +59,6 @@ namespace TailBuddys.Hubs
         {
             _tracker.JoinChat(dogId, chatId);
 
-            // ✅ Security: validate dog ownership before joining chat group
             if (!Context.User.Claims.Any(c => c.Type == "DogId" && c.Value == dogId.ToString()))
             {
                 await Clients.Caller.SendAsync("Error", "Unauthorized dog access.");
@@ -72,18 +69,16 @@ namespace TailBuddys.Hubs
             var chatNotification = await _notificationService.GetChatNotificationsById(chatId, dogId);
             if (chatNotification != null)
             {
-                //await Clients.Caller.SendAsync("ReceiveChatNotification", new { chatId });
                 await Clients.Caller.SendAsync("ReceiveChatNotification", chatNotification);
                 await _notificationService.DeleteChatNotifications(chatId, dogId);
             }
             var allDogsInChat = _tracker.GetAllDogsInChat(chatId);
             foreach (var otherDogId in allDogsInChat)
             {
-                if (otherDogId == dogId) continue; // Skip the current joining dog
+                if (otherDogId == dogId) continue;
 
                 if (_tracker.IsDogInSpecificChat(otherDogId, chatId))
                 {
-                    // Send real-time update to Dog2
                     await Clients.Group($"Chat_{chatId}").SendAsync("ReceiveChatNotification", new
                     {
                         chatId,
@@ -97,8 +92,6 @@ namespace TailBuddys.Hubs
         public async Task LeaveSpecificChatGroup(int chatId, int dogId)
         {
             _tracker.LeaveChat(dogId, chatId);
-
-            // ✅ Same security enforcement as join
             if (!Context.User.Claims.Any(c => c.Type == "DogId" && c.Value == dogId.ToString()))
             {
                 await Clients.Caller.SendAsync("Error", "Unauthorized dog access.");

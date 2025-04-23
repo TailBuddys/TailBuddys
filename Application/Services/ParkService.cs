@@ -37,10 +37,7 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        // להחזיר DTO של פארקים
-        // לחשב מרחקים בין כלב אל פארקים סובבים?
-        // במידה ומשתמש לא הגדיר לעצמו נק' ציון (מיקום) להחזיר רשימה של פארקים ע"פ דרגת דירוג
-        // לקבל פרמטר סינון
+
         public async Task<List<ParkDTO>> GetAllParks(int? dogId, [FromQuery] ParksFilterDTO filters)
         {
             try

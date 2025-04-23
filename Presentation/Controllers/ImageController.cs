@@ -20,11 +20,19 @@ namespace TailBuddys.Presentation.Controllers
             _dogRepository = dogRepository;
             _openAiService = openAiService;
         }
+        public static bool IsValidImage(IFormFile file)
+        {
+            return file.Length > 0 &&
+                   file.Length <= 5 * 1024 * 1024 &&
+                   file.ContentType.StartsWith("image/");
+        }
 
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Post(IFormFile file, [FromQuery] int entityId, int? entityType)
         {
+            if (!IsValidImage(file))
+                return BadRequest("Invalid file.");
             if (entityType == 1 && HttpContext.User.Claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value == "True")
             {
                 string? ParkResult = await _imageService.UploadImage(file, entityId, entityType);

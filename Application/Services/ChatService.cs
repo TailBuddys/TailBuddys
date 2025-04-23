@@ -47,8 +47,6 @@ namespace TailBuddys.Application.Services
 
         public async Task<Chat?> CreateChat(Chat chat)
         {
-            // צריך להכליל בפונקציה הזו גם עדכון של נוטיפיקיישן סרוויס
-            // להגדיר שליחת הודעה ראשונה בעת פתיחת צ'אט חדש
             try
             {
                 var senderMatches = await _matchRepository.GetAllMatchesAsSenderDogDb(chat.SenderDogId);
@@ -66,7 +64,7 @@ namespace TailBuddys.Application.Services
                         Chat? newChat = await _chatRepository.CreateChatDb(chat);
                         if (newChat != null)
                         {
-                                            _logger.LogInformation("Successfully created chat {newChat.Id}.", newChat.Id);
+                             _logger.LogInformation("Successfully created chat {newChat.Id}.", newChat.Id);
 
                             if (_tracker.IsDogInChatsGroup(chat.ReceiverDogId))
                             {
@@ -86,7 +84,7 @@ namespace TailBuddys.Application.Services
                             {
                                 await _notificationService.CreateOrUpdateChatNotification(newChat.Id, chat.SenderDogId);
                             }
-                            // for matches
+
                             if (_tracker.IsDogInMatchGroup(chat.ReceiverDogId))
                             {
                                 await _matchHubContext.Clients.Group(chat.ReceiverDogId.ToString()).SendAsync("ReceiveNewMatch", 0);
@@ -196,7 +194,7 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        //צריך לבדוק מה לעשות אם יוזר מוחק את הצאט 
+
         public async Task<ChatDTO?> UpdateChat(int chatId, bool isArchive, int clientDogId)
         {
             try
@@ -255,7 +253,7 @@ namespace TailBuddys.Application.Services
                     {
                         await _notificationService.CreateOrUpdateChatNotification(chatId, deletedChat.SenderDogId);
                     }
-                    // for matches
+
                     if (_tracker.IsDogInMatchGroup(deletedChat.ReceiverDogId))
                     {
                         await _matchHubContext.Clients.Group(deletedChat.ReceiverDogId.ToString()).SendAsync("ReceiveNewMatch", 0);
@@ -275,7 +273,8 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-        // לוודא שהכלב השולח קיים בצ'אט איי די ולבדוק האם הוא הסנדר איי די
+
+        // review hub notification multiple times 
         public async Task<Message?> AddMessageToChat(Chat chatToUpdate, Message message)
         {
             try
@@ -314,7 +313,6 @@ namespace TailBuddys.Application.Services
                             bool isSenderInChat = _tracker.IsDogInSpecificChat(senderDog.Id, chatToUpdate.Id);
                             if (isSenderInChat)
                             {
-                                // Send message directly if sender is in chat
                                 await _chatHubContext.Clients.Group($"Chat_{chatToUpdate.Id}")
                                     .SendAsync("ReceiveChatNotification", new
                                     {
@@ -325,7 +323,6 @@ namespace TailBuddys.Application.Services
                             }
                             else
                             {
-                                // Send notification if sender is not in chat
                                 var chatNotify = await _notificationService.CreateOrUpdateChatNotification(chatToUpdate.Id, senderDog.Id);
                                 await _chatHubContext.Clients.Group($"DogChats_{senderDog.Id}")
                                     .SendAsync("ReceiveChatNotification", chatNotify);
@@ -361,21 +358,6 @@ namespace TailBuddys.Application.Services
 
 
 
-        //public async Task<List<Message>> GetMessagesByChatId(int chatId)
-        //{
-        //    try
-        //    {
-        //        return await _chatRepository.GetMessagesByChatIdDb(chatId);
-        //    }
-
-        //    catch (Exception e)
-        //    {
-        //        return new List<Message>();
-        //    }
-
-        //}
-        // ליישם את הפונקציה
-
         public async Task<int> MarkAllMessagesAsRead(int chatId, int currentDogId)
         {
             try
@@ -407,28 +389,5 @@ namespace TailBuddys.Application.Services
                 return null;
             }
         }
-
-        //public async Task SendMessage(int chatId, int senderDogId, int receiverDogId, string message)
-        //{
-        //    await _chatHubContext.Clients.Group($"Chat_{chatId}")
-        //        .SendAsync("ReceiveChatNotification", new
-        //        {
-        //            chatId,
-        //            senderDogId,
-        //            message
-        //        });
-
-        //    if (_tracker.IsDogInSpecificChat(receiverDogId, chatId))
-        //    {
-        //        return;
-        //    }
-
-        //    var chatNotify = await _notificationService.CreateOrUpdateChatNotification(chatId, receiverDogId);
-        //    if (_tracker.IsDogInChatsGroup(receiverDogId))
-        //    {
-        //        await _chatHubContext.Clients.Group($"DogChats_{receiverDogId}")
-        //            .SendAsync("ReceiveChatNotification", chatNotify);
-        //    }
-        //}
     }
 }

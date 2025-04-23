@@ -28,11 +28,8 @@ namespace TailBuddys.Hubs
 
         public async Task<bool> JoinDogGroup(int dogId)
         {
-            //int userId = GetUserIdFromToken();
-            //if (userId == 0) return false;
-
-            // GPT review
-            int userId = int.Parse(Context.User?.FindFirst("id")?.Value ?? "0"); // ✅ Prevents exception on null
+ 
+            int userId = int.Parse(Context.User?.FindFirst("id")?.Value ?? "0"); 
             if (userId == 0)
                 return false;
 
@@ -46,9 +43,7 @@ namespace TailBuddys.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, dogId.ToString());
             _tracker.JoinDogMatchGroup(dogId);
 
-            // Fetch all match notifications for the dog
             var matchNotifications = await _notificationService.GetDogAllMatchesNotifications(dogId);
-            // Send each match notification to the frontend
             foreach (var matchNotification in matchNotifications)
             {
                 await Clients.Caller.SendAsync("ReceiveNewMatch", matchNotification.MatchId);
@@ -61,7 +56,6 @@ namespace TailBuddys.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            // GPT review
             int userId = int.Parse(Context.User?.FindFirst("id")?.Value ?? "0");
 
             var dogs = await _dogRepository.GetAllUserDogsDb(userId);

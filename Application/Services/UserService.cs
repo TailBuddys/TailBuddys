@@ -27,7 +27,6 @@ namespace TailBuddys.Application.Services
             _logger = logger;
         }
 
-        // להתייחס לאדמין גם פה וגם בסרוויסים אחרים כמו פארק וכו
         public async Task<User?> Register(User user)
         {
             try
@@ -55,7 +54,7 @@ namespace TailBuddys.Application.Services
             try
             {
                 if (loginModel.Email != null && loginModel.Password != null && loginModel.GoogleId != null)
-                    return null; // Invalid request, all fields shouldn't be filled
+                    return null; 
 
                 User? user = null;
 
@@ -97,7 +96,7 @@ namespace TailBuddys.Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while retrieving all users.");
-                return new List<User>(); // or rethrow, depending on your handling policy
+                return new List<User>(); 
             }
         }
         public async Task<User?> GetOne(int id)
@@ -134,7 +133,7 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-                List<UserDogDTO> dogsToDelete = (await _dogService.GetAll(id)).ToList();
+                var dogsToDelete = await _dogService.GetAll(id) ?? new List<UserDogDTO>();
                 if (dogsToDelete.Count > 0)
                 {
                     foreach (UserDogDTO dog in dogsToDelete)

@@ -110,7 +110,6 @@ namespace TailBuddys.Presentation.Controllers
             return Ok(updatedChat);
         }
 
-        // ??? LAMA ???
         [HttpDelete("{chatId}")]
         [Authorize]
         public async Task<IActionResult> Delete(int chatId)
@@ -138,7 +137,6 @@ namespace TailBuddys.Presentation.Controllers
             return Unauthorized();
         }
 
-        // האם נקרא = כן במידה והכלב מחובר להאב
         [HttpPost("message")]
         [Authorize]
         public async Task<IActionResult> AddMessageToChat([FromBody] Message message)
@@ -167,60 +165,5 @@ namespace TailBuddys.Presentation.Controllers
 
             return Ok(result);
         }
-
-        // should be in the GetById function 
-
-        //[HttpGet("message/{chatId}")]
-        //[Authorize]
-        //public async Task<IActionResult> GetMessagesByChatId(int chatId)
-        //{
-        //    List<Message> result = await _chatService.GetMessagesByChatId(chatId);
-        //    if (result == null)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    return Ok(result);
-        //}
-
-
-        //[HttpPatch("message/{messageId}")]
-        //[Authorize]
-        //// לשנות את הפונקציה לעבוד כפאטץ' מכיוון ועובד מהר יותר
-        //public async Task<IActionResult> MarkMessageAsRead(int messageId)
-        //{
-        //    Message? result = await _chatService.MarkMessageAsRead(messageId);
-        //    if (result == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(result);
-        //}
-
-        // GPT review
-
-        // לסנן את כל ההודעות שנקראו בצ'אט ולא אחת
-        //[HttpPatch("message/{messageId}")]
-        //[Authorize]
-        //public async Task<IActionResult> MarkMessageAsRead(int messageId)
-        //{
-        //    Message? result = await _chatService.MarkMessageAsRead(messageId);
-        //    if (result == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    FullChatDTO? chat = await _chatService.GetChatById(result.ChatID);
-        //    if (chat == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    int clientDogId;
-        //    int.TryParse(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId"
-        //        && (c.Value == chat.SenderDog.Id.ToString() || c.Value == chat.ReceiverDog.Id.ToString()))?.Value, out clientDogId);
-        //    if (clientDogId == 0)
-        //    {
-        //        return Unauthorized();
-        //    }
-        //    return Ok(result);
-        //}
     }
 }

@@ -18,24 +18,6 @@ namespace TailBuddys.Application.Services
         }
 
         //CHAT//
-        //public async Task<ChatNotification?> CreateOrUpdateChatNotification(int chatId, int dogId)
-        //{
-        //    ChatNotification? chatNotify = await _notificationRepository.GetChatNotificationsByIdDB(chatId, dogId);
-
-
-        //    if (chatNotify == null)
-        //    {
-        //        chatNotify = new ChatNotification
-        //        {
-        //            DogId = dogId,
-        //            ChatId = chatId,
-        //            UnreadCount = 1
-        //        };
-        //        return await _notificationRepository.CreateChatNotificationDB(chatNotify.ChatId, chatNotify.DogId);
-        //    }
-
-        //    return await _notificationRepository.UpdateChatNotificationsByIdDB(chatId, dogId);
-        //}
 
         public async Task<ChatNotification?> CreateOrUpdateChatNotification(int chatId, int dogId)
         {

@@ -60,25 +60,6 @@ namespace TailBuddys.Presentation.Controllers
             return Unauthorized();
         }
 
-        // לא בטוח שנצטרך בכלל
-        //[HttpGet("{matchId}")]
-        //[Authorize(Policy = "MustHaveDog")]
-        //public async Task<IActionResult> GetMatchById(int matchId)
-        //{
-        //    string? clientDogId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "DogId" && c.Value == dogId)?.Value;
-
-        //    if (clientDogId == dogId)
-        //    {
-        //        Match? result = await _matchService.GetMatchById(matchId);
-        //        if (result == null)
-        //        {
-        //            return BadRequest();
-        //        }
-        //        return Ok(result);
-        //    }
-        //    return Unauthorized();
-        //}
-
         [HttpPut("{matchId}")]
         [Authorize]
         public async Task<IActionResult> Put(int matchId, [FromBody] Match newMatch)
@@ -109,8 +90,6 @@ namespace TailBuddys.Presentation.Controllers
             else return Unauthorized();
 
         }
-
-        // ככל הנראה נרצה להפוך מאץ' ללא פעיל
 
         [HttpDelete("{matchId}")]
         [Authorize(Policy = "MustBeAdmin")]

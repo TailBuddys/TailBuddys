@@ -9,6 +9,12 @@ namespace TailBuddys.Application.Services
 {
     public class JwtAuthService : IAuth
     {
+        private readonly IConfiguration _config;
+
+        public JwtAuthService(IConfiguration config)
+        {
+            _config = config;
+        }
         public string GenerateToken(User user)
         {
             List<Claim> claims = new List<Claim>
@@ -20,16 +26,21 @@ namespace TailBuddys.Application.Services
             {
                 claims.Add(new Claim("DogId", dog.Id.ToString()));
             }
-            SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("31cb3b1a-f4f3-466e-9099-d4f49a0dd4b8"));
-            SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            JwtSecurityToken token = new JwtSecurityToken(
-                issuer: "TailBuddysServer",
-                audience: "TailBuddysApp",
+            var secret = _config["JwtSettings:Secret"];
+            var issuer = _config["JwtSettings:Issuer"];
+            var audience = _config["JwtSettings:Audience"];
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
                 expires: DateTime.Now.AddDays(365),
                 claims: claims,
                 signingCredentials: credentials
-                );
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

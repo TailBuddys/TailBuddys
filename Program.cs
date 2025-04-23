@@ -9,6 +9,7 @@ using System.Text;
 using TailBuddys.Application.Interfaces;
 using TailBuddys.Application.Services;
 using TailBuddys.Core.Interfaces;
+using TailBuddys.Core.Models.SubModels;
 using TailBuddys.Hubs;
 using TailBuddys.Hubs.HubInterfaces;
 using TailBuddys.Infrastructure.Data;
@@ -40,9 +41,7 @@ namespace TailBuddys
 
                 // Add services to the container
 
-                var dbConnectionString = Environment.GetEnvironmentVariable("TailBuddysDBString")
-                        ?? builder.Configuration.GetConnectionString("DefaultConnection");
-
+                var dbConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
                 if (string.IsNullOrEmpty(dbConnectionString))
                 {
@@ -51,9 +50,7 @@ namespace TailBuddys
                 builder.Services.AddControllers();
                 builder.Services.AddDbContext<TailBuddysContext>(options => options.UseSqlServer(dbConnectionString));
 
-                // Register ActiveDogs as a singleton
                 builder.Services.AddSingleton<IDogConnectionTracker, DogConnectionTracker>();
-                //builder.Services.AddSingleton<HashSet<int>>();
 
                 builder.Services.AddScoped<IAuth, JwtAuthService>();
                 builder.Services.AddHttpClient<IGoogleAuthService, GoogleAuthService>();
@@ -95,14 +92,10 @@ namespace TailBuddys
                             ValidateAudience = true,
                             ValidateLifetime = true,
 
-                            //ValidIssuer = "TailBuddysServer",
-                            //ValidAudience = "TailBuddysApp",
-                            //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                            //    "31cb3b1a-f4f3-466e-9099-d4f49a0dd4b8"))// Consider securing this via secret storage
                             ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
                             ValidAudience = builder.Configuration["JwtSettings:Audience"],
                             IssuerSigningKey = new SymmetricSecurityKey(
-                                    Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"] ?? throw new Exception("Missing JWT secret")))
+                                Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"] ?? throw new Exception("Missing JWT secret")))
                         };
 
                         // Allow SignalR access token from query string

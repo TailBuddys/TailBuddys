@@ -17,9 +17,6 @@ namespace TailBuddys.Core.Models
         public bool SenderDogArchive { get; set; }
         public bool ReceiverDogArchive { get; set; } 
 
-        //public string LastMessegeId { get; set; }
-        //public Messege LastMessege { get; set; }
-        //public bool IsActive { get; set; }
         [JsonIgnore]
         public ICollection<Message> Messages { get; set; } = new List<Message>();
     }

@@ -5,10 +5,10 @@ namespace TailBuddys.Core.Models
     public class ChatNotification
     {
         public int Id { get; set; }
-        public int DogId { get; set; }  // Receiver dog
+        public int DogId { get; set; }  
         [JsonIgnore]
         public Dog? Dog { get; set; }
-        public int ChatId { get; set; } // Chat reference
-        public int UnreadCount { get; set; } // Number of unread messages
+        public int ChatId { get; set; } 
+        public int UnreadCount { get; set; } 
     }
 }

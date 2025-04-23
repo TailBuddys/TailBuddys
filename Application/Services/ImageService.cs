@@ -7,13 +7,10 @@ namespace TailBuddys.Application.Services
 {
     public class ImageService : IImageService
     {
-        // אחראי על דיבור עם ענן התמונות, שמירה של תמונה בענן יצירה של כתובת היו.אר.אל לתמונה
-        // פניה לרפוזטורי של פארק / כלב בהתאם ועדכון שלו בדאטה בייס
-        // להוסיף העלאת תמונה לכלב
-
+      
         private readonly StorageClient _storageClient;
         private readonly IImageRepository _imageRepository;
-        private readonly string _bucketName = "tail_buddys_bucket1"; // להסתיר במשתנה סביבה
+        private readonly string _bucketName = "tail_buddys_bucket1"; 
         private readonly ILogger<ImageService> _logger;
 
 
@@ -37,9 +34,7 @@ namespace TailBuddys.Application.Services
             string fileName = $"{entityType}_{entityId}_{Guid.NewGuid()}";
             using var stream = file.OpenReadStream();
 
-            // file.GetType();
-
-            var obj = await _storageClient.UploadObjectAsync(_bucketName, fileName, file.ContentType, stream); // לבדוק שהצליחה הפעולה
+            var obj = await _storageClient.UploadObjectAsync(_bucketName, fileName, file.ContentType, stream); 
             if (obj == null || string.IsNullOrEmpty(obj.MediaLink)) return null;
 
             string fileUrl = $"https://storage.googleapis.com/{_bucketName}/{fileName}";
@@ -113,7 +108,7 @@ namespace TailBuddys.Application.Services
 
                 if (await _imageRepository.UpdateImageDb(imageToReplace1.Id, imageToReplace1) == null ||
                     await _imageRepository.UpdateImageDb(imageToReplace2.Id, imageToReplace2) == null)
-                    return "ReOrder has been failed";
+                    return null;
 
                 return $"ReOrder of {imageId1} and {imageId2} has been changed successfully";
             }

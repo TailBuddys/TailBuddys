@@ -23,7 +23,6 @@ namespace TailBuddys.Infrastructure.Services
                 chat.SenderDogArchive = false;
                 chat.ReceiverDogArchive = false;
                 _context.Chats.Add(chat);
-                //_context.Messeges.Add(chat.Messages.FirstOrDefault());  ????
                 await _context.SaveChangesAsync();
                 return chat;
             }
@@ -80,8 +79,6 @@ namespace TailBuddys.Infrastructure.Services
                     return null;
                 }
 
-                // ככל הנראה יבוטל
-                //chatToUpdate.IsActive = chat.IsActive;
                 if (chatToUpdate.SenderDogId == clientDogId) 
                 {
                     chatToUpdate.SenderDogArchive = isArchive;
@@ -158,7 +155,6 @@ namespace TailBuddys.Infrastructure.Services
         {
             try
             {
-                // Get all unread messages in this chat that were sent by the other dog
                 var messagesToUpdate = await _context.Messages
                     .Where(m => m.ChatID == chatId &&
                                 m.SenderDogId != currentDogId &&
@@ -167,23 +163,21 @@ namespace TailBuddys.Infrastructure.Services
 
                 if (!messagesToUpdate.Any())
                 {
-                    return 0; // No messages were updated
+                    return 0; 
                 }
 
-                // Mark all messages as read
                 foreach (var message in messagesToUpdate)
                 {
                     message.IsRead = true;
                 }
 
-                // Save changes
                 var updatedCount = await _context.SaveChangesAsync();
                 return updatedCount;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while marking messages as read.");
-                return -1; // Error indicator
+                return -1;
             }
         }
     }

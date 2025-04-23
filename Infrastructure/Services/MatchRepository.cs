@@ -34,7 +34,7 @@ namespace TailBuddys.Infrastructure.Services
         public async Task<List<Match>> GetAllMutualMatchesDb(int dogId)
         {
             try
-            {// מה קורה אם יוזר מחק מאץ' איתי אחרי שכבר נוצר אחד כזה
+            {
                 List<Match> list = await _context.Matches
                      .Include(m => m.SenderDog)
                      .Include(m => m.ReceiverDog!)
@@ -49,7 +49,6 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<Match>();
             }
         }
-        // get async all dog matches that he like / unlike 
         public async Task<List<Match>> GetAllMatchesAsSenderDogDb(int dogId)
         {
             try
@@ -66,7 +65,6 @@ namespace TailBuddys.Infrastructure.Services
                 return new List<Match>();
             }
         }
-        // get all dog that like me
         public async Task<List<Match>> GetAllMatchesAsReceiverDogDb(int dogId)
         {
             try

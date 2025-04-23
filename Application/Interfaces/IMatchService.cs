@@ -7,9 +7,9 @@ namespace TailBuddys.Application.Interfaces
     {
         Task<Match?> CreateMatch(Match match);
         Task HandleNewMatch(int senderDogId, int receiverDogId, int matchId);
-        Task<List<MatchDTO>> GetAllMutualMatches(int dogId); // לשימוש של הפרונט
-        Task<List<Match>> GetAllMatchesAsSenderDog(int dogId); // לשימוש פנימי של הסרוויס ??????
-        Task<List<Match>> GetAllMatchesAsReceiverDog(int dogId); // לשימוש פנימי של הסרוויס ?????
+        Task<List<MatchDTO>> GetAllMutualMatches(int dogId); 
+        Task<List<Match>> GetAllMatchesAsSenderDog(int dogId); 
+        Task<List<Match>> GetAllMatchesAsReceiverDog(int dogId); 
         Task<Match?> GetMatchById(int matchId);
         Task<Match?> UpdateMatch(int matchId, Match newMatch);
         Task<Match?> DeleteMatch(int matchId);

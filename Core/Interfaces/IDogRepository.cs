@@ -7,7 +7,6 @@ namespace TailBuddys.Core.Interfaces
         public Task<Dog?> CreateDogDb(Dog dog);
         public Task<List<Dog>> GetAllDogsDb();
         public Task<List<Dog>> GetAllUserDogsDb(int userId);
-        // return all new dogs that this dog didn't like/ unlike
         public Task<List<Dog>> GetUnMatchedDogsDb(int dogId);
         public Task<Dog?> GetDogByIdDb(int dogId);
         public Task<Dog?> UpdateDogDb(int dogId, Dog dog);

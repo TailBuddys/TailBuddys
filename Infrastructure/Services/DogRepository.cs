@@ -16,8 +16,6 @@ namespace TailBuddys.Infrastructure.Services
             _context = context;
             _logger = logger;
         }
-        // החלפה של כלבים
-        //public async Task<Dog?> SwitchDog(int currentDogId, int switchDogId)
         public async Task<Dog?> CreateDogDb(Dog dog)
         {
             try

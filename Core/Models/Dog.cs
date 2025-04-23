@@ -8,10 +8,9 @@ namespace TailBuddys.Core.Models
     {
         public int Id { get; set; }
         [ForeignKey(nameof(User))]
-        // לבדוק שהנאלל לא בא לנו בהפוכה בהמשך
         public int UserId { get; set; }
         [JsonIgnore]
-        public User? User { get; set; } // לבדוק למה צריך יוזר בתוך המודול של כלב
+        public User? User { get; set; } 
         [Required, StringLength(20, MinimumLength = 2)]
         public string? Name { get; set; }
         [StringLength(500, MinimumLength = 2)]

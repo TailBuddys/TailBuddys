@@ -6,17 +6,17 @@ using TailBuddys.Core.Interfaces;
 using TailBuddys.Core.Models;
 using TailBuddys.Core.Models.DTO;
 using TailBuddys.Core.Models.SubModels;
+using TailBuddys.Infrastructure.Services;
 
 namespace TailBuddys.Application.Services
 {
-    // סינון כלבים לפי מרחקים - גט אןמאץ'ד דוגס
     public class DogService : IDogService
     {
         private readonly IDogRepository _dogRepository;
         private readonly IMatchRepository _matchRepository;
         private readonly IChatRepository _chatRepository;
         private readonly IImageService _imageService;
-        private readonly IUserService _userService;
+        private readonly IUserRepository _userRepository;
         private readonly IAuth _jwtService;
         private readonly ILogger<DogService> _logger;
 
@@ -26,26 +26,25 @@ namespace TailBuddys.Application.Services
             IMatchRepository matchRepository,
             IChatRepository chatRepository,
             IImageService imageService,
-            IUserService userService,
+            IUserRepository userRepository,
             IAuth jwtService, ILogger<DogService> logger)
         {
             _dogRepository = dogRepository;
             _matchRepository = matchRepository;
             _chatRepository = chatRepository;
             _imageService = imageService;
-            _userService = userService;
+            _userRepository = userRepository;
             _jwtService = jwtService;
             _logger = logger;
         }
 
         public async Task<DogDTO?> Create(Dog dog, int userId)
         {
-            // לעדכן ליוזר את הכלב הפעיל האחרון
             try
             {
                 if (dog == null) return null;
                 dog.UserId = userId;
-                User? user = await _userService.GetOne(userId);
+                User? user = await _userRepository.GetUserByIdDb(userId);
                 if (user == null) return null;
                 dog.IsBot = false;
 
@@ -267,7 +266,7 @@ namespace TailBuddys.Application.Services
                 List<Match> allMatches = dogToDelete.MatchesAsSender.Concat(dogToDelete.MatchesAsReceiver).ToList();
                 List<Chat> allChats = dogToDelete.ChatsAsSender.Concat(dogToDelete.ChatsAsReceiver).ToList();
 
-                User? user = await _userService.GetOne(dogToDelete.UserId);
+                User? user = await _userRepository.GetUserByIdDb(dogToDelete.UserId);
                 if (user == null) return null;
 
                 user.Dogs.Remove(dogToDelete);
