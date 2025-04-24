@@ -42,31 +42,30 @@ namespace TailBuddys.Application.Services
 
                 (Dog? receiverDog, Dog? senderDog) = (await _dogRepository.GetDogByIdDb(match.ReceiverDogId),
                     await _dogRepository.GetDogByIdDb(match.SenderDogId));
-
-                if (senderDog?.UserId == receiverDog?.UserId ||
+                if (senderDog == null) return null;
+                if (senderDog.UserId == receiverDog?.UserId ||
                     (await _matchRepository.GetAllMatchesAsSenderDogDb(match.SenderDogId))
                     .Any(m => m.ReceiverDogId == match.ReceiverDogId)) return null;
 
                 match.CreatedAt = DateTime.Now;
                 match.UpdatedAt = DateTime.Now;
 
-                Match? foreignMatch = _matchRepository.GetAllMatchesAsSenderDogDb(match.ReceiverDogId)
-                    .Result.Where(m => m.ReceiverDogId == match.SenderDogId).FirstOrDefault();
+                Match? foreignMatch = (await _matchRepository.GetAllMatchesAsSenderDogDb(match.ReceiverDogId))
+                        .FirstOrDefault(m => m.ReceiverDogId == match.SenderDogId);
 
-                if (foreignMatch == null)
-                {
-                    return await _matchRepository.CreateMatchDb(match);
-                }
-
-                else if (senderDog != null && receiverDog != null && receiverDog.IsBot == true)
+                if (receiverDog?.IsBot == true && foreignMatch == null)
                 {
                     foreignMatch = await _matchRepository.CreateMatchDb(new Match
                     {
                         SenderDogId = receiverDog.Id,
                         ReceiverDogId = senderDog.Id,
                         IsLike = true,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
                     });
+                    match.IsLike = true; 
                 }
+
                 if (match.IsLike && foreignMatch != null && foreignMatch.IsLike)
 
                 {
