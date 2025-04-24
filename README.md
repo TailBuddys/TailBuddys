@@ -9,8 +9,6 @@ A real-time matchmaking and messaging backend for dogs and their humans. Built i
 - [Admin and User Access](#admin-and-user-access)
 - [Technologies Used](#technologies-used)
 - [Installation](#installation)
-- [Usage](#usage)
-- [API Overview](#api-overview)
 
 ## Features
 
