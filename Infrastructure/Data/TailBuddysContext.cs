@@ -109,7 +109,6 @@ namespace TailBuddys.Infrastructure.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Seed(); 
 
         }
     }
