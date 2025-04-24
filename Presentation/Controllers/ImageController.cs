@@ -23,7 +23,7 @@ namespace TailBuddys.Presentation.Controllers
         public static bool IsValidImage(IFormFile file)
         {
             return file.Length > 0 &&
-                   file.Length <= 5 * 1024 * 1024 &&
+                   file.Length <= 50 * 1024 * 1024 &&
                    file.ContentType.StartsWith("image/");
         }
 

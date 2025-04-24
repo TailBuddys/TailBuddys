@@ -129,73 +129,146 @@ namespace TailBuddys.Application.Services
         {
             try
             {
-                List<Dog> unmatchedDogs = await _dogRepository.GetUnMatchedDogsDb(dogId);
                 Dog? originDog = await _dogRepository.GetDogByIdDb(dogId);
                 if (originDog == null)
-                {
                     return new List<DogDTO>();
-                }
-                EntityDistance originDogLocation = new EntityDistance
-                {
-                    EntityId = originDog.Id,
-                    Lat = originDog.Lat,
-                    Lon = originDog.Lon,
-                };
 
-                List<EntityDistance> dogsDistance = unmatchedDogs
-                    .Select(dog => new EntityDistance { EntityId = dog.Id, Lat = dog.Lat, Lon = dog.Lon }).ToList();
+                double lat = originDog.Lat;
+                double lon = originDog.Lon;
 
-                List<EntityDistance> updatedDogsDistance = MapDistanceHelper.CalculateDistance(originDogLocation, dogsDistance);
+                double? radiusKm = filters.Distance;
+                double earthRadiusKm = 6371;
 
-                List<DogDTO> finalDogsList = new List<DogDTO>();
-                foreach (EntityDistance dog in updatedDogsDistance)
-                {
-                    Dog? currentDog = unmatchedDogs.FirstOrDefault(d => d.Id == dog.EntityId);
+                double deltaLat = radiusKm.HasValue ? radiusKm.Value / earthRadiusKm * (180 / Math.PI) : 90;
+                double deltaLon = radiusKm.HasValue ? radiusKm.Value / (earthRadiusKm * Math.Cos(lat * Math.PI / 180)) * (180 / Math.PI) : 180;
 
-                    if (currentDog != null
-                        && (filters.Distance == null || filters.Distance >= dog.Distance)
-                        && (filters.Breeds == null || filters.Breeds.Contains(currentDog.Type))
-                        && (filters.Size == null || filters.Size.Contains(currentDog.Size))
-                        && (filters.Gender == null || filters.Gender.Contains(currentDog.Gender))
-                        && (filters.Vaccinated == null || filters.Vaccinated.Contains(currentDog.Vaccinated))
-                        )
+                var allUnmatchedDogs = await _dogRepository.GetUnMatchedDogsDb(dogId);
+
+                var boxFilteredDogs = allUnmatchedDogs
+                    .Where(d =>
+                        d.Lat >= lat - deltaLat && d.Lat <= lat + deltaLat &&
+                        d.Lon >= lon - deltaLon && d.Lon <= lon + deltaLon)
+                    .ToList();
+
+                var origin = new EntityDistance { EntityId = originDog.Id, Lat = lat, Lon = lon };
+                var candidates = boxFilteredDogs
+                    .Select(d => new EntityDistance { EntityId = d.Id, Lat = d.Lat, Lon = d.Lon })
+                    .ToList();
+
+                var dogsWithDistance = MapDistanceHelper.CalculateDistance(origin, candidates);
+
+                var finalDogsList = dogsWithDistance
+                    .Select(d => new
                     {
-
-                        List<ImageDTO> dogImages = new List<ImageDTO>();
-                        foreach (Image image in currentDog.Images.OrderBy(d => d.Order))
+                        Dog = boxFilteredDogs.First(x => x.Id == d.EntityId),
+                        Distance = d.Distance
+                    })
+                    .Where(x =>
+                        (filters.Distance == null || x.Distance <= filters.Distance.Value) &&
+                        (filters.Breeds == null || filters.Breeds.Contains(x.Dog.Type)) &&
+                        (filters.Size == null || filters.Size.Contains(x.Dog.Size)) &&
+                        (filters.Gender == null || filters.Gender.Contains(x.Dog.Gender)) &&
+                        (filters.Vaccinated == null || filters.Vaccinated.Contains(x.Dog.Vaccinated)))
+                    .Select(x => new DogDTO
+                    {
+                        Id = x.Dog.Id,
+                        Name = x.Dog.Name,
+                        Description = x.Dog.Description,
+                        Type = x.Dog.Type,
+                        Size = x.Dog.Size,
+                        Gender = x.Dog.Gender,
+                        BirthDate = x.Dog.BirthDate,
+                        Vaccinated = x.Dog.Vaccinated,
+                        Distance = x.Distance,
+                        Images = x.Dog.Images.OrderBy(i => i.Order).Select(i => new ImageDTO
                         {
-                            dogImages.Add(new ImageDTO
-                            {
-                                Id = image.Id,
-                                Url = image.Url
-                            });
-                        }
-                        finalDogsList.Add(new DogDTO
-                        {
-                            Id = dog.EntityId,
-                            Name = currentDog.Name,
-                            Description = currentDog.Description,
-                            Type = currentDog.Type,
-                            Size = currentDog.Size,
-                            Gender = currentDog.Gender,
-                            BirthDate = currentDog.BirthDate,
-                            Distance = dog.Distance,
-                            Vaccinated = currentDog.Vaccinated,
-                            Images = dogImages,
-                        });
-                    }
-                }
-                _logger.LogInformation("Successfully retrieved {finalDogsList.Count} dogs.", finalDogsList.Count);
+                            Id = i.Id,
+                            Url = i.Url
+                        }).ToList()
+                    })
+                    .ToList();
 
+                _logger.LogInformation("Retrieved {Count} unmatched dogs with real distances.", finalDogsList.Count);
                 return finalDogsList;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(e, "Error occurred receiving unmatched dogs."); 
+                _logger.LogError(ex, "Error retrieving unmatched dogs.");
                 return new List<DogDTO>();
-
             }
         }
+
+        //public async Task<List<DogDTO>> GetUnmatchedDogs(int dogId, DogsFilterDTO filters)
+        //{
+        //    try
+        //    {
+        //        List<Dog> unmatchedDogs = await _dogRepository.GetUnMatchedDogsDb(dogId);
+        //        Dog? originDog = await _dogRepository.GetDogByIdDb(dogId);
+        //        if (originDog == null)
+        //        {
+        //            return new List<DogDTO>();
+        //        }
+        //        EntityDistance originDogLocation = new EntityDistance
+        //        {
+        //            EntityId = originDog.Id,
+        //            Lat = originDog.Lat,
+        //            Lon = originDog.Lon,
+        //        };
+
+        //        List<EntityDistance> dogsDistance = unmatchedDogs
+        //            .Select(dog => new EntityDistance { EntityId = dog.Id, Lat = dog.Lat, Lon = dog.Lon }).ToList();
+
+        //        List<EntityDistance> updatedDogsDistance = MapDistanceHelper.CalculateDistance(originDogLocation, dogsDistance);
+
+        //        List<DogDTO> finalDogsList = new List<DogDTO>();
+        //        foreach (EntityDistance dog in updatedDogsDistance)
+        //        {
+        //            Dog? currentDog = unmatchedDogs.FirstOrDefault(d => d.Id == dog.EntityId);
+
+        //            if (currentDog != null
+        //                && (filters.Distance == null || filters.Distance >= dog.Distance)
+        //                && (filters.Breeds == null || filters.Breeds.Contains(currentDog.Type))
+        //                && (filters.Size == null || filters.Size.Contains(currentDog.Size))
+        //                && (filters.Gender == null || filters.Gender.Contains(currentDog.Gender))
+        //                && (filters.Vaccinated == null || filters.Vaccinated.Contains(currentDog.Vaccinated))
+        //                )
+        //            {
+
+        //                List<ImageDTO> dogImages = new List<ImageDTO>();
+        //                foreach (Image image in currentDog.Images.OrderBy(d => d.Order))
+        //                {
+        //                    dogImages.Add(new ImageDTO
+        //                    {
+        //                        Id = image.Id,
+        //                        Url = image.Url
+        //                    });
+        //                }
+        //                finalDogsList.Add(new DogDTO
+        //                {
+        //                    Id = dog.EntityId,
+        //                    Name = currentDog.Name,
+        //                    Description = currentDog.Description,
+        //                    Type = currentDog.Type,
+        //                    Size = currentDog.Size,
+        //                    Gender = currentDog.Gender,
+        //                    BirthDate = currentDog.BirthDate,
+        //                    Distance = dog.Distance,
+        //                    Vaccinated = currentDog.Vaccinated,
+        //                    Images = dogImages,
+        //                });
+        //            }
+        //        }
+        //        _logger.LogInformation("Successfully retrieved {finalDogsList.Count} dogs.", finalDogsList.Count);
+
+        //        return finalDogsList;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger.LogError(e, "Error occurred receiving unmatched dogs."); 
+        //        return new List<DogDTO>();
+
+        //    }
+        //}
 
         public async Task<DogDTO?> GetOne(int id, bool isOwner)
         {

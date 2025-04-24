@@ -38,76 +38,165 @@ namespace TailBuddys.Application.Services
             }
         }
 
+        private double CalculateDistanceKm(double lat1, double lon1, double lat2, double lon2)
+        {
+            const double R = 6371; 
+            var dLat = (lat2 - lat1) * Math.PI / 180;
+            var dLon = (lon2 - lon1) * Math.PI / 180;
+            var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                    Math.Cos(lat1 * Math.PI / 180) * Math.Cos(lat2 * Math.PI / 180) *
+                    Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            return R * c;
+        }
         public async Task<List<ParkDTO>> GetAllParks(int? dogId, [FromQuery] ParksFilterDTO filters)
         {
             try
             {
-                List<EntityDistance> updatedParksDistance = new List<EntityDistance>();
-                List<Park> parks = await _parkRepository.GetAllParksDb();
+                var parks = await _parkRepository.GetAllParksDb();
 
                 if (filters.DogLikes != null)
                 {
-                    parks = parks.Where(park => park.DogLikes.Count >= filters.DogLikes).ToList();
-
+                    parks = parks.Where(p => p.DogLikes.Count >= filters.DogLikes.Value).ToList();
                 }
+
+                double? dogLat = null, dogLon = null;
 
                 if (dogId != null)
                 {
-                    DogDTO? myDog = await _dogService.GetOne(dogId.Value, true);
-                    if (myDog != null)
+                    DogDTO? dog = await _dogService.GetOne(dogId.Value, true);
+                    if (dog != null)
                     {
-                        EntityDistance myDogLocation = new EntityDistance
+                        dogLat = dog.Lat;
+                        dogLon = dog.Lon;
+
+                        if (filters.Distance != null && dogLat != 0 && dogLon != 0)
                         {
-                            EntityId = myDog.Id,
-                            Lat = myDog.Lat,
-                            Lon = myDog.Lon,
-                        };
+                            double earthRadiusKm = 6371;
+                            double deltaLat = filters.Distance.Value / earthRadiusKm * (180 / Math.PI);
+                            double deltaLon = filters.Distance.Value / (earthRadiusKm * Math.Cos((double)dogLat * Math.PI / 180)) * (180 / Math.PI);
 
-                        List<EntityDistance> parksDistance = parks
-                        .Select(park => new EntityDistance { EntityId = park.Id, Lat = park.Lat, Lon = park.Lon }).ToList();
-
-                        updatedParksDistance = MapDistanceHelper.CalculateDistance(myDogLocation, parksDistance);
-
-                        if (filters.Distance != null)
-                        {
-                            updatedParksDistance = updatedParksDistance.Where(park => park.Distance < filters.Distance).ToList();
+                            parks = parks
+                                .Where(p =>
+                                    p.Lat >= dogLat - deltaLat && p.Lat <= dogLat + deltaLat &&
+                                    p.Lon >= dogLon - deltaLon && p.Lon <= dogLon + deltaLon)
+                                .ToList();
                         }
-
-                        parks = parks.Where(park => updatedParksDistance.Any(ed => ed.EntityId == park.Id)).ToList();
                     }
                 }
 
-                List<ParkDTO> finalParksList = parks
-                    .Select(park => new ParkDTO
+                var finalList = parks
+                    .Select(p =>
                     {
-                        Id = park.Id,
-                        Name = park.Name,
-                        Description = park.Description,
-                        Address = park.Address,
-                        Lat = park.Lat,
-                        Lon = park.Lon,
-                        DogLikes = park.DogLikes.Select(d => new UserDogDTO
+                        double? distance = null;
+                        if (dogLat != null && dogLon != null)
                         {
-                            Id = d.Id,
-                            Name = d.Name,
-                            ImageUrl = d.Images.FirstOrDefault(i => i.Order == 0)?.Url
-                        }).ToList(),
-                        Images = park.Images.OrderBy(d => d.Order).Select(image => new ImageDTO { Id = image.Id, Url = image.Url }).ToList(),
-                        Distance = updatedParksDistance.FirstOrDefault(ed => ed.EntityId == park.Id)?.Distance
-                    }).ToList();
-                if (dogId != null)
-                {
-                    return finalParksList.OrderBy(p => p.Distance).ToList();
-                }
+                            distance = CalculateDistanceKm(dogLat.Value, dogLon.Value, p.Lat, p.Lon);
+                        }
 
-                return finalParksList;
+                        return new ParkDTO
+                        {
+                            Id = p.Id,
+                            Name = p.Name,
+                            Description = p.Description,
+                            Address = p.Address,
+                            Lat = p.Lat,
+                            Lon = p.Lon,
+                            Distance = distance,
+                            DogLikes = p.DogLikes.Select(d => new UserDogDTO
+                            {
+                                Id = d.Id,
+                                Name = d.Name,
+                                ImageUrl = d.Images.FirstOrDefault(i => i.Order == 0)?.Url
+                            }).ToList(),
+                            Images = p.Images.OrderBy(i => i.Order).Select(i => new ImageDTO
+                            {
+                                Id = i.Id,
+                                Url = i.Url
+                            }).ToList()
+                        };
+                    })
+                    .Where(p => filters.Distance == null || p.Distance <= filters.Distance)
+                    .ToList();
+
+                return dogId != null ? finalList.OrderBy(p => p.Distance).ToList() : finalList;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(e, "Error occurred while receiving all parks park."); 
+                _logger.LogError(ex, "Error retrieving parks with filters.");
                 return new List<ParkDTO>();
             }
         }
+        //public async Task<List<ParkDTO>> GetAllParks(int? dogId, [FromQuery] ParksFilterDTO filters)
+        //{
+        //    try
+        //    {
+        //        List<EntityDistance> updatedParksDistance = new List<EntityDistance>();
+        //        List<Park> parks = await _parkRepository.GetAllParksDb();
+
+        //        if (filters.DogLikes != null)
+        //        {
+        //            parks = parks.Where(park => park.DogLikes.Count >= filters.DogLikes).ToList();
+
+        //        }
+
+        //        if (dogId != null)
+        //        {
+        //            DogDTO? myDog = await _dogService.GetOne(dogId.Value, true);
+        //            if (myDog != null)
+        //            {
+        //                EntityDistance myDogLocation = new EntityDistance
+        //                {
+        //                    EntityId = myDog.Id,
+        //                    Lat = myDog.Lat,
+        //                    Lon = myDog.Lon,
+        //                };
+
+        //                List<EntityDistance> parksDistance = parks
+        //                .Select(park => new EntityDistance { EntityId = park.Id, Lat = park.Lat, Lon = park.Lon }).ToList();
+
+        //                updatedParksDistance = MapDistanceHelper.CalculateDistance(myDogLocation, parksDistance);
+
+        //                if (filters.Distance != null)
+        //                {
+        //                    updatedParksDistance = updatedParksDistance.Where(park => park.Distance < filters.Distance).ToList();
+        //                }
+
+        //                parks = parks.Where(park => updatedParksDistance.Any(ed => ed.EntityId == park.Id)).ToList();
+        //            }
+        //        }
+
+        //        List<ParkDTO> finalParksList = parks
+        //            .Select(park => new ParkDTO
+        //            {
+        //                Id = park.Id,
+        //                Name = park.Name,
+        //                Description = park.Description,
+        //                Address = park.Address,
+        //                Lat = park.Lat,
+        //                Lon = park.Lon,
+        //                DogLikes = park.DogLikes.Select(d => new UserDogDTO
+        //                {
+        //                    Id = d.Id,
+        //                    Name = d.Name,
+        //                    ImageUrl = d.Images.FirstOrDefault(i => i.Order == 0)?.Url
+        //                }).ToList(),
+        //                Images = park.Images.OrderBy(d => d.Order).Select(image => new ImageDTO { Id = image.Id, Url = image.Url }).ToList(),
+        //                Distance = updatedParksDistance.FirstOrDefault(ed => ed.EntityId == park.Id)?.Distance
+        //            }).ToList();
+        //        if (dogId != null)
+        //        {
+        //            return finalParksList.OrderBy(p => p.Distance).ToList();
+        //        }
+
+        //        return finalParksList;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger.LogError(e, "Error occurred while receiving all parks park."); 
+        //        return new List<ParkDTO>();
+        //    }
+        //}
         public async Task<ParkDTO?> GetParkById(int parkId)
         {
             try
