@@ -120,29 +120,6 @@ public static class ModelBuilderExtensions
             "Terrified of balloons, but otherwise confident, strong, and happy-go-lucky."
         };
 
-        string[] parkDescriptions = {
-            "A large park filled with shaded trails, open meadows, and multiple fenced areas for dogs of all sizes.",
-            "Popular with locals, features dog fountains, agility equipment, and benches for owners to relax and socialize.",
-            "Peaceful urban retreat with grassy fields, paved walkways, and plenty of space for off-leash fun.",
-            "Fenced play zones separate big and small dogs, ensuring a fun and safe experience for all visitors.",
-            "Has a calm, welcoming atmosphere with play tunnels, dog ramps, and grassy areas to roll around in.",
-            "Open year-round, provides grassy play zones, snow-safe trails in winter, and covered benches for owners.",
-            "Hosts weekend adoption drives, charity walks, and social events that welcome all dog breeds.",
-            "A hidden gem filled with colorful flowers, peaceful benches, and hidden nooks for relaxed sniffing.",
-            "Built for exploration, with narrow trails, wide fields, and a loop that circles a peaceful lake.",
-            "Pet-friendly all the way, with friendly signage, community boards, and waste bags always available.",
-            "Not overly crowded, but always friendly faces and polite, responsible owners respecting park etiquette.",
-            "Special events like dog birthday parties and costume contests add excitement to regular visits.",
-            "One of the few parks with a swimming zone for water-loving dogs to splash safely.",
-            "Feels like a slice of wilderness in the middle of town, perfect for dogs that love to roam.",
-            "Complete with maps, fenced paths, and signs to keep dogs safe while off-leash.",
-            "Excellent place to teach recall, with natural distractions and enough space to test your dog’s focus.",
-            "Safe for evening visits, with lampposts, security cameras, and a warm atmosphere after sundown.",
-            "Ideal for both training and playtime, with spaces to run freely or work on obedience drills.",
-            "Newly renovated with eco-friendly designs, agility sets, and separate exercise fields for energetic pups.",
-            "Has dog-friendly signage, snack vendors, and emergency kits for peace of mind while you play.",
-            "Daily dog walkers make this their go-to, citing trust, community, and happy tail wags everywhere."
-        };
 
 
         string[] dogNames = { "Bella", "Luna", "Max", "Charlie", "Lucy", "Rocky", "Daisy", "Toby", "Milo", "Sadie",
@@ -152,15 +129,36 @@ public static class ModelBuilderExtensions
             "Boomer", "Abby", "Olive", "Simba", "Moose", "Hazel", "Benji", "Remy", "Pepper", "Rex",
             "Bruno", "Shadow", "Honey", "Nova", "Ace", "Lucky", "Sky", "Ziggy", "Otis", "Maple" };
 
-        string[] parkNames = { "Gan Meir", "Independence Park", "Yarkon Park", "Sacher Park", "Ramat Gan National Park", "HaPisga Garden",
-            "Canada Park", "Ashdod Yam Park", "Gan Ha'ir", "Armon Hanatziv Promenade", "Liberty Bell Park", "Lachish Park",
-            "Ariel Sharon Park", "Park Giv'atayim", "Herzliya Park", "Park Ashkelon", "Beit She'an Park", "Ein Gedi Reserve",
-            "Neot Kedumim", "Ma'ayan Harod", "Timna Park", "Alona Park", "Park Kiryat Motzkin", "Bat Galim Promenade", };
+      
         //"Park Carmiel", "Gan Binyamin", "Park Rehovot", "Raanana Park", "Ramat Hasharon Grove", "Hadera Forest",
         //"Gan Hapsalim", "Park Modi'in", "Nahal Alexander", "Yavne Park", "Holon Eco Park", "Ashkelon National Park",
         //"Tel Afek", "Palmachim Beach Park", "Ein Hemed", "Park Eshkol", "Mount Carmel Park", "Jaffa Park",
         //"Netanya Iris Reserve", "Ga'ash Cliff Trail", "Ashdod Dunes", "Hula Valley Park", "Zikhron Ya'akov Promenade",
         //"Kiryat Ata Park", "Sderot Forest", "Jerusalem Gazelle Valley" };
+
+        var availableImages = new HashSet<string>
+        {
+            "park1o1.jpg", "park1o2.jpg", "park1o3.jpg", "park1o4.jpg", "park1o5.jpg",
+            "park2o1.jpg", "park2o2.jpg", "park2o3.jpg", "park2o4.jpg", "park2o5.jpg",
+            "park3o1.jpg", "park3o2.jpg", "park3o3.jpg", "park3o4.jpg",
+            "park4o1.jpg", "park4o2.jpg", "park4o3.jpg", "park4o4.jpg",
+            "park5o1.jpg", "park5o2.jpg", "park5o3.jpg",
+            "park6o1.jpg", "park6o2.jpg", "park6o3.jpg", "park6o4.jpg", "park6o5.jpg",
+            "park7o1.jpg", "park7o2.jpg", "park7o3.jpg",
+            "park8o1.jpg", "park8o2.jpg", "park8o3.jpg",
+            "park9o1.jpg", "park9o2.jpg", "park9o3.jpg", "park9o4.jpg", "park9o5.jpg",
+            "park10o1.jpg", "park10o2.jpg", "park10o3.jpg", "park10o4.jpg",
+            "park11o1.jpg", "park11o2.jpg", "park11o3.jpg", "park11o4.jpg", "park11o5.jpg",
+            "park12o1.jpg", "park12o2.jpg", "park12o3.jpg", "park12o4.jpg",
+            "park13o1.jpg", "park13o2.jpg", "park13o3.jpg", "park13o4.jpg",
+            "park14o1.jpg", "park14o2.jpg", "park14o3.jpg",
+            "park15o1.jpg", "park15o2.jpg", "park15o3.jpg", "park15o4.jpg",
+            "park16o1.jpg", "park16o2.jpg", "park16o3.jpg",
+            "park17o1.jpg", "park17o2.jpg", "park17o3.jpg",
+            "park18o1.jpg", "park18o2.jpg", "park18o3.jpg",
+            "park19o1.jpg", "park19o2.jpg", "park19o3.jpg",
+            "park20o1.jpg", "park20o2.jpg", "park20o3.jpg", "park20o4.jpg"
+        };
 
         string[] dogAddresses = Enumerable.Range(0, 100)
              .Select(_ => $"{random.Next(1, 200)} {streets[random.Next(streets.Length)]} St, {cities[random.Next(cities.Length)]}")
@@ -169,6 +167,55 @@ public static class ModelBuilderExtensions
         string[] parkAddresses = Enumerable.Range(0, 100)
             .Select(_ => $"{random.Next(1, 200)} {streets[random.Next(streets.Length)]} St, {cities[random.Next(cities.Length)]}")
             .ToArray();
+        
+
+        var fixedParkDescriptions = new[]
+        {
+            "Spacious riverside park with biking trails, dog agility zones, and open fields for frisbee fun.",
+            "Lush garden escape featuring fountains, shaded benches, and dog socializing corners.",
+            "Stylish park in historic Neve Tzedek with cozy paths and plenty of sniffs to discover.",
+            "Sandy beach park with calm waters, perfect for swimming dogs and sunset walks.",
+            "Modern urban greenery with well-lit paths, grassy slopes, and weekend dog events.",
+            "Iconic Holon spot surrounded by art sculptures, dog-safe ponds, and picnic areas.",
+            "Hilly retreat with nature vibes, off-leash zones, and bird-watching for curious canines.",
+            "Flowing river paths, chirping birds, and wide grassy knolls to roll around in.",
+            "Clean and structured with benches every few meters, poop bag stations, and training zones.",
+            "Wide fields, native trees, and relaxing woodland trails for mindful mutt strolls.",
+            "Neighborhood gem with small-dog sections, toddler-proof gates, and shaded pavilions.",
+            "Central green space with water sprinklers, doggy obstacle ramps, and snack vendors.",
+            "Natural reserve vibe with desert trees, natural springs, and paw-friendly terrain.",
+            "Desert-style park with resilient plants, sand dunes, and dog-friendly shaded huts.",
+            "Peaceful terraces with views, natural stone trails, and olive trees everywhere.",
+            "Lakeside breeze, open-air paths, and splash-ready ramps for water-loving pups.",
+            "Botanical-style gardens, beach-like gravel areas, and easy hilltop lookout trails.",
+            "Hidden forest grove for off-leash exploration and community gathering events.",
+            "Ocean views, clean benches, and occasional dog fairs along the marina boulevard.",
+            "Olive trees, quiet picnic spots, and ancient vibes mixed with modern comfort."
+        };
+        var fixedParks = new[]
+        {
+            new { Name = "Gan HaYarkon", Address = "Yarkon St 35, Tel Aviv", Lat = 32.0975, Lon = 34.8147 },
+            new { Name = "Park HaShalom", Address = "Peace Ave 12, Ramat Gan", Lat = 32.0681, Lon = 34.8231 },
+            new { Name = "Neve Tzedek Park", Address = "Shabazi St 44, Tel Aviv", Lat = 32.0601, Lon = 34.7637 },
+            new { Name = "Palmachim Beach Park", Address = "Palmachim Rd 5, Rishon LeZion", Lat = 31.9304, Lon = 34.7094 },
+            new { Name = "Ramat Aviv Green", Address = "Levi Eshkol Blvd 102, Tel Aviv", Lat = 32.1113, Lon = 34.7985 },
+            new { Name = "Gan Bialik", Address = "Bialik St 9, Holon", Lat = 32.0152, Lon = 34.7723 },
+            new { Name = "Herzliya Hills Park", Address = "HaHagana St 77, Herzliya", Lat = 32.1613, Lon = 34.8361 },
+            new { Name = "Yarkon River View", Address = "Riverside Rd 23, Bnei Brak", Lat = 32.1048, Lon = 34.8285 },
+            new { Name = "Gan Modiin", Address = "Weizmann St 90, Modiin", Lat = 31.8948, Lon = 35.0071 },
+            new { Name = "Sderot Woodland", Address = "Sderot HaAtzmaut 18, Sderot", Lat = 31.5215, Lon = 34.5926 },
+            new { Name = "Givat Shmuel Park", Address = "Hazayit St 5, Givat Shmuel", Lat = 32.0723, Lon = 34.8463 },
+            new { Name = "Park Netanya Center", Address = "Herzl St 112, Netanya", Lat = 32.3294, Lon = 34.8576 },
+            new { Name = "Ein Gedi Natural Spot", Address = "Route 90, Ein Gedi", Lat = 31.4597, Lon = 35.3925 },
+            new { Name = "Gan Re'im", Address = "Re'im Blvd 2, Be'er Sheva", Lat = 31.2513, Lon = 34.7913 },
+            new { Name = "Ma'ale Adumim Retreat", Address = "Ma'ale St 11, Ma'ale Adumim", Lat = 31.7732, Lon = 35.2968 },
+            new { Name = "Tiberias Lakeside Park", Address = "Lakeside Rd 8, Tiberias", Lat = 32.7893, Lon = 35.5315 },
+            new { Name = "Haifa Bay Gardens", Address = "Bayview St 21, Haifa", Lat = 32.8272, Lon = 35.0086 },
+            new { Name = "Ganei Tikva Nature Park", Address = "Nature Trail 4, Ganei Tikva", Lat = 32.0598, Lon = 34.8809 },
+            new { Name = "Ashdod Marina Park", Address = "Marina Rd 1, Ashdod", Lat = 31.8002, Lon = 34.6418 },
+            new { Name = "Jerusalem Olive Grove", Address = "Olive Grove St 33, Jerusalem", Lat = 31.7719, Lon = 35.2135 }
+        };
+
 
         var users = Enumerable.Range(1, 20).Select(i => new User
         {
@@ -216,23 +263,47 @@ public static class ModelBuilderExtensions
         }
         modelBuilder.Entity<Dog>().HasData(dogs);
 
-        var parks = Enumerable.Range(1, parkNames.Length).Select(i =>
+        var parks = new List<Park>();
+        var images = new List<Image>();
+        int imageIdCounter = 1;
+
+        for (int i = 0; i < 20; i++)
         {
-            var (lat, lon) = GetRandomCoordinateInPolygon(IsraelPolygon);
-            return new Park
+            var parkInfo = fixedParks[i];
+
+            var park = new Park
             {
-                Id = i,
-                Name = parkNames[i - 1],
-                Description = $"Beautiful park for dogs. Great for playing and resting.",
-                Address = parkAddresses[random.Next(parkAddresses.Length)],
-                Lat = lat,
-                Lon = lon,
+                Id = i + 1,
+                Name = parkInfo.Name,
+                Description = fixedParkDescriptions[i],
+                Address = parkInfo.Address,
+                Lat = parkInfo.Lat,
+                Lon = parkInfo.Lon,
                 CreatedAt = now,
                 UpdatedAt = now
             };
-        }).ToList();
-        modelBuilder.Entity<Park>().HasData(parks);
+            parks.Add(park);
 
+            // Add images per park
+            for (int order = 1; order <= 5; order++)
+            {
+                string imageFileName = $"park{park.Id}o{order}.jpg";
+                if (availableImages.Contains(imageFileName))
+                {
+                    images.Add(new Image
+                    {
+                        Id = imageIdCounter++,
+                        ParkId = park.Id,
+                        DogId = null,
+                        Order = order - 1, // convert to 0-based
+                        Url = $"https://storage.googleapis.com/tail_buddys_bucket1/{imageFileName}"
+                    });
+                }
+            }
+        }
+
+        modelBuilder.Entity<Park>().HasData(parks);
+        modelBuilder.Entity<Image>().HasData(images);
         // In your Seed() method, after seeding Dogs and Parks:
 
         int dogCount = dogs.Count;
