@@ -84,42 +84,74 @@ namespace TailBuddys.Application.Services
                         }
                     }
                 }
-
-                var finalList = parks
-                    .Select(p =>
-                    {
-                        double? distance = null;
-                        if (dogLat != null && dogLon != null)
+                if (dogId != null)
+                {
+                    var finalList = parks
+                        .Select(p =>
                         {
-                            distance = CalculateDistanceKm(dogLat.Value, dogLon.Value, p.Lat, p.Lon);
-                        }
+                            double? distance = null;
+                            if (dogLat != null && dogLon != null)
+                            {
+                                distance = CalculateDistanceKm(dogLat.Value, dogLon.Value, p.Lat, p.Lon);
+                            }
 
-                        return new ParkDTO
+                            return new ParkDTO
+                            {
+                                Id = p.Id,
+                                Name = p.Name,
+                                Description = p.Description,
+                                Address = p.Address,
+                                Lat = p.Lat,
+                                Lon = p.Lon,
+                                Distance = distance,
+                                DogLikes = p.DogLikes.Select(d => new UserDogDTO
+                                {
+                                    Id = d.Id,
+                                    Name = d.Name,
+                                    ImageUrl = d.Images.FirstOrDefault(i => i.Order == 0)?.Url
+                                }).ToList(),
+                                Images = p.Images.OrderBy(i => i.Order).Select(i => new ImageDTO
+                                {
+                                    Id = i.Id,
+                                    Url = i.Url
+                                }).ToList()
+                            };
+                        })
+                        .Where(p => filters.Distance == null || p.Distance <= filters.Distance)
+                        .ToList();
+
+                    return finalList.OrderBy(p => p.Distance).ToList();
+                }
+                else
+                {
+                    var finalList = parks
+                        .Select(p =>
                         {
-                            Id = p.Id,
-                            Name = p.Name,
-                            Description = p.Description,
-                            Address = p.Address,
-                            Lat = p.Lat,
-                            Lon = p.Lon,
-                            Distance = distance,
-                            DogLikes = p.DogLikes.Select(d => new UserDogDTO
+                            return new ParkDTO
                             {
-                                Id = d.Id,
-                                Name = d.Name,
-                                ImageUrl = d.Images.FirstOrDefault(i => i.Order == 0)?.Url
-                            }).ToList(),
-                            Images = p.Images.OrderBy(i => i.Order).Select(i => new ImageDTO
-                            {
-                                Id = i.Id,
-                                Url = i.Url
-                            }).ToList()
-                        };
-                    })
-                    .Where(p => filters.Distance == null || p.Distance <= filters.Distance)
-                    .ToList();
+                                Id = p.Id,
+                                Name = p.Name,
+                                Description = p.Description,
+                                Address = p.Address,
+                                Lat = p.Lat,
+                                Lon = p.Lon,
+                                DogLikes = p.DogLikes.Select(d => new UserDogDTO
+                                {
+                                    Id = d.Id,
+                                    Name = d.Name,
+                                    ImageUrl = d.Images.FirstOrDefault(i => i.Order == 0)?.Url
+                                }).ToList(),
+                                Images = p.Images.OrderBy(i => i.Order).Select(i => new ImageDTO
+                                {
+                                    Id = i.Id,
+                                    Url = i.Url
+                                }).ToList()
+                            };
+                        })
+                        .ToList();
 
-                return dogId != null ? finalList.OrderBy(p => p.Distance).ToList() : finalList;
+                    return finalList;
+                }
             }
             catch (Exception ex)
             {
@@ -127,76 +159,7 @@ namespace TailBuddys.Application.Services
                 return new List<ParkDTO>();
             }
         }
-        //public async Task<List<ParkDTO>> GetAllParks(int? dogId, [FromQuery] ParksFilterDTO filters)
-        //{
-        //    try
-        //    {
-        //        List<EntityDistance> updatedParksDistance = new List<EntityDistance>();
-        //        List<Park> parks = await _parkRepository.GetAllParksDb();
 
-        //        if (filters.DogLikes != null)
-        //        {
-        //            parks = parks.Where(park => park.DogLikes.Count >= filters.DogLikes).ToList();
-
-        //        }
-
-        //        if (dogId != null)
-        //        {
-        //            DogDTO? myDog = await _dogService.GetOne(dogId.Value, true);
-        //            if (myDog != null)
-        //            {
-        //                EntityDistance myDogLocation = new EntityDistance
-        //                {
-        //                    EntityId = myDog.Id,
-        //                    Lat = myDog.Lat,
-        //                    Lon = myDog.Lon,
-        //                };
-
-        //                List<EntityDistance> parksDistance = parks
-        //                .Select(park => new EntityDistance { EntityId = park.Id, Lat = park.Lat, Lon = park.Lon }).ToList();
-
-        //                updatedParksDistance = MapDistanceHelper.CalculateDistance(myDogLocation, parksDistance);
-
-        //                if (filters.Distance != null)
-        //                {
-        //                    updatedParksDistance = updatedParksDistance.Where(park => park.Distance < filters.Distance).ToList();
-        //                }
-
-        //                parks = parks.Where(park => updatedParksDistance.Any(ed => ed.EntityId == park.Id)).ToList();
-        //            }
-        //        }
-
-        //        List<ParkDTO> finalParksList = parks
-        //            .Select(park => new ParkDTO
-        //            {
-        //                Id = park.Id,
-        //                Name = park.Name,
-        //                Description = park.Description,
-        //                Address = park.Address,
-        //                Lat = park.Lat,
-        //                Lon = park.Lon,
-        //                DogLikes = park.DogLikes.Select(d => new UserDogDTO
-        //                {
-        //                    Id = d.Id,
-        //                    Name = d.Name,
-        //                    ImageUrl = d.Images.FirstOrDefault(i => i.Order == 0)?.Url
-        //                }).ToList(),
-        //                Images = park.Images.OrderBy(d => d.Order).Select(image => new ImageDTO { Id = image.Id, Url = image.Url }).ToList(),
-        //                Distance = updatedParksDistance.FirstOrDefault(ed => ed.EntityId == park.Id)?.Distance
-        //            }).ToList();
-        //        if (dogId != null)
-        //        {
-        //            return finalParksList.OrderBy(p => p.Distance).ToList();
-        //        }
-
-        //        return finalParksList;
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        _logger.LogError(e, "Error occurred while receiving all parks park."); 
-        //        return new List<ParkDTO>();
-        //    }
-        //}
         public async Task<ParkDTO?> GetParkById(int parkId)
         {
             try

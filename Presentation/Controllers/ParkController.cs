@@ -61,7 +61,8 @@ namespace TailBuddys.Presentation.Controllers
                 }
                 return Ok(result);
             }
-            return Unauthorized();
+            List<ParkDTO> filteredParks = await _parkService.GetAllParks(null, filters);
+            return Ok(filteredParks);
         }
 
         [HttpGet("{id}")]
